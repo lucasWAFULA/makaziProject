@@ -1,0 +1,48 @@
+substitutions:
+  _REGION: europe-west1
+  _ARTIFACT_REPOSITORY: karibumakazi
+  _SERVICE: karibumakazi-api
+  _CLOUD_SQL_INSTANCE: YOUR_PROJECT_ID:europe-west1:karibumakazi-db
+  _SERVICE_ACCOUNT: karibumakazi-cloudrun-sa@YOUR_PROJECT_ID.iam.gserviceaccount.com
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPOSITORY}/${_SERVICE}:$COMMIT_SHA
+      - ./backend
+
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPOSITORY}/${_SERVICE}:$COMMIT_SHA
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE}
+      - --image
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPOSITORY}/${_SERVICE}:$COMMIT_SHA
+      - --region
+      - ${_REGION}
+      - --platform
+      - managed
+      - --allow-unauthenticated
+      - --port
+      - "8000"
+      - --memory
+      - 1Gi
+      - --cpu
+      - "1"
+      - --max-instances
+      - "10"
+      - --add-cloudsql-instances
+      - ${_CLOUD_SQL_INSTANCE}
+      - --service-account
+      - ${_SERVICE_ACCOUNT}
+
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_ARTIFACT_REPOSITORY}/${_SERVICE}:$COMMIT_SHA
