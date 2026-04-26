@@ -1,0 +1,26 @@
+[
+  {
+    "title": "SGR to Diani transfer guide",
+    "category": "travel_guide",
+    "content": "Use transfer from Miritini SGR station to Diani. Typical route is Miritini to Likoni ferry then south coast road to Diani. Morning travel is recommended to avoid peak traffic.",
+    "country": "Kenya",
+    "region": "Coast",
+    "is_active": true
+  },
+  {
+    "title": "Likoni ferry travel tips",
+    "category": "travel_guide",
+    "content": "Carry light luggage, keep valuables secure, and travel early when possible. Ferry queue times may increase during evening peak hours and holidays.",
+    "country": "Kenya",
+    "region": "Mombasa",
+    "is_active": true
+  },
+  {
+    "title": "Payment support and escalation",
+    "category": "payment_help",
+    "content": "For payment disputes, failed confirmations, or refund checks, escalate to live support immediately via official WhatsApp support so receipts can be validated.",
+    "country": "",
+    "region": "",
+    "is_active": true
+  }
+]

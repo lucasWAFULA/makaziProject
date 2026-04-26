@@ -1,0 +1,36 @@
+{
+  "feature_columns": [
+    "fishing_hours_lag1",
+    "fishing_hours_lag2",
+    "fishing_hours_lag3",
+    "active_hours_lag1",
+    "active_hours_lag2",
+    "fishing_hours_roll3",
+    "fishing_hours_trend3",
+    "length_m_inferred",
+    "engine_power_kw_inferred",
+    "tonnage_gt_inferred",
+    "vessel_class_inferred_enc",
+    "flag_gfw_enc",
+    "year_num"
+  ],
+  "train_medians": {
+    "fishing_hours_lag1": 460.2256,
+    "fishing_hours_lag2": 503.8751000000001,
+    "fishing_hours_lag3": 531.5320499999999,
+    "active_hours_lag1": 1627.1309,
+    "active_hours_lag2": 1750.2621999999997,
+    "fishing_hours_roll3": 449.5265500000001,
+    "fishing_hours_trend3": 35.4813,
+    "length_m_inferred": 23.313,
+    "engine_power_kw_inferred": 331.316,
+    "tonnage_gt_inferred": 93.055,
+    "vessel_class_inferred_enc": 13.0,
+    "flag_gfw_enc": 63.0,
+    "year_num": 2018.0
+  },
+  "uses_scaler": false,
+  "selected_model": "XGBoost",
+  "best_iteration": 557,
+  "created_at_utc": "2026-03-16T09:12:54.967303"
+}
