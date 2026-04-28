@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { ChatWidget } from './ChatWidget'
@@ -51,7 +52,10 @@ function TikTokIcon() {
 export function Layout({ children }) {
   const { t, i18n } = useTranslation()
   const { user, logout } = useAuth()
+  const location = useLocation()
+  const navRef = useRef(null)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [activeMenu, setActiveMenu] = useState(null)
 
   const bookingMenu = [
     { label: 'Airport Pickup + Stay', to: '/booking/airport-pickup-stay' },
@@ -84,11 +88,92 @@ export function Layout({ children }) {
     { label: 'Currency Exchange Tips', href: '/#guides' },
     { label: 'Safe Travel Advice', href: '/#guides' },
   ]
+  const menuItems = {
+    booking: bookingMenu,
+    agents: agentMenu,
+    hotels: hotelsMenu,
+    guide: guideMenu,
+  }
 
   const switchLanguage = () => {
     const nextLang = i18n.language === 'sw' ? 'en' : i18n.language === 'en' ? 'tz' : 'sw'
     i18n.changeLanguage(nextLang)
   }
+
+  const closeMenus = () => {
+    setMobileOpen(false)
+    setActiveMenu(null)
+  }
+
+  const closeMenusBeforeNavigation = () => {
+    flushSync(() => {
+      closeMenus()
+    })
+  }
+
+  const toggleMenu = (menu) => {
+    setActiveMenu((prev) => (prev === menu ? null : menu))
+  }
+
+  const toggleMobileMenu = () => {
+    setMobileOpen((prev) => {
+      const next = !prev
+      if (!next) setActiveMenu(null)
+      return next
+    })
+  }
+
+  useEffect(() => {
+    setActiveMenu(null)
+    setMobileOpen(false)
+  }, [location.pathname, location.search, location.hash])
+
+  useEffect(() => {
+    const handlePointerDown = (event) => {
+      if (!navRef.current?.contains(event.target)) {
+        setActiveMenu(null)
+      }
+    }
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setActiveMenu(null)
+      }
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown)
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
+  const renderMenuButton = (key, label) => (
+    <button
+      type="button"
+      className="nav-dropdown-trigger"
+      onClick={() => toggleMenu(key)}
+      aria-expanded={activeMenu === key}
+    >
+      {label}
+    </button>
+  )
+
+  const renderMegaMenu = () => (
+    activeMenu ? (
+      <div className="mega-menu">
+        {menuItems[activeMenu].map((item) => (
+          item.href ? (
+            <a key={item.label} href={item.href} onClick={closeMenusBeforeNavigation}>{item.label}</a>
+          ) : (
+            <Link key={item.label} to={item.to} onClick={closeMenusBeforeNavigation}>{item.label}</Link>
+          )
+        ))}
+      </div>
+    ) : null
+  )
 
   return (
     <div className="app-layout">
@@ -98,50 +183,31 @@ export function Layout({ children }) {
         <a href="https://maps.google.com/?q=Mombasa" target="_blank" rel="noreferrer">{t('quick_directions')}</a>
       </div>
 
-      <nav className="nav nav-main">
+      <nav className="nav nav-main" ref={navRef}>
         <div className="nav-row">
-          <Link to="/" className="nav-brand" onClick={() => setMobileOpen(false)}>
+          <Link to="/" className="nav-brand" onClick={closeMenusBeforeNavigation}>
             <img src="/logo.png" alt="" className="nav-logo" onError={(e) => { e.target.style.display = 'none' }} />
             <span className="nav-name">{t('app_name')}</span>
           </Link>
           <span className="nav-tagline">{t('tagline')}</span>
-          <button type="button" className="mobile-menu-btn" onClick={() => setMobileOpen((prev) => !prev)}>
+          <button type="button" className="mobile-menu-btn" onClick={toggleMobileMenu}>
             {mobileOpen ? '×' : '☰'}
           </button>
         </div>
 
         <div className={`nav-menu ${mobileOpen ? 'open' : ''}`}>
-          <Link to="/" className="nav-link" onClick={() => setMobileOpen(false)}>{t('home')}</Link>
-          <Link to="/stays/apartments" className="nav-link" onClick={() => setMobileOpen(false)}>{t('menu_stays')}</Link>
-          <details className="nav-dropdown">
-            <summary>{t('menu_booking')}</summary>
-            <div className="nav-dropdown-menu">
-              {bookingMenu.map((item) => <Link key={item.label} to={item.to} onClick={() => setMobileOpen(false)}>{item.label}</Link>)}
-            </div>
-          </details>
-          <details className="nav-dropdown">
-            <summary>{t('menu_agents')}</summary>
-            <div className="nav-dropdown-menu">
-              {agentMenu.map((item) => <Link key={item.label} to={item.to} onClick={() => setMobileOpen(false)}>{item.label}</Link>)}
-            </div>
-          </details>
-          <details className="nav-dropdown">
-            <summary>{t('menu_hotels')}</summary>
-            <div className="nav-dropdown-menu">
-              {hotelsMenu.map((item) => <Link key={item.label} to={item.to} onClick={() => setMobileOpen(false)}>{item.label}</Link>)}
-            </div>
-          </details>
-          <details className="nav-dropdown">
-            <summary>{t('menu_guide')}</summary>
-            <div className="nav-dropdown-menu">
-              {guideMenu.map((item) => <a key={item.label} href={item.href} onClick={() => setMobileOpen(false)}>{item.label}</a>)}
-            </div>
-          </details>
-          <a href="/#contact" className="nav-link" onClick={() => setMobileOpen(false)}>{t('menu_contact')}</a>
-          <Link to="/taxi" className="nav-link" onClick={() => setMobileOpen(false)}>{t('taxi_booking')}</Link>
-          {user && <Link to="/bookings" className="nav-link" onClick={() => setMobileOpen(false)}>{t('my_bookings')}</Link>}
-          {user?.role === 'host' && <Link to="/dashboard" className="nav-link" onClick={() => setMobileOpen(false)}>{t('manage_listings')}</Link>}
+          <Link to="/" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('home')}</Link>
+          <Link to="/stays/apartments" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('menu_stays')}</Link>
+          {renderMenuButton('booking', t('menu_booking'))}
+          {renderMenuButton('agents', t('menu_agents'))}
+          {renderMenuButton('hotels', t('menu_hotels'))}
+          {renderMenuButton('guide', t('menu_guide'))}
+          <a href="/#contact" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('menu_contact')}</a>
+          <Link to="/taxi" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('taxi_booking')}</Link>
+          {user && <Link to="/bookings" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('my_bookings')}</Link>}
+          {user?.role === 'host' && <Link to="/dashboard" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('manage_listings')}</Link>}
         </div>
+        {renderMegaMenu()}
 
         <span className="nav-right">
           <button

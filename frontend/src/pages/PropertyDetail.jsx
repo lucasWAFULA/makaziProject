@@ -34,7 +34,9 @@ export function PropertyDetail() {
 
   if (isLoading || !property) return <p>{t('loading')}</p>
 
-  const imageUrls = property.image_urls?.length ? property.image_urls : (property.images?.length ? property.images.map((i) => i.image) : [])
+  const imageUrls = Array.isArray(property.image_urls)
+    ? property.image_urls
+    : (Array.isArray(property.images) ? property.images.map((i) => i.image).filter(Boolean) : [])
   const sortedReviews = useMemo(
     () => [...reviews].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)),
     [reviews],

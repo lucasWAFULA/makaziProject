@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getProperties } from '../api/properties'
@@ -30,8 +31,73 @@ const agentMap = {
   commercial: { title: 'Commercial Space', params: { area: 'commercial' } },
 }
 
+const stayChips = [
+  { label: 'All stays', value: 'all' },
+  { label: 'Budget', value: 'budget' },
+  { label: 'Standard', value: 'standard' },
+  { label: 'Premium', value: 'premium' },
+  { label: 'Luxury', value: 'luxury' },
+  { label: 'Zanzibar', value: 'zanzibar' },
+  { label: 'Dar', value: 'dar' },
+  { label: 'Beachfront', value: 'beachfront' },
+  { label: 'Work-friendly', value: 'work' },
+]
+
+const getPrice = (item) => Number(item.price_per_night || item.price || 0)
+
+const getStayText = (item) => [
+  item.title_sw,
+  item.title,
+  item.location,
+  item.region,
+  item.town,
+  item.destination_name,
+  item.listing_type,
+  item.amenities,
+].join(' ').toLowerCase()
+
+const getPriceTier = (price) => {
+  if (price <= 80000) return 'Budget'
+  if (price <= 180000) return 'Standard'
+  if (price <= 350000) return 'Premium'
+  return 'Luxury'
+}
+
+const getStayTags = (item) => {
+  const text = getStayText(item)
+  const tags = [getPriceTier(getPrice(item))]
+  if (/beach|ocean|sea|nungwi|kendwa|paje|diani|jambiani/.test(text)) tags.push('Beachfront')
+  if (/wifi|work|desk|business|masaki|oyster|dar/.test(text)) tags.push('Work-friendly')
+  if (/pool/.test(text)) tags.push('Pool')
+  if (/parking/.test(text)) tags.push('Parking')
+  return tags.slice(0, 3)
+}
+
+function StayCard({ item }) {
+  const price = getPrice(item)
+  return (
+    <article className="premium-listing-card">
+      <div className="premium-listing-media">
+        {item.first_image ? <img src={item.first_image} alt="" loading="lazy" /> : <span className="no-image" />}
+      </div>
+      <div className="premium-listing-body">
+        <strong>{item.title_sw || item.title}</strong>
+        <p className="property-card-meta">{item.location || item.town || item.region}</p>
+        <div className="listing-tags">
+          {getStayTags(item).map((tag) => <span key={tag}>{tag}</span>)}
+        </div>
+        <div className="listing-card-footer">
+          <b>TZS {price.toLocaleString()}</b>
+          <Link to={`/property/${item.id}`} className="btn btn-secondary btn-sm">View details</Link>
+        </div>
+      </div>
+    </article>
+  )
+}
+
 export function TaxonomyPage() {
   const { type, slug } = useParams()
+  const [activeChip, setActiveChip] = useState('all')
   const mapByType = type === 'stays' ? stayMap : type === 'booking' ? bookingMap : type === 'agents' ? agentMap : null
   const fallbackConfig = type === 'booking' ? { title: 'Package Results', params: { package_type: slug } } : null
   const config = mapByType?.[slug] || fallbackConfig
@@ -48,6 +114,54 @@ export function TaxonomyPage() {
     enabled: !!config,
   })
 
+  const filteredStays = useMemo(() => {
+    if (type !== 'stays') return data
+    if (activeChip === 'all') return data
+    return data.filter((item) => {
+      const text = getStayText(item)
+      const price = getPrice(item)
+      if (activeChip === 'budget') return price <= 80000
+      if (activeChip === 'standard') return price > 80000 && price <= 180000
+      if (activeChip === 'premium') return price > 180000 && price <= 350000
+      if (activeChip === 'luxury') return price > 350000
+      if (activeChip === 'zanzibar') return /zanzibar|stone town|nungwi|kendwa|paje|jambiani/.test(text)
+      if (activeChip === 'dar') return /dar|masaki|oyster|msasani|mikocheni|kinondoni|kigamboni/.test(text)
+      if (activeChip === 'beachfront') return /beach|ocean|sea|nungwi|kendwa|paje|diani|jambiani/.test(text)
+      if (activeChip === 'work') return /wifi|work|desk|business|masaki|oyster|dar/.test(text)
+      return true
+    })
+  }, [activeChip, data, type])
+
+  const staySections = useMemo(() => {
+    if (type !== 'stays') return []
+    const sections = [
+      {
+        title: 'Beachfront Apartments in Zanzibar',
+        description: 'Ocean access, island energy and stays near Nungwi, Paje, Kendwa and Stone Town.',
+        items: filteredStays.filter((item) => /zanzibar|nungwi|kendwa|paje|jambiani|stone town|beach|ocean/.test(getStayText(item))),
+      },
+      {
+        title: 'Business-ready Apartments in Dar es Salaam',
+        description: 'Convenient stays near Masaki, Oyster Bay, Msasani and city business routes.',
+        items: filteredStays.filter((item) => /dar|masaki|oyster|msasani|mikocheni|kinondoni/.test(getStayText(item))),
+      },
+      {
+        title: 'Budget and Mid-range Comfort',
+        description: 'Simple, clean, practical stays for short visits and value-focused trips.',
+        items: filteredStays.filter((item) => getPrice(item) <= 180000),
+      },
+      {
+        title: 'Premium and Luxury Near the Ocean',
+        description: 'Better interiors, service and locations for memorable coastal stays.',
+        items: filteredStays.filter((item) => getPrice(item) > 180000 || /villa|luxury|premium|beach|ocean/.test(getStayText(item))),
+      },
+    ]
+    const visibleSections = sections
+      .map((section) => ({ ...section, items: section.items.slice(0, 8) }))
+      .filter((section) => section.items.length > 0)
+    return visibleSections.length ? visibleSections : [{ title: config.title, description: 'Available stays matching this category.', items: filteredStays }]
+  }, [config.title, filteredStays, type])
+
   if (!config) {
     return (
       <section className="card section-card">
@@ -62,20 +176,42 @@ export function TaxonomyPage() {
       <div className="section-heading">
         <h2>{config.title}</h2>
       </div>
+      {type === 'stays' && (
+        <div className="filter-chip-row" aria-label="Stay filters">
+          {stayChips.map((chip) => (
+            <button
+              key={chip.value}
+              type="button"
+              className={activeChip === chip.value ? 'is-active' : ''}
+              onClick={() => setActiveChip(chip.value)}
+            >
+              {chip.label}
+            </button>
+          ))}
+        </div>
+      )}
       {isLoading ? (
         <p>Loading...</p>
-      ) : data.length === 0 ? (
+      ) : data.length === 0 || (type === 'stays' && filteredStays.length === 0) ? (
         <p>No results available yet.</p>
+      ) : type === 'stays' ? (
+        <div className="listing-section-stack">
+          {staySections.map((section) => (
+            <section key={section.title} className="listing-group">
+              <div className="section-heading compact-heading">
+                <div>
+                  <h3>{section.title}</h3>
+                  <p>{section.description}</p>
+                </div>
+              </div>
+              <div className="grid grid-3">
+                {section.items.map((item) => <StayCard key={`${section.title}-${item.id}`} item={item} />)}
+              </div>
+            </section>
+          ))}
+        </div>
       ) : (
         <div className="grid grid-3">
-          {type === 'stays' && data.map((item) => (
-            <article key={item.id} className="review-card">
-              <strong>{item.title_sw}</strong>
-              <p className="property-card-meta">{item.location}</p>
-              <p>TZS {Number(item.price_per_night).toLocaleString()}</p>
-              <Link to={`/property/${item.id}`} className="btn btn-secondary btn-sm">View details</Link>
-            </article>
-          ))}
           {type === 'booking' && data.map((item) => (
             <article key={item.id} className="review-card">
               <strong>{item.name}</strong>

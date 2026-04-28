@@ -1,7 +1,8 @@
 import api from './client'
+import { asList } from './normalizeList'
 
 export async function createBooking(propertyId, checkIn, checkOut) {
-  const res = await api.post('/bookings/', {
+  const res = await api.post('bookings/', {
     property: propertyId,
     check_in: checkIn,
     check_out: checkOut,
@@ -10,6 +11,6 @@ export async function createBooking(propertyId, checkIn, checkOut) {
 }
 
 export async function getMyBookings() {
-  const res = await api.get('/bookings/my/')
-  return res.data
+  const res = await api.get('bookings/my/')
+  return asList(res.data)
 }

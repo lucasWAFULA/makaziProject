@@ -261,6 +261,44 @@ export function Home() {
       && (!draftFilters.region || item.region === draftFilters.region),
   )
   const quickSearchTowns = ['Nyali', 'Diani', 'Zanzibar', 'Watamu', 'Dar']
+  const experienceTiles = [
+    { label: 'Beachfront Living', icon: '🌊', hint: 'Ocean views, beach access, resort energy', filters: { location: 'Zanzibar', listingType: 'villa' } },
+    { label: 'City Convenience', icon: '🏙️', hint: 'Near malls, transport, nightlife and business', filters: { location: 'Dar', listingType: 'apartment' } },
+    { label: 'Family Friendly', icon: '🏡', hint: 'Secure, calm neighborhoods with room to settle', filters: { location: 'Mombasa', listingType: 'house' } },
+    { label: 'Work-Friendly Stays', icon: '💻', hint: 'WiFi-ready stays for longer coastal trips', filters: { location: 'Dar', listingType: 'apartment' } },
+    { label: 'Luxury & Villas', icon: '💎', hint: 'Premium interiors, service and standout locations', filters: { location: 'Diani', listingType: 'villa' } },
+    { label: 'Budget Stays', icon: '💰', hint: 'Clean, simple, practical stays for short visits', filters: { location: 'Zanzibar', listingType: 'bnb', priceMax: '80000' } },
+  ]
+  const destinationStories = [
+    {
+      title: 'Zanzibar',
+      to: '/destinations/zanzibar',
+      image: 'https://images.unsplash.com/photo-1573843981267-be1999ff37cd?auto=format&fit=crop&w=900&q=75',
+      summary: 'Beach nightlife, culture, kite surfing and luxury ocean-view stays.',
+      tags: ['Nungwi', 'Paje', 'Stone Town'],
+    },
+    {
+      title: 'Dar es Salaam',
+      to: '/destinations/dar-es-salaam',
+      image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=900&q=75',
+      summary: 'Business-ready apartments, premium coastal living and long-stay value.',
+      tags: ['Masaki', 'Oyster Bay', 'Kigamboni'],
+    },
+    {
+      title: 'Diani',
+      to: '/destinations/diani',
+      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=75',
+      summary: 'Beachfront villas, family holidays and relaxed South Coast escapes.',
+      tags: ['Beach Villas', 'Family', 'Luxury'],
+    },
+    {
+      title: 'Mombasa',
+      to: '/destinations/mombasa',
+      image: 'https://images.unsplash.com/photo-1524850011238-e3d235c7d4c9?auto=format&fit=crop&w=900&q=75',
+      summary: 'City access, airport transfers, historic coast and flexible stays.',
+      tags: ['Nyali', 'Airport', 'City'],
+    },
+  ]
   const visiblePackageCount = 3
   const packageItems = packageList.slice()
   const canSlidePackages = packageItems.length > visiblePackageCount
@@ -428,6 +466,17 @@ export function Home() {
     applySearchFilters(nextFilters)
   }
 
+  const handleExperienceSelect = (tile) => {
+    const nextFilters = {
+      ...draftFilters,
+      location: tile.filters.location || '',
+      listingType: tile.filters.listingType || '',
+      priceMax: tile.filters.priceMax || '',
+    }
+    setDraftFilters(nextFilters)
+    applySearchFilters(nextFilters)
+  }
+
   const handleAiAssist = async () => {
     const prompt = aiPrompt.trim()
     if (!prompt || isAiApplying) return
@@ -460,6 +509,11 @@ export function Home() {
     const motionReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const revealItems = root.querySelectorAll('.reveal-item')
     if (motionReduced) {
+      revealItems.forEach((el) => el.classList.add('is-visible'))
+      return
+    }
+
+    if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
       revealItems.forEach((el) => el.classList.add('is-visible'))
       return
     }
@@ -654,6 +708,60 @@ export function Home() {
           </div>
           {activeTab === 'taxi' && <p className="hint-text">{t('taxi_intro')}</p>}
           {activeTab === 'package' && <p className="hint-text">{t('featured_packages')}</p>}
+        </div>
+      </section>
+
+      <section className="card section-card experience-section">
+        <div className="section-heading">
+          <div>
+            <span className="section-kicker">Explore by Experience</span>
+            <h2>Find the stay that matches your trip</h2>
+            <p>Choose by lifestyle first, then compare apartments, villas, BnBs and hotels that fit the moment.</p>
+          </div>
+        </div>
+        <div className="experience-tile-grid">
+          {experienceTiles.map((tile, idx) => (
+            <button
+              key={tile.label}
+              type="button"
+              className="experience-tile reveal-item"
+              style={{ '--stagger': idx }}
+              onClick={() => handleExperienceSelect(tile)}
+            >
+              <span className="experience-icon">{tile.icon}</span>
+              <strong>{tile.label}</strong>
+              <small>{tile.hint}</small>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="card section-card destination-story-section">
+        <div className="section-heading">
+          <div>
+            <span className="section-kicker">Top Destinations</span>
+            <h2>Choose by location story</h2>
+            <p>See why to stay in Zanzibar, Dar es Salaam, Diani or Mombasa before choosing a property.</p>
+          </div>
+        </div>
+        <div className="destination-story-grid">
+          {destinationStories.map((destination, idx) => (
+            <Link
+              key={destination.title}
+              to={destination.to}
+              className="destination-story-card reveal-item"
+              style={{ '--stagger': idx }}
+            >
+              <img src={destination.image} alt="" loading="lazy" />
+              <div>
+                <strong>{destination.title}</strong>
+                <p>{destination.summary}</p>
+                <span>
+                  {destination.tags.map((tag) => <em key={tag}>{tag}</em>)}
+                </span>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
