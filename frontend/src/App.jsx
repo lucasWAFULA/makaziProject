@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { Layout } from './components/Layout'
+import { SplashScreen } from './components/SplashScreen'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'
 import { Register } from './pages/Register'
@@ -15,9 +17,16 @@ import { TaxonomyPage } from './pages/TaxonomyPage'
 import { DestinationPage } from './pages/DestinationPage'
 
 function App() {
+  const [showSplash, setShowSplash] = useState(() => sessionStorage.getItem('makaziplus_intro_seen') !== '1')
+  const finishSplash = () => {
+    sessionStorage.setItem('makaziplus_intro_seen', '1')
+    setShowSplash(false)
+  }
+
   return (
     <BrowserRouter>
       <AuthProvider>
+        {showSplash && <SplashScreen onFinish={finishSplash} />}
         <Layout>
           <Routes>
             <Route path="/" element={<Home />} />

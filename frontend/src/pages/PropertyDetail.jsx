@@ -32,11 +32,12 @@ export function PropertyDetail() {
     enabled: !!id,
   })
 
-  if (isLoading || !property) return <p>{t('loading')}</p>
-
-  const imageUrls = Array.isArray(property.image_urls)
-    ? property.image_urls
-    : (Array.isArray(property.images) ? property.images.map((i) => i.image).filter(Boolean) : [])
+  const imageUrls = useMemo(() => {
+    if (!property) return []
+    return Array.isArray(property.image_urls)
+      ? property.image_urls
+      : (Array.isArray(property.images) ? property.images.map((i) => i.image).filter(Boolean) : [])
+  }, [property])
   const sortedReviews = useMemo(
     () => [...reviews].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)),
     [reviews],
@@ -52,107 +53,212 @@ export function PropertyDetail() {
   const topShare = sortedReviews.length
     ? Math.round(((roundedCounts[5] || 0) / sortedReviews.length) * 100)
     : 0
+  const availableDates = availability.filter((a) => a.is_available)
+
+  if (isLoading || !property) return <p>{t('loading')}</p>
+
+  const price = Number(property.price_per_night || 0)
+  const totalEstimate = price * 3
+  const amenities = Array.isArray(property.amenities) ? property.amenities.filter(Boolean) : []
+  const visibleAmenities = amenities.length ? amenities.slice(0, 8) : ['WiFi-ready', 'Security', 'Kitchen access', 'Local support']
+  const listingTags = [
+    property.price_tier ? `${String(property.price_tier).replace(/\b\w/g, (char) => char.toUpperCase())} stay` : 'Verified stay',
+    ...(Array.isArray(property.experience_tags) ? property.experience_tags.slice(0, 2).map((tag) => String(tag).replace(/_/g, ' ')) : []),
+  ]
+  const whatsappMessage = encodeURIComponent(`Hello MakaziPlus.co, I am interested in ${property.title_sw} in ${property.location}.`)
+  const whatsappLink = `https://wa.me/255700000111?text=${whatsappMessage}`
 
   return (
-    <div>
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', padding: '0.5rem', background: '#f8f9fa' }}>
-          {imageUrls.map((url, i) => (
-            <img key={i} src={url} alt="" style={{ height: 200, width: 280, objectFit: 'cover', borderRadius: 8 }} />
-          ))}
-          {imageUrls.length === 0 && <div style={{ height: 200, width: '100%', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>No image</div>}
+    <div className="listing-detail-page">
+      <section className="listing-gallery-shell">
+        <div className="listing-gallery-grid">
+          <div className="listing-main-image">
+            {imageUrls[0] ? <img src={imageUrls[0]} alt="" /> : <span>No image</span>}
+          </div>
+          <div className="listing-side-images">
+            {imageUrls.slice(1, 5).map((url, i) => <img key={url || i} src={url} alt="" />)}
+            {imageUrls.length <= 1 && <span className="listing-image-placeholder">More photos coming soon</span>}
+          </div>
         </div>
-        <div style={{ padding: '1rem' }}>
-          <h1 style={{ marginTop: 0 }}>{property.title_sw}</h1>
-          <p style={{ color: '#666' }}>{property.location}</p>
-          <p><strong>{t('price_per_night')}:</strong> TZS {Number(property.price_per_night).toLocaleString()}</p>
-          <p>{property.description_sw}</p>
-          {property.rules_sw && <p><strong>{t('rules')}:</strong> {property.rules_sw}</p>}
+        <div className="listing-floating-actions">
+          <button type="button">♡ Save</button>
+          <button type="button">Share</button>
         </div>
-      </div>
+      </section>
 
-      <div className="card" style={{ padding: '1rem', marginBottom: '1.5rem' }}>
-        <h3>{t('available_dates')}</h3>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-          {availability.filter((a) => a.is_available).slice(0, 30).map((a) => (
-            <span key={a.id} style={{ padding: '0.25rem 0.5rem', background: '#e7f5ff', borderRadius: 4, fontSize: '0.875rem' }}>{a.date}</span>
-          ))}
-          {availability.filter((a) => a.is_available).length === 0 && <p>{t('not_available')}</p>}
-        </div>
-      </div>
-
-      {user && (
-        <div className="detail-cta-row">
-          <Link to={`/book/${id}`} className="btn btn-primary">{t('book_now')}</Link>
-          <Link to={`/taxi?destination=${encodeURIComponent(property.location || property.title_sw || '')}`} className="btn btn-accent">
-            {t('book_taxi_now')}
-          </Link>
-        </div>
-      )}
-      {!user && <p><Link to="/login">{t('login')}</Link> {t('book_now')}</p>}
-
-      <div className="card detail-review-card">
-        <h3>{t('reviews')}</h3>
-        {sortedReviews.length === 0 ? <p>{t('no_reviews_yet')}</p> : (
-          <>
-            <div className="review-summary">
-              <strong>{avgRating} / 5</strong>
-              <span>{sortedReviews.length} {t('reviews')}</span>
+      <section className="listing-detail-layout">
+        <main className="listing-detail-main">
+          <div className="listing-title-block">
+            <div>
+              <span className="section-kicker">Verified MakaziPlus stay</span>
+              <h1>{property.title_sw}</h1>
+              <p>📍 {property.location}</p>
             </div>
-            <article className="experience-analytics-card">
-              <div className="experience-analytics-head">
-                <strong>{t('experience_analytics_title')}</strong>
-                <span>{avgRating} / 5</span>
-              </div>
-              <div className="experience-metric-row">
-                <div>
-                  <small>{t('experience_avg_label')}</small>
-                  <strong>{avgRating}</strong>
+            <div className="listing-rating-pill">
+              <strong>{avgRating || 'New'}</strong>
+              <span>{sortedReviews.length ? `${sortedReviews.length} ${t('reviews')}` : 'No reviews yet'}</span>
+            </div>
+          </div>
+
+          <div className="listing-tags">
+            <span>Verified listing</span>
+            <span>Secure payment</span>
+            <span>WhatsApp support</span>
+            {listingTags.map((tag) => <span key={tag}>{tag}</span>)}
+          </div>
+
+          <section className="card listing-section-card">
+            <h2>About this stay</h2>
+            <p>{property.description_sw || 'A MakaziPlus stay selected for comfort, location and local support.'}</p>
+            <div className="property-facts-grid">
+              <span>Entire stay</span>
+              <span>{property.listing_type || 'Property'}</span>
+              <span>{property.town || property.region || 'East Africa'}</span>
+              <span>Local support</span>
+            </div>
+          </section>
+
+          <section className="card listing-section-card">
+            <h2>Amenities</h2>
+            <div className="amenity-grid">
+              {visibleAmenities.map((item) => <span key={item}>✓ {item}</span>)}
+            </div>
+          </section>
+
+          <section className="card listing-section-card">
+            <h2>Enhance your stay</h2>
+            <div className="addon-grid">
+              <Link to={`/taxi?destination=${encodeURIComponent(property.location || property.title_sw || '')}`}>
+                <strong>🚕 Airport pickup</strong>
+                <span>Book transfer to this stay</span>
+              </Link>
+              <Link to="/booking/beach-holiday-packages">
+                <strong>🌍 Tours & experiences</strong>
+                <span>Add local packages and activities</span>
+              </Link>
+              <a href={whatsappLink} target="_blank" rel="noreferrer">
+                <strong>💬 WhatsApp agent</strong>
+                <span>Ask questions before booking</span>
+              </a>
+            </div>
+          </section>
+
+          <section className="card listing-section-card">
+            <h2>{t('available_dates')}</h2>
+            <div className="availability-pill-row">
+              {availableDates.slice(0, 30).map((a) => (
+                <span key={a.id}>{a.date}</span>
+              ))}
+              {availableDates.length === 0 && <p>{t('not_available')}</p>}
+            </div>
+          </section>
+
+          <section className="card listing-section-card">
+            <h2>Policies and trust</h2>
+            <div className="trust-grid">
+              <span>✓ No hidden fees shown by MakaziPlus</span>
+              <span>✓ Verified listing checks</span>
+              <span>✓ Customer support available</span>
+              <span>✓ Contact agent before payment</span>
+            </div>
+            {property.rules_sw && <p className="listing-rules"><strong>{t('rules')}:</strong> {property.rules_sw}</p>}
+          </section>
+
+          <section className="card detail-review-card">
+            <h2>{t('reviews')}</h2>
+            {sortedReviews.length === 0 ? <p>{t('no_reviews_yet')}</p> : (
+              <>
+                <div className="review-summary">
+                  <strong>{avgRating} / 5</strong>
+                  <span>{sortedReviews.length} {t('reviews')}</span>
                 </div>
-                <div>
-                  <small>{t('experience_total_label')}</small>
-                  <strong>{sortedReviews.length}</strong>
-                </div>
-                <div>
-                  <small>{t('experience_top_label')}</small>
-                  <strong>{topShare}%</strong>
-                </div>
-              </div>
-              <div className="experience-chart">
-                {[5, 4, 3, 2, 1].map((level) => {
-                  const count = roundedCounts[level] || 0
-                  const width = sortedReviews.length ? Math.max(10, Math.round((count / sortedReviews.length) * 100)) : 0
-                  return (
-                    <div key={`detail-row-${level}`} className="experience-bar-row">
-                      <span>{level}</span>
-                      <div className="experience-bar-track">
-                        <span style={{ '--bar-fill': `${width}%` }} />
-                      </div>
-                      <em>{count}</em>
-                    </div>
-                  )
-                })}
-              </div>
-            </article>
-            <ul className="review-list">
-              {sortedReviews.map((r) => (
-                <li key={r.id} className="review-item">
-                  <div className="review-head">
-                    <div className="review-rating-row">
-                      <span className="review-stars" aria-hidden="true">
-                        {'★★★★★'.slice(0, Math.round(clampRating(r.rating)))}
-                        {'☆☆☆☆☆'.slice(0, 5 - Math.round(clampRating(r.rating)))}
-                      </span>
-                      <strong className="review-score-chip">{clampRating(r.rating).toFixed(1)} / 5</strong>
-                    </div>
-                    {r.created_at && <span>{new Date(r.created_at).toLocaleDateString()}</span>}
+                <article className="experience-analytics-card">
+                  <div className="experience-analytics-head">
+                    <strong>{t('experience_analytics_title')}</strong>
+                    <span>{avgRating} / 5</span>
                   </div>
-                  <p>{r.comment_sw || t('no_comment')}</p>
-                </li>
-            ))}
-            </ul>
-          </>
-        )}
+                  <div className="experience-metric-row">
+                    <div>
+                      <small>{t('experience_avg_label')}</small>
+                      <strong>{avgRating}</strong>
+                    </div>
+                    <div>
+                      <small>{t('experience_total_label')}</small>
+                      <strong>{sortedReviews.length}</strong>
+                    </div>
+                    <div>
+                      <small>{t('experience_top_label')}</small>
+                      <strong>{topShare}%</strong>
+                    </div>
+                  </div>
+                  <div className="experience-chart">
+                    {[5, 4, 3, 2, 1].map((level) => {
+                      const count = roundedCounts[level] || 0
+                      const width = sortedReviews.length ? Math.max(10, Math.round((count / sortedReviews.length) * 100)) : 0
+                      return (
+                        <div key={`detail-row-${level}`} className="experience-bar-row">
+                          <span>{level}</span>
+                          <div className="experience-bar-track">
+                            <span style={{ '--bar-fill': `${width}%` }} />
+                          </div>
+                          <em>{count}</em>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </article>
+                <ul className="review-list">
+                  {sortedReviews.map((r) => (
+                    <li key={r.id} className="review-item">
+                      <div className="review-head">
+                        <div className="review-rating-row">
+                          <span className="review-stars" aria-hidden="true">
+                            {'★★★★★'.slice(0, Math.round(clampRating(r.rating)))}
+                            {'☆☆☆☆☆'.slice(0, 5 - Math.round(clampRating(r.rating)))}
+                          </span>
+                          <strong className="review-score-chip">{clampRating(r.rating).toFixed(1)} / 5</strong>
+                        </div>
+                        {r.created_at && <span>{new Date(r.created_at).toLocaleDateString()}</span>}
+                      </div>
+                      <p>{r.comment_sw || t('no_comment')}</p>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </section>
+        </main>
+
+        <aside className="booking-panel">
+          <div className="booking-panel-card">
+            <span>{t('price_per_night')}</span>
+            <strong>TZS {price.toLocaleString()}</strong>
+            <p>TZS {totalEstimate.toLocaleString()} total estimate for 3 nights</p>
+            <div className="booking-mini-grid">
+              <span>Check-in</span>
+              <span>Check-out</span>
+              <em>Choose dates on next step</em>
+            </div>
+            {user ? (
+              <Link to={`/book/${id}`} className="btn btn-accent booking-reserve-btn">Reserve</Link>
+            ) : (
+              <Link to="/login" className="btn btn-accent booking-reserve-btn">{t('login')} to reserve</Link>
+            )}
+            <a href={whatsappLink} target="_blank" rel="noreferrer" className="btn btn-secondary booking-whatsapp-btn">
+              Chat with agent
+            </a>
+            <div className="booking-panel-trust">
+              <span>✓ Verified listing</span>
+              <span>✓ No hidden fees</span>
+              <span>✓ Local MakaziPlus support</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <div className="mobile-booking-bar">
+        <span>TZS {price.toLocaleString()} / night</span>
+        {user ? <Link to={`/book/${id}`} className="btn btn-accent btn-sm">Reserve</Link> : <Link to="/login" className="btn btn-accent btn-sm">{t('login')}</Link>}
       </div>
     </div>
   )

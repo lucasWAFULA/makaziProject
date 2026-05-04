@@ -552,8 +552,15 @@ export function Home() {
     <div ref={pageRef}>
       <header className="hero hero-coastal hero-animate">
         <div className="hero-content">
+          <span className="hero-kicker">MakaziPlus East Africa</span>
           <h1 className="hero-title">{t('hero_headline')}</h1>
           <p className="hero-tagline">{t('hero_subline')}</p>
+          <div className="hero-search-strip" aria-label="Popular destination shortcuts">
+            <span>Where are you going?</span>
+            {quickSearchTowns.map((town) => (
+              <a key={town} href="#listings" onClick={() => handleQuickSearch(town)}>{town}</a>
+            ))}
+          </div>
           <div className="hero-actions">
             <a href="#listings" className="btn btn-primary">{t('cta_find_stays')}</a>
             <a href="#packages" className="btn btn-accent">{t('cta_book_package')}</a>
