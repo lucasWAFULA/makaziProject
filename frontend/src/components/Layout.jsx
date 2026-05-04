@@ -246,7 +246,7 @@ export function Layout({ children }) {
               <TikTokIcon />
             </a>
           </div>
-          <span>© {new Date().getFullYear()} KaribuMakazi</span>
+          <span>© {new Date().getFullYear()} MakaziPlus.co</span>
         </div>
       </footer>
       <a className="whatsapp-fab" href="https://wa.me/255700000111" target="_blank" rel="noreferrer">

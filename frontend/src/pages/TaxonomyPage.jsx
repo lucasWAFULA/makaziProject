@@ -64,8 +64,13 @@ const getPriceTier = (price) => {
 }
 
 const getStayTags = (item) => {
+  if (Array.isArray(item.experience_tags) && item.experience_tags.length > 0) {
+    return item.experience_tags
+      .map((tag) => String(tag).replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()))
+      .slice(0, 3)
+  }
   const text = getStayText(item)
-  const tags = [getPriceTier(getPrice(item))]
+  const tags = [item.price_tier ? String(item.price_tier).replace(/\b\w/g, (char) => char.toUpperCase()) : getPriceTier(getPrice(item))]
   if (/beach|ocean|sea|nungwi|kendwa|paje|diani|jambiani/.test(text)) tags.push('Beachfront')
   if (/wifi|work|desk|business|masaki|oyster|dar/.test(text)) tags.push('Work-friendly')
   if (/pool/.test(text)) tags.push('Pool')
@@ -120,14 +125,16 @@ export function TaxonomyPage() {
     return data.filter((item) => {
       const text = getStayText(item)
       const price = getPrice(item)
-      if (activeChip === 'budget') return price <= 80000
-      if (activeChip === 'standard') return price > 80000 && price <= 180000
-      if (activeChip === 'premium') return price > 180000 && price <= 350000
-      if (activeChip === 'luxury') return price > 350000
+      const tier = String(item.price_tier || '').toLowerCase()
+      const experiences = Array.isArray(item.experience_tags) ? item.experience_tags.join(' ').toLowerCase() : ''
+      if (activeChip === 'budget') return tier === 'budget' || price <= 80000
+      if (activeChip === 'standard') return tier === 'standard' || (price > 80000 && price <= 180000)
+      if (activeChip === 'premium') return tier === 'premium' || (price > 180000 && price <= 350000)
+      if (activeChip === 'luxury') return tier === 'luxury' || price > 350000
       if (activeChip === 'zanzibar') return /zanzibar|stone town|nungwi|kendwa|paje|jambiani/.test(text)
       if (activeChip === 'dar') return /dar|masaki|oyster|msasani|mikocheni|kinondoni|kigamboni/.test(text)
-      if (activeChip === 'beachfront') return /beach|ocean|sea|nungwi|kendwa|paje|diani|jambiani/.test(text)
-      if (activeChip === 'work') return /wifi|work|desk|business|masaki|oyster|dar/.test(text)
+      if (activeChip === 'beachfront') return experiences.includes('beachfront') || /beach|ocean|sea|nungwi|kendwa|paje|diani|jambiani/.test(text)
+      if (activeChip === 'work') return experiences.includes('work') || /wifi|work|desk|business|masaki|oyster|dar/.test(text)
       return true
     })
   }, [activeChip, data, type])
@@ -138,22 +145,28 @@ export function TaxonomyPage() {
       {
         title: 'Beachfront Apartments in Zanzibar',
         description: 'Ocean access, island energy and stays near Nungwi, Paje, Kendwa and Stone Town.',
-        items: filteredStays.filter((item) => /zanzibar|nungwi|kendwa|paje|jambiani|stone town|beach|ocean/.test(getStayText(item))),
+        items: filteredStays.filter((item) => {
+          const experiences = Array.isArray(item.experience_tags) ? item.experience_tags.join(' ').toLowerCase() : ''
+          return experiences.includes('beachfront') || /zanzibar|nungwi|kendwa|paje|jambiani|stone town|beach|ocean/.test(getStayText(item))
+        }),
       },
       {
         title: 'Business-ready Apartments in Dar es Salaam',
         description: 'Convenient stays near Masaki, Oyster Bay, Msasani and city business routes.',
-        items: filteredStays.filter((item) => /dar|masaki|oyster|msasani|mikocheni|kinondoni/.test(getStayText(item))),
+        items: filteredStays.filter((item) => {
+          const experiences = Array.isArray(item.experience_tags) ? item.experience_tags.join(' ').toLowerCase() : ''
+          return experiences.includes('work') || /dar|masaki|oyster|msasani|mikocheni|kinondoni/.test(getStayText(item))
+        }),
       },
       {
         title: 'Budget and Mid-range Comfort',
         description: 'Simple, clean, practical stays for short visits and value-focused trips.',
-        items: filteredStays.filter((item) => getPrice(item) <= 180000),
+        items: filteredStays.filter((item) => ['budget', 'standard'].includes(String(item.price_tier || '').toLowerCase()) || getPrice(item) <= 180000),
       },
       {
         title: 'Premium and Luxury Near the Ocean',
         description: 'Better interiors, service and locations for memorable coastal stays.',
-        items: filteredStays.filter((item) => getPrice(item) > 180000 || /villa|luxury|premium|beach|ocean/.test(getStayText(item))),
+        items: filteredStays.filter((item) => ['premium', 'luxury'].includes(String(item.price_tier || '').toLowerCase()) || getPrice(item) > 180000 || /villa|luxury|premium|beach|ocean/.test(getStayText(item))),
       },
     ]
     const visibleSections = sections

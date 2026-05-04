@@ -87,7 +87,7 @@ export function DestinationPage() {
     )
   }
 
-  const guide = resolveGuide(slug, activeDestination)
+  const guide = activeDestination.guide || resolveGuide(slug, activeDestination)
 
   return (
     <div className="destination-page-stack">

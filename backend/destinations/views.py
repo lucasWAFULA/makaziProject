@@ -1,5 +1,7 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
+from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 from .models import Destination
 from .serializers import DestinationSerializer
@@ -31,3 +33,18 @@ class DestinationDetailView(generics.RetrieveAPIView):
     serializer_class = DestinationSerializer
     permission_classes = [AllowAny]
     lookup_field = "destination_slug"
+
+    def get_object(self):
+        slug = self.kwargs.get(self.lookup_field)
+        queryset = self.filter_queryset(self.get_queryset())
+        destination = queryset.filter(destination_slug=slug).first()
+        if destination:
+            return destination
+
+        alias = (slug or "").replace("-", " ")
+        return get_object_or_404(
+            queryset,
+            Q(destination_name__iexact=alias)
+            | Q(destination_name__icontains=alias)
+            | Q(region__icontains=alias)
+        )
