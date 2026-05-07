@@ -19,6 +19,10 @@ import { DestinationPage } from './pages/DestinationPage'
 import { StaysPage } from './pages/StaysPage'
 import { AgentsPage } from './pages/AgentsPage'
 import { PackagesPage } from './pages/PackagesPage'
+import { Terms } from './pages/Terms'
+import { HostResponsibility } from './pages/HostResponsibility'
+import { FraudReporting } from './pages/FraudReporting'
+import { DisputePolicy } from './pages/DisputePolicy'
 
 function App() {
   const [showSplash, setShowSplash] = useState(() => sessionStorage.getItem('makaziplus_intro_seen') !== '1')
@@ -49,6 +53,10 @@ function App() {
             <Route path="/packages" element={<PackagesPage />} />
             <Route path="/taxi" element={<TaxiBooking />} />
             <Route path="/destinations/:slug" element={<DestinationPage />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/host-responsibility" element={<HostResponsibility />} />
+            <Route path="/fraud-reporting" element={<FraudReporting />} />
+            <Route path="/dispute-policy" element={<DisputePolicy />} />
             <Route path="/:type/:slug" element={<TaxonomyPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

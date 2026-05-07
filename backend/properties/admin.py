@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils import timezone
 from django.utils.html import format_html
 
 from .models import Property, PropertyImage
@@ -32,10 +33,11 @@ class PropertyAdmin(admin.ModelAdmin):
         "location",
         "price_per_night",
         "approval_status",
+        "verification_tier",
         "is_active",
         "created_at",
     )
-    list_filter = ("approval_status", "listing_type", "destination", "is_active", "created_at")
+    list_filter = ("approval_status", "verification_tier", "listing_type", "destination", "is_active", "created_at")
     search_fields = ("title_sw", "location", "description_sw", "host__username", "host__email")
     autocomplete_fields = ("host", "destination")
     inlines = [PropertyImageInline]
@@ -44,6 +46,9 @@ class PropertyAdmin(admin.ModelAdmin):
         "activate_listings",
         "approve_listings",
         "reject_listings",
+        "mark_unverified",
+        "mark_remote_verified",
+        "mark_premium_verified",
         "auto_map_destinations",
     ]
     date_hierarchy = "created_at"
@@ -59,11 +64,44 @@ class PropertyAdmin(admin.ModelAdmin):
 
     @admin.action(description="Approve selected listings")
     def approve_listings(self, request, queryset):
-        queryset.update(approval_status=Property.ApprovalStatus.APPROVED)
+        queryset.update(
+            approval_status=Property.ApprovalStatus.APPROVED,
+            approved_by=request.user,
+            approved_at=timezone.now(),
+            rejection_reason="",
+        )
 
     @admin.action(description="Reject selected listings")
     def reject_listings(self, request, queryset):
-        queryset.update(approval_status=Property.ApprovalStatus.REJECTED)
+        queryset.update(
+            approval_status=Property.ApprovalStatus.REJECTED,
+            approved_by=None,
+            approved_at=None,
+        )
+
+    @admin.action(description="Mark selected as Unverified")
+    def mark_unverified(self, request, queryset):
+        queryset.update(
+            verification_tier=Property.VerificationTier.UNVERIFIED,
+            verified_by=None,
+            verified_at=None,
+        )
+
+    @admin.action(description="Mark selected as Remote Verified")
+    def mark_remote_verified(self, request, queryset):
+        queryset.update(
+            verification_tier=Property.VerificationTier.REMOTE_VERIFIED,
+            verified_by=request.user,
+            verified_at=timezone.now(),
+        )
+
+    @admin.action(description="Mark selected as Premium Verified")
+    def mark_premium_verified(self, request, queryset):
+        queryset.update(
+            verification_tier=Property.VerificationTier.PREMIUM_VERIFIED,
+            verified_by=request.user,
+            verified_at=timezone.now(),
+        )
 
     @admin.action(description="Auto-map destination for selected listings")
     def auto_map_destinations(self, request, queryset):

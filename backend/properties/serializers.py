@@ -96,6 +96,7 @@ class PropertyListSerializer(serializers.ModelSerializer):
             "first_image",
             "is_active",
             "approval_status",
+            "verification_tier",
         )
 
     def get_first_image(self, obj):
@@ -130,6 +131,11 @@ class PropertyDetailSerializer(serializers.ModelSerializer):
             "country", "region", "town", "listing_type", "catalog_slug",
             "price_per_night", "price_tier", "experience_tags", "amenity_groups",
             "rules_sw", "amenities", "is_active", "approval_status", "images", "image_urls",
+            "verification_tier",
+            "latitude",
+            "longitude",
+            "landmark",
+            "walkthrough_video_url",
             "created_at", "updated_at",
         )
 
@@ -170,6 +176,13 @@ class PropertyWriteSerializer(serializers.ModelSerializer):
             "rules_sw",
             "amenities",
             "is_active",
+            "latitude",
+            "longitude",
+            "landmark",
+            "contact_name",
+            "contact_phone",
+            "ownership_details",
+            "walkthrough_video_url",
         )
 
     def create(self, validated_data):

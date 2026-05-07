@@ -61,6 +61,14 @@ export function PropertyDetail() {
   const totalEstimate = price * 3
   const amenities = Array.isArray(property.amenities) ? property.amenities.filter(Boolean) : []
   const visibleAmenities = amenities.length ? amenities.slice(0, 8) : ['WiFi-ready', 'Security', 'Kitchen access', 'Local support']
+  const verificationTier = String(property.verification_tier || '').toLowerCase()
+  const verificationLabel = verificationTier === 'premium_verified'
+    ? 'Premium Verified'
+    : verificationTier === 'remote_verified'
+      ? 'Makazi Verified'
+      : verificationTier === 'unverified'
+        ? 'Unverified'
+        : ''
   const listingTags = [
     property.price_tier ? `${String(property.price_tier).replace(/\b\w/g, (char) => char.toUpperCase())} stay` : 'Verified stay',
     ...(Array.isArray(property.experience_tags) ? property.experience_tags.slice(0, 2).map((tag) => String(tag).replace(/_/g, ' ')) : []),
@@ -90,7 +98,7 @@ export function PropertyDetail() {
         <main className="listing-detail-main">
           <div className="listing-title-block">
             <div>
-              <span className="section-kicker">Verified MakaziPlus stay</span>
+              <span className="section-kicker">{verificationLabel ? `${verificationLabel} MakaziPlus stay` : 'MakaziPlus stay'}</span>
               <h1>{property.title_sw}</h1>
               <p>📍 {property.location}</p>
             </div>
@@ -101,11 +109,31 @@ export function PropertyDetail() {
           </div>
 
           <div className="listing-tags">
-            <span>Verified listing</span>
+            {verificationLabel && <span>{verificationLabel}</span>}
             <span>Secure payment</span>
             <span>WhatsApp support</span>
             {listingTags.map((tag) => <span key={tag}>{tag}</span>)}
           </div>
+
+          <section className="card listing-section-card">
+            <h2>Verification</h2>
+            {verificationTier === 'premium_verified' && (
+              <p>
+                Premium Verified listings have completed remote verification and additional checks through partners or on-ground review.
+              </p>
+            )}
+            {verificationTier === 'remote_verified' && (
+              <p>
+                Makazi Verified listings are remotely verified (identity, contact, location details, and walkthrough evidence).
+              </p>
+            )}
+            {verificationTier === 'unverified' && (
+              <p>
+                This listing is not verified yet. Book only if you are comfortable and confirm details on WhatsApp before paying.
+              </p>
+            )}
+            {!verificationTier && <p>Verification status is not available for this listing yet.</p>}
+          </section>
 
           <section className="card listing-section-card">
             <h2>About this stay</h2>

@@ -20,6 +20,11 @@ class Property(models.Model):
         SUSPENDED = "suspended", "Suspended"
         EXPIRED = "expired", "Expired"
 
+    class VerificationTier(models.TextChoices):
+        UNVERIFIED = "unverified", "Unverified"
+        REMOTE_VERIFIED = "remote_verified", "Remote Verified"
+        PREMIUM_VERIFIED = "premium_verified", "Premium Verified"
+
     host = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="properties")
     title_sw = models.CharField(max_length=255)
     description_sw = models.TextField(blank=True)
@@ -39,6 +44,32 @@ class Property(models.Model):
     price_per_night = models.DecimalField(max_digits=12, decimal_places=2)
     rules_sw = models.TextField(blank=True)
     amenities = models.JSONField(default=list, blank=True)
+
+    # Host-provided details for remote onboarding / verification
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    landmark = models.CharField(max_length=255, blank=True, default="")
+    contact_name = models.CharField(max_length=120, blank=True, default="")
+    contact_phone = models.CharField(max_length=30, blank=True, default="")
+    ownership_details = models.TextField(blank=True, default="")
+    walkthrough_video_url = models.URLField(blank=True, default="")
+
+    # Trust tier (separate from publish approval workflow)
+    verification_tier = models.CharField(
+        max_length=30,
+        choices=VerificationTier.choices,
+        default=VerificationTier.UNVERIFIED,
+        db_index=True,
+    )
+    verified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="verified_properties",
+    )
+    verified_at = models.DateTimeField(null=True, blank=True)
+    verification_notes = models.TextField(blank=True, default="")
     is_active = models.BooleanField(default=True)
     approval_status = models.CharField(max_length=30, choices=ApprovalStatus.choices, default=ApprovalStatus.DRAFT)
     approved_by = models.ForeignKey(
