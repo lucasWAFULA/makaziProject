@@ -7,7 +7,7 @@ from django.conf.urls.static import static
 admin.site.site_header = "MakaziPlus administration"
 admin.site.site_title = "MakaziPlus admin"
 admin.site.index_title = "MakaziPlus site administration"
-admin.site.site_url = "/"
+admin.site.site_url = "https://www.makazi-plus.com/"
 
 
 api_urlpatterns = [
