@@ -4,9 +4,9 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-admin.site.site_header = "Kusajilisha administration"
-admin.site.site_title = "Kusajilisha admin"
-admin.site.index_title = "Site administration"
+admin.site.site_header = "MakaziPlus administration"
+admin.site.site_title = "MakaziPlus admin"
+admin.site.index_title = "MakaziPlus site administration"
 admin.site.site_url = "/"
 
 

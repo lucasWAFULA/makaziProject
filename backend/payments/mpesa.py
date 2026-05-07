@@ -53,7 +53,7 @@ def stk_push(phone: str, amount: float, reference: str) -> dict:
         "PhoneNumber": phone_clean,
         "CallBackURL": callback,
         "AccountReference": reference[:20],
-        "TransactionDesc": "Kusajilisha booking",
+        "TransactionDesc": "MakaziPlus booking",
     }
 
     resp = requests.post(
