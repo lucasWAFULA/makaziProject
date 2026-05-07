@@ -65,7 +65,7 @@ export function PropertyDetail() {
     property.price_tier ? `${String(property.price_tier).replace(/\b\w/g, (char) => char.toUpperCase())} stay` : 'Verified stay',
     ...(Array.isArray(property.experience_tags) ? property.experience_tags.slice(0, 2).map((tag) => String(tag).replace(/_/g, ' ')) : []),
   ]
-  const whatsappMessage = encodeURIComponent(`Hello MakaziPlus.co, I am interested in ${property.title_sw} in ${property.location}.`)
+  const whatsappMessage = encodeURIComponent(`Hello MakaziPlus, I am interested in ${property.title_sw} in ${property.location}.`)
   const whatsappLink = `https://wa.me/255700000111?text=${whatsappMessage}`
 
   return (

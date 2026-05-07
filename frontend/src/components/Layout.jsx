@@ -58,6 +58,7 @@ export function Layout({ children }) {
   const [activeMenu, setActiveMenu] = useState(null)
 
   const bookingMenu = [
+    { label: 'All Packages', to: '/packages' },
     { label: 'Airport Pickup + Stay', to: '/booking/airport-pickup-stay' },
     { label: 'Beach Holiday Packages', to: '/booking/beach-holiday-packages' },
     { label: 'Family Vacation Packages', to: '/booking/family-vacation-packages' },
@@ -66,6 +67,7 @@ export function Layout({ children }) {
     { label: 'Executive Business Stay', to: '/booking/executive-business-stay' },
   ]
   const agentMenu = [
+    { label: 'All Agents', to: '/agents' },
     { label: 'Verified Agents', to: '/agents/verified' },
     { label: 'Apartments for Rent', to: '/agents/apartments' },
     { label: 'Houses for Sale', to: '/agents/houses' },
@@ -73,6 +75,7 @@ export function Layout({ children }) {
     { label: 'Commercial Space', to: '/agents/commercial' },
   ]
   const hotelsMenu = [
+    { label: 'All Stays', to: '/stays' },
     { label: 'Budget Rooms', to: '/stays/budget-rooms' },
     { label: 'Beach Villas', to: '/stays/beach-villas' },
     { label: 'Apartments', to: '/stays/apartments' },
@@ -197,9 +200,9 @@ export function Layout({ children }) {
 
         <div className={`nav-menu ${mobileOpen ? 'open' : ''}`}>
           <Link to="/" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('home')}</Link>
-          <Link to="/stays/apartments" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('menu_stays')}</Link>
+          <Link to="/stays" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('menu_stays')}</Link>
           {renderMenuButton('booking', t('menu_booking'))}
-          {renderMenuButton('agents', t('menu_agents'))}
+          <Link to="/agents" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('menu_agents')}</Link>
           {renderMenuButton('hotels', t('menu_hotels'))}
           {renderMenuButton('guide', t('menu_guide'))}
           <a href="/#contact" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('menu_contact')}</a>
@@ -246,7 +249,7 @@ export function Layout({ children }) {
               <TikTokIcon />
             </a>
           </div>
-          <span>© {new Date().getFullYear()} MakaziPlus.co</span>
+          <span>© {new Date().getFullYear()} MakaziPlus</span>
         </div>
       </footer>
       <a className="whatsapp-fab" href="https://wa.me/255700000111" target="_blank" rel="noreferrer">

@@ -21,8 +21,8 @@ export function SplashScreen({ onFinish }) {
       aria-label="Skip MakaziPlus intro"
     >
       <span className="splash-glow" />
-      <img src="/logo.png" alt="MakaziPlus.co" className="splash-logo" />
-      <strong>MakaziPlus.co</strong>
+      <img src="/logo.png" alt="MakaziPlus" className="splash-logo" />
+      <strong>MakaziPlus</strong>
       <small>Nyumba. Safari. Mazingira Bora.</small>
       <em>Click to skip</em>
     </button>
