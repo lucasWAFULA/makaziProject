@@ -8,7 +8,18 @@ environ.Env.read_env(BASE_DIR / ".env")
 
 SECRET_KEY = env("SECRET_KEY", default="dev-secret-key-change-in-production")
 DEBUG = env("DEBUG")
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+ALLOWED_HOSTS = env.list(
+    "ALLOWED_HOSTS",
+    default=[
+        "localhost",
+        "127.0.0.1",
+        "makazi-plus.com",
+        "www.makazi-plus.com",
+        "admin.makazi-plus.com",
+    ],
+)
+SITE_URL = env("SITE_URL", default="https://www.makazi-plus.com/")
+ADMIN_DOMAIN = env("ADMIN_DOMAIN", default="admin.makazi-plus.com")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -32,6 +43,7 @@ INSTALLED_APPS = [
     "agents",
     "packages",
     "destinations",
+    "notifications",
 ]
 
 MIDDLEWARE = [
@@ -168,6 +180,32 @@ OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
 OPENAI_MODEL = env("OPENAI_MODEL", default="gpt-4o-mini")
 AI_ASSISTANT_NAME = env("AI_ASSISTANT_NAME", default="Makazi AI")
 
+# Email (Zoho SMTP by default; falls back to console backend in DEBUG when no host user is set)
+EMAIL_HOST = env("EMAIL_HOST", default="smtp.zoho.com")
+EMAIL_PORT = env.int("EMAIL_PORT", default=465)
+EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", default=True)
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=False)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+EMAIL_TIMEOUT = env.int("EMAIL_TIMEOUT", default=20)
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL",
+    default="MakaziPlus <noreply@makazi-plus.com>",
+)
+SUPPORT_EMAIL = env("SUPPORT_EMAIL", default="support@makazi-plus.com")
+BOOKINGS_EMAIL = env("BOOKINGS_EMAIL", default="bookings@makazi-plus.com")
+HOSTS_EMAIL = env("HOSTS_EMAIL", default="hosts@makazi-plus.com")
+SERVER_EMAIL = env("SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
+EMAIL_REPLY_TO = env("EMAIL_REPLY_TO", default=SUPPORT_EMAIL)
+EMAIL_NOTIFICATIONS_ENABLED = env.bool("EMAIL_NOTIFICATIONS_ENABLED", default=True)
+
+if env("EMAIL_BACKEND", default=""):
+    EMAIL_BACKEND = env("EMAIL_BACKEND")
+elif EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 # Production: trust X-Forwarded-Proto when behind HTTPS reverse proxy
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 _default_csrf_trusted_origins = [
@@ -177,6 +215,9 @@ _default_csrf_trusted_origins = [
     "http://127.0.0.1:8888",
     "http://localhost",
     "http://127.0.0.1",
+    "https://makazi-plus.com",
+    "https://www.makazi-plus.com",
+    "https://admin.makazi-plus.com",
 ]
 _env_csrf_trusted_origins = [origin.strip() for origin in env.list("CSRF_TRUSTED_ORIGINS", default=[]) if origin.strip()]
 CSRF_TRUSTED_ORIGINS = sorted(set(_default_csrf_trusted_origins + _env_csrf_trusted_origins))

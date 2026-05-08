@@ -223,6 +223,16 @@ printf "YOUR_MPESA_CONSUMER_SECRET" | gcloud secrets create mpesa-consumer-secre
 printf "YOUR_MPESA_PASSKEY" | gcloud secrets create mpesa-passkey --data-file=-
 ```
 
+Email (Zoho SMTP) — store the App Password as a secret. Generate it in Zoho Mail under
+**Security → App Passwords** (not your Zoho account password):
+
+```bash
+printf "YOUR_ZOHO_APP_PASSWORD" | gcloud secrets create zoho-smtp-password --data-file=-
+gcloud secrets add-iam-policy-binding zoho-smtp-password \
+  --member="serviceAccount:$CLOUD_RUN_SA_EMAIL" \
+  --role="roles/secretmanager.secretAccessor"
+```
+
 ## 9. Build and Deploy Backend to Cloud Run
 
 Build and push:
@@ -263,6 +273,27 @@ gcloud run services update "$SERVICE" \
   --region "$REGION" \
   --set-secrets "MPESA_CONSUMER_KEY=mpesa-consumer-key:latest,MPESA_CONSUMER_SECRET=mpesa-consumer-secret:latest,MPESA_PASSKEY=mpesa-passkey:latest"
 ```
+
+Add Zoho SMTP for transactional emails (booking confirmations, payment receipts, host
+notifications). The `EMAIL_HOST_USER` must be a real Zoho mailbox; the password comes from
+Secret Manager:
+
+```bash
+gcloud run services update "$SERVICE" \
+  --region "$REGION" \
+  --update-env-vars "EMAIL_HOST=smtp.zoho.com,EMAIL_PORT=465,EMAIL_USE_SSL=True,EMAIL_USE_TLS=False,EMAIL_HOST_USER=noreply@makazi-plus.com,DEFAULT_FROM_EMAIL=MakaziPlus <noreply@makazi-plus.com>,SUPPORT_EMAIL=support@makazi-plus.com,BOOKINGS_EMAIL=bookings@makazi-plus.com,HOSTS_EMAIL=hosts@makazi-plus.com,EMAIL_REPLY_TO=support@makazi-plus.com,EMAIL_NOTIFICATIONS_ENABLED=True" \
+  --update-secrets "EMAIL_HOST_PASSWORD=zoho-smtp-password:latest"
+```
+
+Verify SMTP after deploy by running the management command in a one-off Cloud Run Job
+(or once locally with the same env values pointing to Zoho):
+
+```bash
+python manage.py send_test_email you@yourdomain.com
+```
+
+If the test message arrives, booking and payment-confirmation emails are wired and will
+fire automatically from `bookings.views.BookingCreateView` and `payments.views.MpesaCallbackView`.
 
 Get the Cloud Run URL:
 
@@ -401,12 +432,14 @@ Keep that region consistent with Cloud Run.
 After adding your custom domain to Firebase Hosting, update Cloud Run environment:
 
 ```bash
-FRONTEND_ORIGIN="https://yourdomain.com"
+FRONTEND_ORIGIN="https://www.makazi-plus.com"
+APEX_ORIGIN="https://makazi-plus.com"
+ADMIN_ORIGIN="https://admin.makazi-plus.com"
 API_ORIGIN="https://your-cloud-run-or-api-domain"
 
 gcloud run services update "$SERVICE" \
   --region "$REGION" \
-  --set-env-vars "ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com,api.yourdomain.com,YOUR_CLOUD_RUN_HOST,CORS_ORIGINS=$FRONTEND_ORIGIN,CSRF_TRUSTED_ORIGINS=$FRONTEND_ORIGIN,$API_ORIGIN,MPESA_CALLBACK_BASE_URL=$API_ORIGIN"
+  --set-env-vars "ALLOWED_HOSTS=makazi-plus.com,www.makazi-plus.com,admin.makazi-plus.com,YOUR_CLOUD_RUN_HOST,SITE_URL=https://www.makazi-plus.com/,ADMIN_DOMAIN=admin.makazi-plus.com,CORS_ORIGINS=$APEX_ORIGIN,$FRONTEND_ORIGIN,CSRF_TRUSTED_ORIGINS=$APEX_ORIGIN,$FRONTEND_ORIGIN,$ADMIN_ORIGIN,$API_ORIGIN,MPESA_CALLBACK_BASE_URL=$API_ORIGIN"
 ```
 
 If you use a custom API subdomain, set:
@@ -417,6 +450,28 @@ VITE_API_URL=https://api.yourdomain.com/api
 
 Then rebuild and redeploy Firebase Hosting.
 
+### Admin Subdomain
+
+Use a direct Cloud Run domain mapping for Django admin:
+
+```bash
+PROJECT_ID="makazi240097"
+REGION="europe-west1"
+SERVICE="karibumakazi-api"
+
+gcloud run domain-mappings create \
+  --service "$SERVICE" \
+  --domain admin.makazi-plus.com \
+  --region "$REGION" \
+  --project "$PROJECT_ID"
+
+gcloud run domain-mappings describe admin.makazi-plus.com \
+  --region "$REGION" \
+  --project "$PROJECT_ID"
+```
+
+The describe command returns DNS records. Add those records in Namecheap for the `admin` host. Once DNS propagates, `https://admin.makazi-plus.com/` redirects to `https://admin.makazi-plus.com/admin/`.
+
 ## 13. Production Security Checklist
 
 Confirm these Django settings are active in Cloud Run:
@@ -426,9 +481,9 @@ DEBUG=False
 SECURE_SSL_REDIRECT=True
 SESSION_COOKIE_SECURE=True
 CSRF_COOKIE_SECURE=True
-CSRF_TRUSTED_ORIGINS=https://yourdomain.com,https://api.yourdomain.com
-CORS_ORIGINS=https://yourdomain.com
-ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com,api.yourdomain.com,YOUR_CLOUD_RUN_HOST
+CSRF_TRUSTED_ORIGINS=https://makazi-plus.com,https://www.makazi-plus.com,https://admin.makazi-plus.com,https://api.yourdomain.com
+CORS_ORIGINS=https://makazi-plus.com,https://www.makazi-plus.com
+ALLOWED_HOSTS=makazi-plus.com,www.makazi-plus.com,admin.makazi-plus.com,YOUR_CLOUD_RUN_HOST
 ```
 
 The project already sets secure cookie and content-sniffing settings when `DEBUG=False`; `SECURE_SSL_REDIRECT` is controlled by environment and should be `True` in production.

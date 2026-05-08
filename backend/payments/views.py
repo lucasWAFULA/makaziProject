@@ -10,6 +10,10 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
 
 from bookings.models import Booking
+from notifications.mailer import (
+    send_booking_confirmed_email,
+    send_host_booking_confirmed_email,
+)
 from .models import Payment
 from .mpesa import stk_push
 
@@ -106,6 +110,12 @@ class MpesaCallbackView(APIView):
                     booking.payment_reference = str(items.get("MpesaReceiptNumber", ref))
                     booking.save()
                 logger.info("Booking %s confirmed via M-Pesa.", booking_id)
+                try:
+                    booking.refresh_from_db()
+                    send_booking_confirmed_email(booking)
+                    send_host_booking_confirmed_email(booking)
+                except Exception as exc:
+                    logger.warning("Failed to send confirmation emails for booking %s: %s", booking_id, exc)
             else:
                 payment.status = Payment.Status.FAILED
                 payment.save()

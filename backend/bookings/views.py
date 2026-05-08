@@ -6,6 +6,10 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 
 from properties.models import Property
+from notifications.mailer import (
+    send_booking_received_email,
+    send_host_new_booking_email,
+)
 from .models import Booking, Availability
 from .serializers import BookingSerializer, BookingCreateSerializer, AvailabilitySerializer
 
@@ -67,6 +71,12 @@ class BookingCreateView(generics.CreateAPIView):
                 property_id=property_id,
                 date__in=dates,
             ).update(is_available=False)
+
+        try:
+            send_booking_received_email(booking)
+            send_host_new_booking_email(booking)
+        except Exception:
+            pass
 
         return Response(
             BookingSerializer(booking).data,
