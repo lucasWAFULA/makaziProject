@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useAuth } from '../context/AuthContext'
+import { getUserDisplayName, isOwnerDashboardUser } from '../utils/authProfile'
 import { useQuery } from '@tanstack/react-query'
 import { getProperties } from '../api/properties'
 import { getFeaturedDestinations, getDestinations } from '../api/destinations'
@@ -80,6 +82,7 @@ function PackageMetaIcon({ type }) {
 
 export function Home() {
   const { t } = useTranslation()
+  const { user, loading: authLoading } = useAuth()
   const [draftFilters, setDraftFilters] = useState({
     country: '',
     region: '',
@@ -185,7 +188,7 @@ export function Home() {
       languages: 'Kiswahili,English',
       verified_badge: true,
       rating: 4.8,
-      user: { phone_number: '255700000111' },
+      user: { phone_number: '254725301031' },
     },
     {
       id: 'juma',
@@ -194,12 +197,17 @@ export function Home() {
       languages: 'Kiswahili,English',
       verified_badge: true,
       rating: 4.7,
-      user: { phone_number: '255700000111' },
+      user: { phone_number: '254725301031' },
     },
   ]
   const liveAgents = (agentList.length ? agentList : fallbackAgents).filter((agent) => agent.is_active !== false)
-  const activeListingsCount = allListings.filter((item) => item.is_active !== false).length
   const verifiedAgentsCount = liveAgents.filter((agent) => agent.verified_badge).length
+  const coverageAreas = [...new Set(liveAgents.flatMap((agent) => (
+    String(agent.areas_served || '')
+      .split(',')
+      .map((area) => area.trim())
+      .filter(Boolean)
+  )))]
   const averageResponseMinutes = liveAgents.length
     ? Math.max(5, Math.round(liveAgents.reduce((sum, agent) => sum + (12 - Math.min(Number(agent.rating || 4), 5)), 0) / liveAgents.length))
     : 8
@@ -228,10 +236,18 @@ export function Home() {
     return Math.max(6, Math.round(Number(agent.rating || 4.4) * 4))
   }
   const buildAgentWhatsappLink = (agent) => {
-    const phone = (agent.user?.phone_number || '255700000111').replace(/[^\d]/g, '')
+    const phone = (agent.user?.phone_number || '254725301031').replace(/[^\d]/g, '')
     const name = agent.agency_name || agent.user?.username || t('verified_agents_section')
     const message = encodeURIComponent(`${t('agent_whatsapp_hello')} ${name}, ${t('agent_whatsapp_body')}`)
     return `https://wa.me/${phone}?text=${message}`
+  }
+  const resolveAgentBadges = (agent) => {
+    const areas = (agent.areas_served || '').split(',').map((area) => area.trim()).filter(Boolean)
+    return [
+      ...areas.slice(0, 2),
+      agent.verified_badge ? t('verified_agents_section') : '',
+      Number(agent.rating || 0) >= 4.5 ? t('agent_filter_available') : '',
+    ].filter(Boolean).slice(0, 4)
   }
   const tabs = [
     { id: 'rent', label: `🏠 ${t('quick_rent')}` },
@@ -262,12 +278,12 @@ export function Home() {
   )
   const quickSearchTowns = ['Nyali', 'Diani', 'Zanzibar', 'Watamu', 'Dar']
   const experienceTiles = [
-    { label: 'Beachfront Living', icon: '🌊', hint: 'Ocean views, beach access, resort energy', filters: { location: 'Zanzibar', listingType: 'villa' } },
-    { label: 'City Convenience', icon: '🏙️', hint: 'Near malls, transport, nightlife and business', filters: { location: 'Dar', listingType: 'apartment' } },
-    { label: 'Family Friendly', icon: '🏡', hint: 'Secure, calm neighborhoods with room to settle', filters: { location: 'Mombasa', listingType: 'house' } },
-    { label: 'Work-Friendly Stays', icon: '💻', hint: 'WiFi-ready stays for longer coastal trips', filters: { location: 'Dar', listingType: 'apartment' } },
-    { label: 'Luxury & Villas', icon: '💎', hint: 'Premium interiors, service and standout locations', filters: { location: 'Diani', listingType: 'villa' } },
-    { label: 'Budget Stays', icon: '💰', hint: 'Clean, simple, practical stays for short visits', filters: { location: 'Zanzibar', listingType: 'bnb', priceMax: '80000' } },
+    { key: 'beachfront', label: t('lifestyle_beachfront_label'), icon: '🌊', hint: t('lifestyle_beachfront_hint'), filters: { location: 'Zanzibar', listingType: 'villa' } },
+    { key: 'city', label: t('lifestyle_city_label'), icon: '🏙️', hint: t('lifestyle_city_hint'), filters: { location: 'Dar', listingType: 'apartment' } },
+    { key: 'family', label: t('lifestyle_family_label'), icon: '🏡', hint: t('lifestyle_family_hint'), filters: { location: 'Mombasa', listingType: 'house' } },
+    { key: 'work', label: t('lifestyle_work_label'), icon: '💻', hint: t('lifestyle_work_hint'), filters: { location: 'Dar', listingType: 'apartment' } },
+    { key: 'luxury', label: t('lifestyle_luxury_label'), icon: '💎', hint: t('lifestyle_luxury_hint'), filters: { location: 'Diani', listingType: 'villa' } },
+    { key: 'budget', label: t('lifestyle_budget_label'), icon: '💰', hint: t('lifestyle_budget_hint'), filters: { location: 'Zanzibar', listingType: 'bnb', priceMax: '80000' } },
   ]
   const destinationStories = [
     {
@@ -550,13 +566,34 @@ export function Home() {
 
   return (
     <div ref={pageRef}>
+      {user && !authLoading ? (
+        <div className="home-welcome-strip" role="status">
+          <p className="home-welcome-line">
+            {t('home_welcome_return', { name: getUserDisplayName(user) })}
+          </p>
+          <p className="home-welcome-sub">
+            {isOwnerDashboardUser(user)
+              ? t('home_welcome_owner_hint')
+              : t('home_welcome_customer_hint')}
+          </p>
+          {isOwnerDashboardUser(user) ? (
+            <Link to="/owner-dashboard" className="btn btn-secondary btn-sm home-welcome-cta">
+              {t('owner_dashboard')}
+            </Link>
+          ) : (
+            <Link to="/stays" className="btn btn-primary btn-sm home-welcome-cta">
+              {t('cta_find_stays')}
+            </Link>
+          )}
+        </div>
+      ) : null}
       <header className="hero hero-coastal hero-animate">
         <div className="hero-content">
           <span className="hero-kicker">MakaziPlus East Africa</span>
           <h1 className="hero-title">{t('hero_headline')}</h1>
           <p className="hero-tagline">{t('hero_subline')}</p>
           <div className="hero-search-strip" aria-label="Popular destination shortcuts">
-            <span>Where are you going?</span>
+            <span>{t('hero_quick_search_label')}</span>
             {quickSearchTowns.map((town) => (
               <a key={town} href="#listings" onClick={() => handleQuickSearch(town)}>{town}</a>
             ))}
@@ -719,25 +756,30 @@ export function Home() {
       </section>
 
       <section className="card section-card experience-section">
-        <div className="section-heading">
+        <div className="section-heading lifestyle-heading">
           <div>
-            <span className="section-kicker">Explore by Experience</span>
-            <h2>Find the stay that matches your trip</h2>
-            <p>Choose by lifestyle first, then compare apartments, villas, BnBs and hotels that fit the moment.</p>
+            <span className="section-kicker">{t('lifestyle_kicker')}</span>
+            <h2>{t('lifestyle_title')}</h2>
+            <p>{t('lifestyle_subtitle')}</p>
           </div>
+          <Link to="/stays" className="btn btn-secondary btn-sm">{t('lifestyle_browse_cta')}</Link>
         </div>
-        <div className="experience-tile-grid">
+        <div className="experience-ribbon" role="list">
           {experienceTiles.map((tile, idx) => (
             <button
-              key={tile.label}
+              key={tile.key}
               type="button"
-              className="experience-tile reveal-item"
+              className="experience-chip reveal-item"
               style={{ '--stagger': idx }}
               onClick={() => handleExperienceSelect(tile)}
+              role="listitem"
+              aria-label={tile.label}
             >
-              <span className="experience-icon">{tile.icon}</span>
-              <strong>{tile.label}</strong>
-              <small>{tile.hint}</small>
+              <span className="experience-chip-icon">{tile.icon}</span>
+              <span className="experience-chip-text">
+                <strong>{tile.label}</strong>
+                <small>{tile.hint}</small>
+              </span>
             </button>
           ))}
         </div>
@@ -746,9 +788,9 @@ export function Home() {
       <section className="card section-card destination-story-section">
         <div className="section-heading">
           <div>
-            <span className="section-kicker">Top Destinations</span>
-            <h2>Choose by location story</h2>
-            <p>See why to stay in Zanzibar, Dar es Salaam, Diani or Mombasa before choosing a property.</p>
+            <span className="section-kicker">{t('destinations_story_kicker')}</span>
+            <h2>{t('destinations_story_title')}</h2>
+            <p>{t('destinations_story_subtitle')}</p>
           </div>
         </div>
         <div className="destination-story-grid">
@@ -802,6 +844,7 @@ export function Home() {
         <section className="card section-card" id="featured-stays">
           <div className="section-heading">
             <h2>{t('featured_stays')}</h2>
+            <Link to="/stays" className="btn btn-secondary btn-sm">{t('view_all_stays')}</Link>
           </div>
           <div className="grid grid-3">
             {Array.from({ length: 6 }).map((_, idx) => (
@@ -822,6 +865,7 @@ export function Home() {
         <section className="card section-card" id="featured-stays">
           <div className="section-heading">
             <h2>{t('featured_stays')}</h2>
+            <Link to="/stays" className="btn btn-secondary btn-sm">{t('view_all_stays')}</Link>
           </div>
           {!isLoading && promoted.length > 0 && (
             <div className="grid grid-3" style={{ marginBottom: '1.5rem' }}>
@@ -873,6 +917,7 @@ export function Home() {
             <p>{t('pkg_subtitle')}</p>
           </div>
           <div className="package-carousel-controls">
+            <Link to="/packages" className="btn btn-secondary btn-sm">{t('all_packages')}</Link>
             <button type="button" aria-label={t('pkg_prev')} onClick={handlePackagePrev} disabled={!canSlidePackages}>‹</button>
             <button type="button" aria-label={t('pkg_next')} onClick={handlePackageNext} disabled={!canSlidePackages}>›</button>
           </div>
@@ -980,7 +1025,7 @@ export function Home() {
         </div>
       </section>
 
-      <section className="card section-card" id="contact">
+      <section className="card section-card">
         <div className="section-heading">
           <h2>{t('review_spotlight')}</h2>
         </div>
@@ -1066,7 +1111,7 @@ export function Home() {
           </div>
           <div className="agent-live-stats">
             <span><strong>{verifiedAgentsCount}</strong>{t('agent_stat_verified')}</span>
-            <span><strong>{activeListingsCount}</strong>{t('agent_stat_listings')}</span>
+            <span><strong>{coverageAreas.length || 'Pwani'}</strong>{t('agent_stat_coverage')}</span>
             <span><strong>{availableAgentsCount}</strong>{t('agent_stat_available')}</span>
             <span><strong>{averageResponseMinutes}{t('minute_abbr')}</strong>{t('agent_stat_response')}</span>
           </div>
@@ -1100,6 +1145,7 @@ export function Home() {
                 {item.label}
               </span>
             ))}
+            <p className="agent-verification-note">{t('agent_verification_note')}</p>
           </div>
 
           <div className="agent-card-list">
@@ -1116,28 +1162,46 @@ export function Home() {
                     )}
                   </div>
                   <p>{t('trust_agent_role')} · {agent.areas_served || t('agent_default_region')}</p>
+                  <div className="agent-badge-row">
+                    {resolveAgentBadges(agent).map((badge) => <span key={`${agent.id}-${badge}`}>{badge}</span>)}
+                  </div>
                   <p className="trust-agent-meta">
                     <span className="trust-agent-status-dot" />
-                    {Number(agent.rating || 0).toFixed(1)} ★ · {resolveAgentListings(agent)} {t('agent_listings_label')} · {t('agent_replies_in')} {Math.max(5, Math.round(14 - Math.min(Number(agent.rating || 4), 5)))} {t('minutes_short')}
+                    {Number(agent.rating || 0).toFixed(1)} ★ · {resolveAgentListings(agent)} {t('agent_listings_label')} · {t('agent_replies_in')} ~{Math.max(5, Math.round(14 - Math.min(Number(agent.rating || 4), 5)))} {t('minutes_short')}
                   </p>
                   <div className="agent-card-actions">
                     <a className="btn btn-whatsapp btn-sm" href={buildAgentWhatsappLink(agent)} target="_blank" rel="noreferrer">
                       {t('quick_whatsapp')}
                     </a>
-                    <Link to="/" className="btn btn-secondary btn-sm">{t('agent_view_listings')}</Link>
+                    <Link to="/stays" className="btn btn-secondary btn-sm">{t('agent_view_listings')}</Link>
                   </div>
                 </div>
               </article>
             ))}
+            {featuredAgents.length < 3 && (
+              <article className="trust-agent-card agent-live-card agent-join-card">
+                <span className="trust-agent-avatar"><AgentAvatarIcon /></span>
+                <div className="trust-agent-content">
+                  <strong>{t('agent_join_card_title')}</strong>
+                  <p>{t('agent_join_card_body')}</p>
+                  <div className="agent-card-actions">
+                    <Link to="/register" className="btn btn-accent btn-sm">{t('agent_register_cta')}</Link>
+                    <Link to="/property/new" className="btn btn-secondary btn-sm">{t('add_property')}</Link>
+                  </div>
+                </div>
+              </article>
+            )}
           </div>
         </div>
 
         <div className="agent-owner-cta">
           <span>{t('agent_owner_cta')}</span>
+          <Link to="/agents" className="btn btn-secondary btn-sm">{t('menu_agents')}</Link>
           <Link to="/register" className="btn btn-secondary btn-sm">{t('agent_register_cta')}</Link>
           <Link to="/property/new" className="btn btn-accent btn-sm">{t('add_property')}</Link>
         </div>
       </section>
+
     </div>
   )
 }
