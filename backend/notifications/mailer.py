@@ -237,6 +237,33 @@ def send_host_booking_confirmed_email(booking) -> None:
     send_html_email(subject, text, _wrap_html(subject, intro, body, cta), [host.email])
 
 
+def send_password_reset_email(user, reset_url: str) -> bool:
+    """Email a branded password-reset link to the user."""
+    if not user or not getattr(user, "email", ""):
+        return False
+    name = (getattr(user, "first_name", "") or user.get_username() or "there").strip()
+    subject = "Reset your MakaziPlus password"
+    intro = (
+        f"<p>Hi <strong>{escape(name)}</strong>,</p>"
+        "<p>We received a request to reset your MakaziPlus password. Click the button below to choose a new one. "
+        "This link is valid for 24 hours.</p>"
+    )
+    body = (
+        "<p>If you did not request a password reset, you can safely ignore this email \u2014 "
+        "your password will not change.</p>"
+        f"<p style='font-size:12px;color:#6B7280;'>If the button doesn\u2019t work, copy and paste this link "
+        f"into your browser:<br><span style='word-break:break-all;'>{escape(reset_url)}</span></p>"
+    )
+    cta = {"label": "Reset password", "href": reset_url}
+    text = (
+        f"Hi {name},\n\nWe received a request to reset your MakaziPlus password.\n"
+        f"Open this link within 24 hours to choose a new password:\n{reset_url}\n\n"
+        "If you did not request this, ignore this email \u2014 your password will not change.\n\n"
+        "\u2014 MakaziPlus"
+    )
+    return send_html_email(subject, text, _wrap_html(subject, intro, body, cta), [user.email])
+
+
 def send_test_email(to: str) -> bool:
     """Sanity-check helper used by `manage.py send_test_email`."""
     subject = "MakaziPlus SMTP test"
