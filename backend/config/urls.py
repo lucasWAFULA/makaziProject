@@ -25,6 +25,7 @@ api_urlpatterns = [
     path("ai/", include("chat.ai_urls")),
     path("rbac/", include("roles.urls")),
     path("monetization/", include("monetization.urls")),
+    path("currencies/", include("currencies.urls")),
 ]
 
 

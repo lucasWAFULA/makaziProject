@@ -6,6 +6,8 @@ import { getProperty, getAvailability } from '../api/properties'
 import { getPropertyReviews } from '../api/properties'
 import { useAuth } from '../context/AuthContext'
 import { TransportWidget } from '../components/TransportWidget'
+import { PriceDisplay } from '../components/PriceDisplay'
+import { useCurrency } from '../context/CurrencyContext'
 
 function clampRating(value) {
   const numeric = Number(value)
@@ -59,7 +61,7 @@ export function PropertyDetail() {
   if (isLoading || !property) return <p>{t('loading')}</p>
 
   const price = Number(property.price_per_night || 0)
-  const totalEstimate = price * 3
+  const baseCurrency = property.base_currency || 'KES'
   const amenities = Array.isArray(property.amenities) ? property.amenities.filter(Boolean) : []
   const visibleAmenities = amenities.length ? amenities.slice(0, 8) : ['WiFi-ready', 'Security', 'Kitchen access', 'Local support']
   const verificationTier = String(property.verification_tier || '').toLowerCase()
@@ -289,8 +291,7 @@ export function PropertyDetail() {
         <aside className="booking-panel">
           <div className="booking-panel-card">
             <span>{t('price_per_night')}</span>
-            <strong>TZS {price.toLocaleString()}</strong>
-            <p>TZS {totalEstimate.toLocaleString()} total estimate for 3 nights</p>
+            <PriceDisplay amount={price} baseCurrency={baseCurrency} className="booking-price-lg" />
             <div className="booking-mini-grid">
               <span>Check-in</span>
               <span>Check-out</span>
@@ -314,7 +315,7 @@ export function PropertyDetail() {
       </section>
 
       <div className="mobile-booking-bar">
-        <span>TZS {price.toLocaleString()} / night</span>
+        <PriceDisplay amount={price} baseCurrency={baseCurrency} suffix="/ night" />
         {user ? <Link to={`/book/${id}`} className="btn btn-accent btn-sm">Reserve</Link> : <Link to="/login" className="btn btn-accent btn-sm">{t('login')}</Link>}
       </div>
     </div>

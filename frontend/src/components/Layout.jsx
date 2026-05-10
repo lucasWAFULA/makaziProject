@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { getUserDisplayName, getUserInitials, isOwnerDashboardUser } from '../utils/authProfile'
 import { ChatWidget } from './ChatWidget'
 import { SupportWidget } from './SupportWidget'
+import { CurrencySelector } from './CurrencySelector'
 
 function WhatsAppIcon() {
   return (
@@ -247,6 +248,7 @@ export function Layout({ children }) {
           >
             {String(i18n.language).toUpperCase()}
           </button>
+          <CurrencySelector />
           {user ? (
             <div className="nav-account" ref={accountRef}>
               <button

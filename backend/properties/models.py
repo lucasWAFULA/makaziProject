@@ -195,6 +195,11 @@ class Property(models.Model):
     )
     catalog_slug = models.CharField(max_length=50, blank=True, default="", db_index=True)
     price_per_night = models.DecimalField(max_digits=12, decimal_places=2)
+    base_currency = models.CharField(
+        max_length=5,
+        default='KES',
+        help_text='ISO currency code for the listed price (KES, TZS, USD, etc.)'
+    )
     rules_sw = models.TextField(blank=True)
     amenities = models.JSONField(default=list, blank=True)
 

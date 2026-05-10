@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "destinations",
     "notifications",
     "monetization",
+    "currencies",
 ]
 
 MIDDLEWARE = [

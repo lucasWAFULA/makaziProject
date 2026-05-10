@@ -23,8 +23,9 @@ PROPERTIES = [
         "country": "Kenya", "region": "Kwale", "town": "Diani",
         "listing_type": "villa",
         "category_slug": "villa", "type_name": "Beach Villa",
-        "price_per_night": decimal.Decimal("18500"),
-        "price_tier": "luxury", "stay_style": "couple",
+        "price_per_night": decimal.Decimal("150000"),
+        "base_currency": "UGX",
+        "price_tier": "budget", "stay_style": "couple",
         "bedrooms": 3, "beds": 4, "bathrooms": 3, "max_guests": 6,
         "amenities": ["Bwawa la kuogelea", "WiFi", "Jiko", "Eneo la kuegesha gari", "AC", "View ya bahari"],
         "feature_slugs": ["private-pool", "wifi", "beachfront", "ocean-view", "parking", "kitchen", "couple-friendly"],
@@ -37,7 +38,8 @@ PROPERTIES = [
         "country": "Kenya", "region": "Mombasa", "town": "Nyali",
         "listing_type": "apartment",
         "category_slug": "apartment", "type_name": "2 Bedroom Apartment",
-        "price_per_night": decimal.Decimal("5800"),
+        "price_per_night": decimal.Decimal("85000"),
+        "base_currency": "TZS",
         "price_tier": "standard", "stay_style": "corporate",
         "bedrooms": 2, "beds": 2, "bathrooms": 1, "max_guests": 4,
         "amenities": ["WiFi ya haraka", "Ulinzi 24/7", "Jiko", "Umeme wa backup", "AC"],
@@ -52,6 +54,7 @@ PROPERTIES = [
         "listing_type": "bnb",
         "category_slug": "bnb", "type_name": "Beachfront BnB",
         "price_per_night": decimal.Decimal("4200"),
+        "base_currency": "KES",
         "price_tier": "standard", "stay_style": "couple",
         "bedrooms": 1, "beds": 1, "bathrooms": 1, "max_guests": 2,
         "amenities": ["Chakula cha asubuhi", "WiFi", "Bafu binafsi", "Bustani", "Karibu na bahari"],
@@ -66,6 +69,7 @@ PROPERTIES = [
         "listing_type": "house",
         "category_slug": "vacation-home", "type_name": "Family Vacation Home",
         "price_per_night": decimal.Decimal("7500"),
+        "base_currency": "KES",
         "price_tier": "standard", "stay_style": "family",
         "bedrooms": 3, "beds": 4, "bathrooms": 2, "max_guests": 8,
         "amenities": ["Bustani", "Jiko kubwa", "Parking", "WiFi", "Vyumba 3"],
@@ -79,7 +83,8 @@ PROPERTIES = [
         "country": "Tanzania", "region": "Zanzibar Urban/West", "town": "Zanzibar",
         "listing_type": "apartment",
         "category_slug": "apartment", "type_name": "Studio Apartment",
-        "price_per_night": decimal.Decimal("6200"),
+        "price_per_night": decimal.Decimal("60000"),
+        "base_currency": "TZS",
         "price_tier": "standard", "stay_style": "solo",
         "bedrooms": 0, "beds": 1, "bathrooms": 1, "max_guests": 2,
         "amenities": ["WiFi", "AC", "View ya mji", "Karibu na feri", "Jiko kidogo"],
@@ -94,6 +99,7 @@ PROPERTIES = [
         "listing_type": "villa",
         "category_slug": "villa", "type_name": "Private Pool Villa",
         "price_per_night": decimal.Decimal("22000"),
+        "base_currency": "TZS",
         "price_tier": "luxury", "stay_style": "couple",
         "bedrooms": 4, "beds": 5, "bathrooms": 4, "max_guests": 8,
         "amenities": ["Pool ya Infinity", "Breakfast", "AC", "WiFi", "View ya bahari", "Huduma kamili"],
@@ -107,7 +113,8 @@ PROPERTIES = [
         "country": "Tanzania", "region": "Dar es Salaam", "town": "Dar es Salaam",
         "listing_type": "apartment",
         "category_slug": "serviced-apartment", "type_name": "Executive Serviced Apartment",
-        "price_per_night": decimal.Decimal("8900"),
+        "price_per_night": decimal.Decimal("25000"),
+        "base_currency": "KES",
         "price_tier": "premium", "stay_style": "corporate",
         "bedrooms": 2, "beds": 2, "bathrooms": 2, "max_guests": 3,
         "amenities": ["WiFi ya kasi", "Jiko", "Gym", "Ulinzi", "Parking"],
@@ -122,6 +129,7 @@ PROPERTIES = [
         "listing_type": "hotel",
         "category_slug": "hotel", "type_name": "Deluxe Room",
         "price_per_night": decimal.Decimal("11500"),
+        "base_currency": "KES",
         "price_tier": "premium", "stay_style": "couple",
         "bedrooms": 1, "beds": 1, "bathrooms": 1, "max_guests": 2,
         "amenities": ["Breakfast & Dinner", "Pool", "Beach Access", "WiFi", "AC", "Bar"],
@@ -263,6 +271,7 @@ class Command(BaseCommand):
             cat_slug = data.pop("category_slug", None)
             type_name = data.pop("type_name", None)
             feature_slugs = data.pop("feature_slugs", [])
+            base_currency = data.pop("base_currency", "KES")
 
             category = categories.get(cat_slug) if cat_slug else None
             property_type = None
@@ -279,6 +288,7 @@ class Command(BaseCommand):
                 is_active=True,
                 category=category,
                 property_type=property_type,
+                base_currency=base_currency,
                 **data,
             )
 

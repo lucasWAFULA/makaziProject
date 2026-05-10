@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { PriceDisplay } from '../components/PriceDisplay'
 import { useAuth } from '../context/AuthContext'
 import { getUserDisplayName, isOwnerDashboardUser } from '../utils/authProfile'
 import { useQuery } from '@tanstack/react-query'
@@ -955,7 +956,7 @@ export function Home() {
                   <div className="property-card-body">
                     <strong>{p.title_sw}</strong>
                     <p className="property-card-meta">{p.location}</p>
-                    <p className="property-card-price">TZS {Number(p.price_per_night).toLocaleString()}</p>
+                    <PriceDisplay amount={p.price_per_night} baseCurrency={p.base_currency} className="property-card-price" />
                   </div>
                 </article>
               ))}
@@ -972,7 +973,7 @@ export function Home() {
                 <div className="property-card-body">
                   <strong>{p.title_sw}</strong>
                   <p className="property-card-meta">{p.location}</p>
-                  <p className="property-card-price">{t('price_per_night')}: TZS {Number(p.price_per_night).toLocaleString()}</p>
+                  <PriceDisplay amount={p.price_per_night} baseCurrency={p.base_currency} className="property-card-price" />
                   <div className="property-card-actions">
                     <Link to={`/property/${p.id}`} className="btn btn-secondary btn-sm">{t('view_details')}</Link>
                     <Link to={`/book/${p.id}`} className="btn btn-primary btn-sm">{t('book_now')}</Link>

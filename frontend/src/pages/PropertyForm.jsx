@@ -66,6 +66,7 @@ export function PropertyForm() {
     stay_style: '',
     // Pricing
     price_per_night: '',
+    base_currency: 'KES',
     rules_sw: '',
     // Legacy
     listing_type: 'apartment',
@@ -137,6 +138,7 @@ export function PropertyForm() {
         price_tier: property.price_tier || '',
         stay_style: property.stay_style || '',
         price_per_night: property.price_per_night ?? '',
+        base_currency: property.base_currency || 'KES',
         rules_sw: property.rules_sw || '',
         listing_type: property.listing_type || 'apartment',
         catalog_slug: property.catalog_slug || '',
@@ -228,6 +230,7 @@ export function PropertyForm() {
       catalog_slug: form.catalog_slug,
       amenities,
       price_per_night: form.price_per_night ? Number(form.price_per_night) : 0,
+      base_currency: form.base_currency,
       rules_sw: form.rules_sw,
       // Location
       latitude: form.latitude === '' ? null : Number(form.latitude),
@@ -396,7 +399,21 @@ export function PropertyForm() {
         {/* ── PRICING ── */}
         <h3 style={sectionStyle}>💰 Pricing &amp; Rules</h3>
         <div className="form-group">
-          <label>{t('price_per_night')} (TZS / night)</label>
+          <label>Base Currency</label>
+          <select value={form.base_currency} onChange={(e) => update('base_currency', e.target.value)}>
+            <option value="KES">Kenyan Shilling (KES)</option>
+            <option value="TZS">Tanzanian Shilling (TZS)</option>
+            <option value="UGX">Ugandan Shilling (UGX)</option>
+            <option value="USD">US Dollar (USD)</option>
+            <option value="RWF">Rwandan Franc (RWF)</option>
+            <option value="ETB">Ethiopian Birr (ETB)</option>
+            <option value="EUR">Euro (EUR)</option>
+            <option value="GBP">British Pound (GBP)</option>
+          </select>
+          <small style={{ color: 'var(--color-text-muted)' }}>The currency you set your price in. We convert it automatically for users.</small>
+        </div>
+        <div className="form-group">
+          <label>{t('price_per_night')} ({form.base_currency} / night)</label>
           <input type="number" value={form.price_per_night} onChange={(e) => update('price_per_night', e.target.value)} required min="0" />
         </div>
         <div className="form-group">
