@@ -11,9 +11,20 @@ class User(AbstractUser):
         DRIVER = "driver", "Driver"
         ADMIN = "admin", "Admin"
 
+    class BillingStatus(models.TextChoices):
+        ACTIVE = "active", "Active"
+        WARNING = "warning", "Warning (30d overdue)"
+        LIMITED = "limited", "Limited Visibility (60d overdue)"
+        RESTRICTED = "restricted", "Restricted (90d overdue)"
+        SUSPENDED = "suspended", "Suspended"
+
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.CUSTOMER)
     phone_number = models.CharField(max_length=20, blank=True)
     is_verified = models.BooleanField(default=False)
+    billing_status = models.CharField(
+        max_length=20, choices=BillingStatus.choices, default=BillingStatus.ACTIVE,
+        help_text="Enforced automatically by the billing system based on overdue commissions."
+    )
 
     def __str__(self):
         return self.email or self.username

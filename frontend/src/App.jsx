@@ -12,6 +12,7 @@ import { BookProperty } from './pages/BookProperty'
 import { PayBooking } from './pages/PayBooking'
 import { MyBookings } from './pages/MyBookings'
 import { HostDashboard } from './pages/HostDashboard'
+import { BillingCenter } from './pages/BillingCenter'
 import { PropertyForm } from './pages/PropertyForm'
 import { TaxiBooking } from './pages/TaxiBooking'
 import { TaxonomyPage } from './pages/TaxonomyPage'
@@ -52,6 +53,7 @@ function App() {
             <Route path="/bookings" element={<MyBookings />} />
             <Route path="/dashboard" element={<Navigate to="/owner-dashboard" replace />} />
             <Route path="/owner-dashboard" element={<HostDashboard />} />
+            <Route path="/owner-dashboard/billing" element={<BillingCenter />} />
             <Route path="/account" element={<AccountPage />} />
             <Route path="/property/new" element={<PropertyForm />} />
             <Route path="/property/:id/edit" element={<PropertyForm />} />

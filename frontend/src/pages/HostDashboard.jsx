@@ -74,6 +74,7 @@ export function HostDashboard() {
       ) : null}
 
       <div className="owner-dashboard-actions">
+        <Link to="/owner-dashboard/billing" className="btn btn-secondary">Billing & Payments</Link>
         {canAddProperty ? (
           <>
             <Link to="/property/new" className="btn btn-primary">{t('new_listing')}</Link>
