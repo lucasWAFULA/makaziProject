@@ -10,6 +10,14 @@ const categoryConfig = {
   all_in_one: { icon: '🛵', label: 'All-in-One Delivery', color: '#3b82f6' },
 }
 
+const fallbackPartners = [
+  { id: 'fb-1', name: 'Glovo', category: 'all_in_one', link: 'https://glovoapp.com/', isRestaurant: false },
+  { id: 'fb-2', name: 'Uber Eats', category: 'restaurant', link: 'https://www.ubereats.com/', isRestaurant: false },
+  { id: 'fb-3', name: 'Bolt Food', category: 'restaurant', link: 'https://bolt.eu/en/food/', isRestaurant: false },
+  { id: 'fb-4', name: 'Supermarket Delivery', category: 'grocery', link: '#', isRestaurant: false },
+  { id: 'fb-5', name: 'Local Pharmacy', category: 'pharmacy', link: '#', isRestaurant: false },
+]
+
 export function PlusServices({ propertyId, location }) {
   const { t } = useTranslation()
 
@@ -72,7 +80,10 @@ export function PlusServices({ propertyId, location }) {
   }
 
   if (isLoading) return null // Or a small skeleton
-  if (displayItems.length === 0) return null
+  
+  const finalItems = displayItems.length > 0 ? displayItems : fallbackPartners
+
+  if (finalItems.length === 0) return null
 
   return (
     <div className="plus-services-section" style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--color-border)' }}>
@@ -84,7 +95,7 @@ export function PlusServices({ propertyId, location }) {
       </p>
 
       <div className="grid grid-3" style={{ gap: '1rem' }}>
-        {displayItems.map(item => {
+        {finalItems.map(item => {
           const config = categoryConfig[item.category] || categoryConfig.all_in_one
           return (
             <a 
