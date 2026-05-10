@@ -218,6 +218,11 @@ _default_csrf_trusted_origins = [
     "https://makazi-plus.com",
     "https://www.makazi-plus.com",
     "https://admin.makazi-plus.com",
+    # Cloud Run service URL — required for Django admin login CSRF
+    "https://karibumakazi-api-dpifguofja-ew.a.run.app",
+    # Firebase Hosting
+    "https://makazi240097.web.app",
+    "https://makazi240097.firebaseapp.com",
 ]
 _env_csrf_trusted_origins = [origin.strip() for origin in env.list("CSRF_TRUSTED_ORIGINS", default=[]) if origin.strip()]
 CSRF_TRUSTED_ORIGINS = sorted(set(_default_csrf_trusted_origins + _env_csrf_trusted_origins))
