@@ -1,7 +1,9 @@
+import logging
+
 from django.shortcuts import get_object_or_404
 from django.conf import settings
-from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework import generics, status
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -16,13 +18,20 @@ from .serializers import (
     AIStructuredSearchSerializer,
 )
 from .ai_service import build_ai_response
+from .email_service import (
+    notify_support_new_chat,
+    notify_support_followup_message,
+    notify_user_session_received,
+    notify_user_admin_reply,
+)
 
+logger = logging.getLogger(__name__)
 
 BOT_REPLIES = {
-    ChatSession.Topic.HOUSE: "Great choice. Share destination and budget and we will suggest suitable stays.",
-    ChatSession.Topic.TAXI: "Taxi support is ready. Please share pickup and destination details in Taxi Booking.",
+    ChatSession.Topic.HOUSE: "Asante! Share your destination and budget and we will suggest the best stays for you.",
+    ChatSession.Topic.TAXI: "Taxi support is ready. Please share pickup location and destination in the Taxi Booking section.",
     ChatSession.Topic.GROUP: "Perfect. Tell us your group size and dates to get matching home and transfer options.",
-    ChatSession.Topic.OTHER: "Thank you. Our support team will review this and respond shortly.",
+    ChatSession.Topic.OTHER: "Thank you for your message. Our support team will review it and respond shortly.",
 }
 
 
@@ -32,18 +41,44 @@ def _resolve_topic(session, user_text):
         return ChatSession.Topic.TAXI
     if "group" in text:
         return ChatSession.Topic.GROUP
-    if "house" in text or "home" in text or "stay" in text:
+    if "house" in text or "home" in text or "stay" in text or "room" in text or "apartment" in text:
         return ChatSession.Topic.HOUSE
     return session.topic or ChatSession.Topic.OTHER
 
 
 def _can_access_session(request, session, client_id):
-    if request.user.is_authenticated and session.user_id == request.user.id:
-        return True
+    if request.user.is_authenticated:
+        if request.user.is_staff or request.user.is_superuser:
+            return True
+        if session.user_id == request.user.id:
+            return True
     return session.client_id == client_id
 
 
+def _get_user_email(session) -> str:
+    user = session.user
+    return (getattr(user, "email", "") or "") if user else ""
+
+
+def _get_user_name(session) -> str:
+    user = session.user
+    if not user:
+        return "Guest"
+    return (
+        getattr(user, "get_full_name", lambda: "")()
+        or getattr(user, "first_name", "")
+        or getattr(user, "username", "Guest")
+    ).strip() or "Guest"
+
+
+# ── Public chat ────────────────────────────────────────────────────────────────
+
 class ChatSessionCreateView(APIView):
+    """
+    POST /api/chat/sessions/
+    Creates a new session + first user message. Sends Zoho email to support
+    and a receipt email to the user (if registered).
+    """
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -66,11 +101,22 @@ class ChatSessionCreateView(APIView):
         if topic != session.topic:
             session.topic = topic
             session.save(update_fields=["topic", "updated_at"])
+
         bot_message = ChatMessage.objects.create(
             session=session,
             sender=ChatMessage.Sender.BOT,
             text=BOT_REPLIES.get(topic, BOT_REPLIES[ChatSession.Topic.OTHER]),
         )
+
+        # ── Email notifications ──────────────────────────────────────────────
+        try:
+            notify_support_new_chat(session, data["message"])
+            user_email = _get_user_email(session)
+            if user_email:
+                notify_user_session_received(session, user_email, _get_user_name(session))
+        except Exception as exc:
+            logger.warning("Chat email notification failed (session=%s): %s", session.pk, exc)
+
         return Response(
             {
                 "session": ChatSessionSerializer(session).data,
@@ -82,6 +128,7 @@ class ChatSessionCreateView(APIView):
 
 
 class ChatSessionDetailView(APIView):
+    """GET /api/chat/sessions/<pk>/ — fetch session + all messages."""
     permission_classes = [AllowAny]
 
     def get(self, request, session_pk):
@@ -93,6 +140,10 @@ class ChatSessionDetailView(APIView):
 
 
 class ChatSessionMessageCreateView(APIView):
+    """
+    POST /api/chat/sessions/<pk>/messages/
+    User sends a follow-up message. Notifies support via email.
+    """
     permission_classes = [AllowAny]
 
     def post(self, request, session_pk):
@@ -115,11 +166,19 @@ class ChatSessionMessageCreateView(APIView):
         if topic != session.topic:
             session.topic = topic
             session.save(update_fields=["topic", "updated_at"])
+
         bot_message = ChatMessage.objects.create(
             session=session,
             sender=ChatMessage.Sender.BOT,
             text=BOT_REPLIES.get(topic, BOT_REPLIES[ChatSession.Topic.OTHER]),
         )
+
+        # ── Email notification to support ────────────────────────────────────
+        try:
+            notify_support_followup_message(session, data["message"])
+        except Exception as exc:
+            logger.warning("Follow-up email notification failed (session=%s): %s", session.pk, exc)
+
         return Response(
             {
                 "user_message": ChatMessageSerializer(user_message).data,
@@ -128,6 +187,145 @@ class ChatSessionMessageCreateView(APIView):
             status=status.HTTP_201_CREATED,
         )
 
+
+# ── Staff / admin chat endpoints ───────────────────────────────────────────────
+
+class ChatSessionAdminListView(APIView):
+    """
+    GET /api/chat/sessions/admin/
+    Staff-only: list all chat sessions ordered by most recent.
+    Supports ?status=open|closed, ?topic=house|taxi|group|other, ?search=
+    """
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        qs = (
+            ChatSession.objects
+            .select_related("user")
+            .prefetch_related("messages")
+            .order_by("-updated_at")
+        )
+        status_filter = request.query_params.get("status")
+        if status_filter in ("open", "closed"):
+            qs = qs.filter(status=status_filter)
+
+        topic_filter = request.query_params.get("topic")
+        if topic_filter:
+            qs = qs.filter(topic=topic_filter)
+
+        search = request.query_params.get("search", "").strip()
+        if search:
+            from django.db.models import Q
+            qs = qs.filter(
+                Q(client_id__icontains=search)
+                | Q(user__email__icontains=search)
+                | Q(user__username__icontains=search)
+                | Q(messages__text__icontains=search)
+            ).distinct()
+
+        data = []
+        for session in qs[:100]:
+            last_msg = session.messages.last()
+            user = session.user
+            data.append({
+                "id": session.pk,
+                "topic": session.topic,
+                "topic_display": session.get_topic_display(),
+                "status": session.status,
+                "user_id": user.pk if user else None,
+                "user_email": getattr(user, "email", "") if user else "",
+                "user_name": _get_user_name(session),
+                "client_id": session.client_id,
+                "message_count": session.messages.count(),
+                "last_message": last_msg.text[:120] if last_msg else "",
+                "last_sender": last_msg.sender if last_msg else "",
+                "created_at": session.created_at.isoformat(),
+                "updated_at": session.updated_at.isoformat(),
+            })
+
+        return Response({"count": len(data), "results": data})
+
+
+class ChatSessionAdminReplyView(APIView):
+    """
+    POST /api/chat/sessions/<pk>/reply/
+    Staff-only: send an agent reply to a session.
+    Creates a DB AGENT message + emails the user if they have an email address.
+
+    Request body: { "message": "Your reply text here" }
+    """
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, session_pk):
+        message_text = (request.data.get("message") or "").strip()
+        if not message_text:
+            return Response({"detail": "message is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        session = get_object_or_404(ChatSession, pk=session_pk)
+        if session.status != ChatSession.Status.OPEN:
+            return Response({"detail": "Cannot reply to a closed session."}, status=status.HTTP_400_BAD_REQUEST)
+
+        agent_message = ChatMessage.objects.create(
+            session=session,
+            sender=ChatMessage.Sender.AGENT,
+            text=message_text,
+        )
+        session.save(update_fields=["updated_at"])
+
+        # ── Email user ───────────────────────────────────────────────────────
+        user_email = _get_user_email(session)
+        emailed = False
+        if user_email:
+            try:
+                notify_user_admin_reply(session, message_text, user_email, _get_user_name(session))
+                emailed = True
+            except Exception as exc:
+                logger.warning("Admin reply email failed (session=%s): %s", session.pk, exc)
+
+        return Response(
+            {
+                "agent_message": ChatMessageSerializer(agent_message).data,
+                "user_emailed": emailed,
+                "user_email": user_email or "(anonymous — no email)",
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class ChatSessionAdminCloseView(APIView):
+    """
+    POST /api/chat/sessions/<pk>/close/
+    Staff-only: close a session.
+    """
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, session_pk):
+        session = get_object_or_404(ChatSession, pk=session_pk)
+        session.status = ChatSession.Status.CLOSED
+        session.save(update_fields=["status", "updated_at"])
+        return Response({"detail": "Session closed.", "status": session.status})
+
+
+# ── Registered-user: own sessions ─────────────────────────────────────────────
+
+class MyChatSessionsView(APIView):
+    """
+    GET /api/chat/sessions/mine/
+    Returns all sessions belonging to the authenticated user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        sessions = (
+            ChatSession.objects
+            .filter(user=request.user)
+            .prefetch_related("messages")
+            .order_by("-updated_at")
+        )
+        return Response(ChatSessionSerializer(sessions, many=True).data)
+
+
+# ── AI endpoints ───────────────────────────────────────────────────────────────
 
 def _resolve_ai_conversation(user, client_id, conversation_id=None):
     if conversation_id:
