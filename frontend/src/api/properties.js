@@ -35,3 +35,16 @@ export async function getPropertyReviews(propertyId) {
   const res = await api.get(`reviews/property/${propertyId}/`)
   return asList(res.data)
 }
+
+// ── Taxonomy catalogue endpoints ──────────────────────────────────────────────
+
+export async function getPropertyCategories() {
+  const res = await api.get('properties/categories/')
+  return Array.isArray(res.data) ? res.data : (res.data?.results ?? [])
+}
+
+export async function getPropertyFeatures(group = null) {
+  const params = group ? { group } : {}
+  const res = await api.get('properties/features/', { params })
+  return Array.isArray(res.data) ? res.data : (res.data?.results ?? [])
+}

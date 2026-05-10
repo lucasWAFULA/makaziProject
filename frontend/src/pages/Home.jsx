@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { getUserDisplayName, isOwnerDashboardUser } from '../utils/authProfile'
 import { useQuery } from '@tanstack/react-query'
-import { getProperties } from '../api/properties'
+import { getProperties, getPropertyCategories } from '../api/properties'
 import { getFeaturedDestinations, getDestinations } from '../api/destinations'
 import { getPackages } from '../api/packages'
 import { getAgents } from '../api/agents'
@@ -87,19 +87,23 @@ export function Home() {
     country: '',
     region: '',
     destinationName: '',
-    listingType: '',
+    category: '',
     location: '',
     priceMin: '',
     priceMax: '',
+    bedrooms: '',
+    guests: '',
   })
   const [searchFilters, setSearchFilters] = useState({
     country: '',
     region: '',
     destinationName: '',
-    listingType: '',
+    category: '',
     location: '',
     priceMin: '',
     priceMax: '',
+    bedrooms: '',
+    guests: '',
   })
   const [activeTab, setActiveTab] = useState('rent')
   const [aiPrompt, setAiPrompt] = useState('')
@@ -139,6 +143,10 @@ export function Home() {
     queryKey: ['properties-home-stats'],
     queryFn: () => getProperties(),
   })
+  const { data: categories = [] } = useQuery({
+    queryKey: ['property-categories'],
+    queryFn: getPropertyCategories,
+  })
 
   const { data: list = [], isLoading } = useQuery({
     queryKey: [
@@ -149,7 +157,9 @@ export function Home() {
       searchFilters.country,
       searchFilters.region,
       searchFilters.destinationName,
-      searchFilters.listingType,
+      searchFilters.category,
+      searchFilters.bedrooms,
+      searchFilters.guests,
     ],
     queryFn: () => getProperties({
       location: searchFilters.location || undefined,
@@ -158,7 +168,9 @@ export function Home() {
       country: searchFilters.country || undefined,
       region: searchFilters.region || undefined,
       town: searchFilters.destinationName || undefined,
-      listing_type: searchFilters.listingType || undefined,
+      category: searchFilters.category || undefined,
+      bedrooms: searchFilters.bedrooms || undefined,
+      guests: searchFilters.guests || undefined,
     }),
   })
 
@@ -256,13 +268,9 @@ export function Home() {
     { id: 'package', label: `🌴 ${t('quick_package')}` },
     { id: 'agent', label: `🏢 ${t('quick_agent')}` },
   ]
-  const listingTypeOptions = [
+  const categoryOptions = [
     { value: '', label: t('all_property_types') },
-    { value: 'house', label: 'House' },
-    { value: 'apartment', label: 'Apartment' },
-    { value: 'bnb', label: 'BnB' },
-    { value: 'hotel', label: 'Hotel' },
-    { value: 'villa', label: 'Villa' },
+    ...categories.map((c) => ({ value: c.slug, label: `${c.icon} ${c.name}` })),
   ]
   const countries = [...new Set(destinations.map((item) => item.country))].sort()
   const regions = [
@@ -460,10 +468,12 @@ export function Home() {
       country: nextFilters.country || '',
       region: nextFilters.region || '',
       destinationName: nextFilters.destinationName || '',
-      listingType: nextFilters.listingType || '',
+      category: nextFilters.category || '',
       location: nextFilters.location || '',
       priceMin: nextFilters.priceMin || '',
       priceMax: nextFilters.priceMax || '',
+      bedrooms: nextFilters.bedrooms || '',
+      guests: nextFilters.guests || '',
     })
   }
 
@@ -486,7 +496,7 @@ export function Home() {
     const nextFilters = {
       ...draftFilters,
       location: tile.filters.location || '',
-      listingType: tile.filters.listingType || '',
+      category: tile.filters.category || '',
       priceMax: tile.filters.priceMax || '',
     }
     setDraftFilters(nextFilters)
@@ -690,10 +700,10 @@ export function Home() {
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label>{t('property_type')}</label>
                 <select
-                  value={draftFilters.listingType}
-                  onChange={(e) => setDraftFilters((prev) => ({ ...prev, listingType: e.target.value }))}
+                  value={draftFilters.category}
+                  onChange={(e) => setDraftFilters((prev) => ({ ...prev, category: e.target.value }))}
                 >
-                  {listingTypeOptions.map((item) => (
+                  {categoryOptions.map((item) => (
                     <option key={item.value || 'all'} value={item.value}>{item.label}</option>
                   ))}
                 </select>
@@ -709,6 +719,30 @@ export function Home() {
                   onChange={(e) => setDraftFilters((prev) => ({ ...prev, location: e.target.value }))}
                   placeholder={t('location')}
                 />
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>🛏️ Bedrooms</label>
+                <select
+                  value={draftFilters.bedrooms}
+                  onChange={(e) => setDraftFilters((prev) => ({ ...prev, bedrooms: e.target.value }))}
+                >
+                  <option value="">Any</option>
+                  {[1,2,3,4,5].map((n) => (
+                    <option key={n} value={n}>{n}+</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>👥 Guests</label>
+                <select
+                  value={draftFilters.guests}
+                  onChange={(e) => setDraftFilters((prev) => ({ ...prev, guests: e.target.value }))}
+                >
+                  <option value="">Any</option>
+                  {[1,2,3,4,5,6,8,10,12].map((n) => (
+                    <option key={n} value={n}>{n}+</option>
+                  ))}
+                </select>
               </div>
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label>{t('price_min')}</label>
