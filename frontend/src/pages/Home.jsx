@@ -418,6 +418,47 @@ export function Home() {
     ]
   }
 
+  // ── Property image resolver with curated Unsplash fallbacks ──────────────────
+  const CATEGORY_FALLBACKS = {
+    villa: 'https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4?auto=format&fit=crop&w=900&q=75',
+    apartment: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=75',
+    bnb: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=75',
+    hotel: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=900&q=75',
+    'guest-house': 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=900&q=75',
+    resort: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=900&q=75',
+    lodge: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=900&q=75',
+    hostel: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=900&q=75',
+    'serviced-apartment': 'https://images.unsplash.com/photo-1560448204-603b3fc33ddc?auto=format&fit=crop&w=900&q=75',
+    'vacation-home': 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=900&q=75',
+    'beach-house': 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=900&q=75',
+    'safari-camp': 'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=900&q=75',
+    cottage: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=900&q=75',
+    cabin: 'https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?auto=format&fit=crop&w=900&q=75',
+    'camping-site': 'https://images.unsplash.com/photo-1537225228614-56cc3556d7ed?auto=format&fit=crop&w=900&q=75',
+    'shared-stay': 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=900&q=75',
+    penthouse: 'https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?auto=format&fit=crop&w=900&q=75',
+    'farm-stay': 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=75',
+  }
+  const LISTING_TYPE_FALLBACKS = {
+    villa: CATEGORY_FALLBACKS.villa,
+    apartment: CATEGORY_FALLBACKS.apartment,
+    bnb: CATEGORY_FALLBACKS.bnb,
+    hotel: CATEGORY_FALLBACKS.hotel,
+    house: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=900&q=75',
+  }
+  const DEFAULT_FALLBACK = 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=900&q=75'
+
+  const resolvePropertyImage = (p) => {
+    if (p.first_image) return p.first_image
+    const catSlug = p.category_detail?.slug || ''
+    return (
+      CATEGORY_FALLBACKS[catSlug]
+      || LISTING_TYPE_FALLBACKS[p.listing_type]
+      || DEFAULT_FALLBACK
+    )
+  }
+
+
   const handlePackageNext = () => {
     if (!canSlidePackages) return
     const maxStart = Math.max(0, packageItems.length - visiblePackageCount)
@@ -908,7 +949,7 @@ export function Home() {
                   <span className="promo-badge">{t('sponsored')}</span>
                   <Link to={`/property/${p.id}`} className="property-card-image-link">
                     <div className="property-card-image">
-                      {p.first_image ? <img src={p.first_image} alt="" /> : <span className="no-image" />}
+                      <img src={resolvePropertyImage(p)} alt={p.title_sw || 'Property'} loading="lazy" />
                     </div>
                   </Link>
                   <div className="property-card-body">
@@ -925,7 +966,7 @@ export function Home() {
               <article key={p.id} className="card property-card reveal-item" style={{ '--stagger': idx }}>
                 <Link to={`/property/${p.id}`} className="property-card-image-link">
                   <div className="property-card-image">
-                    {p.first_image ? <img src={p.first_image} alt="" /> : <span className="no-image" />}
+                    <img src={resolvePropertyImage(p)} alt={p.title_sw || 'Property'} loading="lazy" />
                   </div>
                 </Link>
                 <div className="property-card-body">
