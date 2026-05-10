@@ -36,15 +36,15 @@ class ReferralClickAdmin(admin.ModelAdmin):
 
 @admin.register(FeaturedListing)
 class FeaturedListingAdmin(admin.ModelAdmin):
-    list_display = ("property", "tier", "status_badge", "starts_at", "ends_at", "price_paid", "currency")
+    list_display = ("listing", "tier", "status_badge", "starts_at", "ends_at", "price_paid", "currency")
     list_filter = ("tier", "is_active")
-    search_fields = ("property__title_sw", "property__location")
+    search_fields = ("listing__title_sw", "listing__location")
     readonly_fields = ("created_at",)
     date_hierarchy = "starts_at"
 
     @admin.display(description="Status")
     def status_badge(self, obj):
-        if obj.is_live:
+        if obj.is_live_now():
             return format_html(
                 '<span style="background:#059669;color:#fff;padding:2px 10px;border-radius:999px;font-size:11px;">LIVE</span>'
             )

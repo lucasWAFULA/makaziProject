@@ -23,9 +23,9 @@ class AdPlacementSerializer(serializers.ModelSerializer):
 
 
 class FeaturedListingSerializer(serializers.ModelSerializer):
-    property_id = serializers.IntegerField(source="property.id")
-    property_title = serializers.CharField(source="property.title_sw")
-    property_location = serializers.CharField(source="property.location")
+    property_id = serializers.IntegerField(source="listing.id")
+    property_title = serializers.CharField(source="listing.title_sw")
+    property_location = serializers.CharField(source="listing.location")
 
     class Meta:
         model = FeaturedListing

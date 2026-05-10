@@ -106,7 +106,7 @@ class FeaturedListing(models.Model):
         PREMIUM = "premium", "Premium (KES 5,000/mo)"
         SPOTLIGHT = "spotlight", "Spotlight (KES 15,000/mo)"
 
-    property = models.ForeignKey(
+    listing = models.ForeignKey(
         "properties.Property",
         on_delete=models.CASCADE,
         related_name="featured_campaigns",
@@ -124,10 +124,9 @@ class FeaturedListing(models.Model):
         ordering = ["-starts_at"]
 
     def __str__(self):
-        return f"{self.property} [{self.tier}] {self.starts_at:%Y-%m-%d} → {self.ends_at:%Y-%m-%d}"
+        return f"{self.listing} [{self.tier}] {self.starts_at:%Y-%m-%d} → {self.ends_at:%Y-%m-%d}"
 
-    @property
-    def is_live(self) -> bool:
+    def is_live_now(self) -> bool:
         now = timezone.now()
         return self.is_active and self.starts_at <= now <= self.ends_at
 
