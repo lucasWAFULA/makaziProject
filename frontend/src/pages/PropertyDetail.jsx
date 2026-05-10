@@ -6,6 +6,7 @@ import { getProperty, getAvailability } from '../api/properties'
 import { getPropertyReviews } from '../api/properties'
 import { useAuth } from '../context/AuthContext'
 import { TransportWidget } from '../components/TransportWidget'
+import { PlusServices } from '../components/PlusServices'
 import { PriceDisplay } from '../components/PriceDisplay'
 import { useCurrency } from '../context/CurrencyContext'
 
@@ -183,6 +184,7 @@ export function PropertyDetail() {
           </section>
 
           <TransportWidget property={property} />
+          <PlusServices propertyId={id} location={property.town || property.region} />
 
           <section className="card listing-section-card">
             <h2>Tours &amp; experiences</h2>

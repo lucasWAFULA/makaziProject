@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "monetization",
     "currencies",
     "billing",
+    "services",
 ]
 
 MIDDLEWARE = [

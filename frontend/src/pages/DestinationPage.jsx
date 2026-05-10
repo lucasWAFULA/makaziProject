@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getDestinationBySlug } from '../api/destinations'
 import { getProperties } from '../api/properties'
+import { PlusServices } from '../components/PlusServices'
 
 const destinationGuides = {
   zanzibar: {
@@ -155,6 +156,16 @@ export function DestinationPage() {
             ))}
           </div>
         )}
+      </section>
+
+      <section className="card section-card">
+        <div className="section-heading">
+          <div>
+            <span className="section-kicker">Plus Services</span>
+            <h2>Food & Essentials in {activeDestination.destination_name}</h2>
+          </div>
+        </div>
+        <PlusServices propertyId={null} location={activeDestination.destination_name} />
       </section>
     </div>
   )
