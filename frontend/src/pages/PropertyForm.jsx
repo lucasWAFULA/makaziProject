@@ -8,6 +8,8 @@ import {
 } from '../api/properties'
 import { getDestinations } from '../api/destinations'
 import { useAuth } from '../context/AuthContext'
+import { GooglePlacePicker } from '../components/GooglePlacePicker'
+import { PropertyMediaUpload } from '../components/PropertyMediaUpload'
 
 const PRICE_TIERS = [
   { value: '', label: 'Auto-detect from price' },
@@ -249,13 +251,14 @@ export function PropertyForm() {
   const gridThree = { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }
 
   return (
-    <div className="card" style={{ maxWidth: 620, margin: '0 auto', padding: '1.5rem' }}>
-      <h1 style={{ marginTop: 0 }}>{isEdit ? t('edit_property') : t('add_property')}</h1>
-      {!isEdit && (
-        <p style={{ marginTop: 0, color: 'var(--color-text-muted)' }}>
-          New listings are reviewed before they appear publicly.
-        </p>
-      )}
+    <div style={{ maxWidth: 680, margin: '0 auto' }}>
+      <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+        <h1 style={{ marginTop: 0 }}>{isEdit ? t('edit_property') : t('add_property')}</h1>
+        {!isEdit && (
+          <p style={{ marginTop: 0, color: 'var(--color-text-muted)' }}>
+            New listings are reviewed before they appear publicly. Save your details first, then upload photos.
+          </p>
+        )}
 
       <form onSubmit={handleSubmit}>
 
@@ -268,10 +271,6 @@ export function PropertyForm() {
         <div className="form-group">
           <label>{t('description')}</label>
           <textarea value={form.description_sw} onChange={(e) => update('description_sw', e.target.value)} rows={3} />
-        </div>
-        <div className="form-group">
-          <label>{t('location')}</label>
-          <input type="text" value={form.location} onChange={(e) => update('location', e.target.value)} required />
         </div>
         <div className="form-group">
           <label>Destination</label>
@@ -357,7 +356,7 @@ export function PropertyForm() {
         </div>
 
         {/* ── FEATURES ── */}
-        <h3 style={sectionStyle}>✨ Features & Amenities</h3>
+        <h3 style={sectionStyle}>✨ Features &amp; Amenities</h3>
         <small style={{ color: 'var(--color-text-muted)', display: 'block', marginBottom: '0.75rem' }}>
           Select all that apply — these power search and AI recommendations.
         </small>
@@ -395,7 +394,7 @@ export function PropertyForm() {
         ))}
 
         {/* ── PRICING ── */}
-        <h3 style={sectionStyle}>💰 Pricing & Rules</h3>
+        <h3 style={sectionStyle}>💰 Pricing &amp; Rules</h3>
         <div className="form-group">
           <label>{t('price_per_night')} (TZS / night)</label>
           <input type="number" value={form.price_per_night} onChange={(e) => update('price_per_night', e.target.value)} required min="0" />
@@ -405,30 +404,47 @@ export function PropertyForm() {
           <textarea value={form.rules_sw} onChange={(e) => update('rules_sw', e.target.value)} rows={2} />
         </div>
         <div className="form-group">
-          <label>Legacy Amenities (comma-separated)</label>
+          <label>Amenities (comma-separated)</label>
           <input
             type="text"
             value={form.amenities_text}
             onChange={(e) => update('amenities_text', e.target.value)}
-            placeholder="WiFi, Pool, Parking, Kitchen..."
+            placeholder="WiFi, Pool, Parking, Kitchen…"
           />
-          <small style={{ color: 'var(--color-text-muted)' }}>Use the feature tags above instead — this is for backwards compatibility.</small>
         </div>
 
         {/* ── LOCATION ── */}
-        <h3 style={sectionStyle}>📍 Map Pin</h3>
+        <h3 style={sectionStyle}>📍 Location</h3>
+        <div className="form-group">
+          <label>Search address (Google Maps)</label>
+          <GooglePlacePicker
+            value={form.location}
+            placeholder="Start typing an address, landmark or area…"
+            onChange={({ address, lat, lng, country, city }) => {
+              setForm((prev) => ({
+                ...prev,
+                location: address || prev.location,
+                latitude: lat ?? prev.latitude,
+                longitude: lng ?? prev.longitude,
+                ...(country ? { country } : {}),
+                ...(city ? { town: city } : {}),
+              }))
+            }}
+          />
+          <small style={{ color: 'var(--color-text-muted)' }}>Lat/Lng are auto-filled from the map pin.</small>
+        </div>
         <div className="form-group">
           <label>Landmark / nearby place</label>
-          <input type="text" value={form.landmark} onChange={(e) => update('landmark', e.target.value)} placeholder="e.g. Near Kendwa Rocks, Nyali Centre..." />
+          <input type="text" value={form.landmark} onChange={(e) => update('landmark', e.target.value)} placeholder="e.g. Near Kendwa Rocks, Nyali Centre…" />
         </div>
         <div style={gridTwo}>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Latitude</label>
-            <input type="number" step="0.000001" value={form.latitude} onChange={(e) => update('latitude', e.target.value)} placeholder="-6.165917" />
+            <label>Latitude <small style={{ fontWeight: 400 }}>(auto)</small></label>
+            <input type="number" step="0.000001" value={form.latitude} onChange={(e) => update('latitude', e.target.value)} placeholder="-6.165917" readOnly={!!form.latitude} style={{ background: form.latitude ? '#f8fafc' : undefined }} />
           </div>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Longitude</label>
-            <input type="number" step="0.000001" value={form.longitude} onChange={(e) => update('longitude', e.target.value)} placeholder="39.202641" />
+            <label>Longitude <small style={{ fontWeight: 400 }}>(auto)</small></label>
+            <input type="number" step="0.000001" value={form.longitude} onChange={(e) => update('longitude', e.target.value)} placeholder="39.202641" readOnly={!!form.longitude} style={{ background: form.longitude ? '#f8fafc' : undefined }} />
           </div>
         </div>
 
@@ -442,7 +458,7 @@ export function PropertyForm() {
             onChange={(e) => update('walkthrough_video_url', e.target.value)}
             placeholder="YouTube, Google Drive, Dropbox, etc."
           />
-          <small style={{ color: 'var(--color-text-muted)' }}>Continuous walkthrough helps us verify faster.</small>
+          <small style={{ color: 'var(--color-text-muted)' }}>Or use the Photos & Videos section below to upload directly.</small>
         </div>
         <div style={gridTwo}>
           <div className="form-group" style={{ marginBottom: 0 }}>
@@ -482,6 +498,30 @@ export function PropertyForm() {
           </button>
         </div>
       </form>
+      </div>
+
+      {/* ── MEDIA UPLOAD (only after property exists) ── */}
+      {isEdit && id && (
+        <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
+          <h2 style={{ marginTop: 0, marginBottom: '0.25rem' }}>📁 Photos &amp; Videos</h2>
+          <p style={{ margin: '0 0 1.25rem', color: 'var(--color-text-muted)', fontSize: 14 }}>
+            Upload photos and videos of your property. The first photo becomes the cover image.
+          </p>
+          <PropertyMediaUpload
+            propertyId={id}
+            onUpdate={() => queryClient.invalidateQueries(['property', id])}
+          />
+        </div>
+      )}
+      {!isEdit && (
+        <div className="card" style={{ padding: '1.25rem', marginBottom: '2rem', background: 'linear-gradient(135deg, #f0fdf4, #fefffe)', border: '1px dashed #86efac' }}>
+          <strong>📸 Next step: add photos</strong>
+          <p style={{ margin: '0.35rem 0 0', fontSize: 14, color: 'var(--color-text-muted)' }}>
+            After saving, you'll be taken to the property page where you can upload photos and videos.
+          </p>
+        </div>
+      )}
     </div>
   )
 }
+

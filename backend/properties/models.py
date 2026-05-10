@@ -269,3 +269,35 @@ class PropertyImage(models.Model):
 
     class Meta:
         ordering = ["order", "id"]
+
+
+def property_video_upload_to(instance, filename):
+    return f"properties/{instance.property_id}/videos/{filename}"
+
+
+class PropertyVideo(models.Model):
+    """Short video clip or walkthrough uploaded by the host/agent."""
+    property = models.ForeignKey(
+        Property, on_delete=models.CASCADE, related_name="videos"
+    )
+    video = models.FileField(
+        upload_to=property_video_upload_to,
+        blank=True,
+        default="",
+        help_text="Upload MP4/MOV (max 100 MB). Or use the external_url field for YouTube/Drive links.",
+    )
+    external_url = models.URLField(
+        blank=True,
+        default="",
+        help_text="YouTube, Google Drive or other shareable video link.",
+    )
+    title = models.CharField(max_length=200, blank=True, default="")
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.title or f"Video #{self.pk} for property {self.property_id}"
+
