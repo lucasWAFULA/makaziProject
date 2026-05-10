@@ -6,11 +6,11 @@ import { useAuth } from '../context/AuthContext'
 import { createTaxiBooking, getMyTaxiBookings, getTransportPartners, getTransportRoutes } from '../api/taxi'
 
 const vehicleOptions = [
-  { value: 'sedan', labelKey: 'taxi_vehicle_sedan', multiplier: 1, metaKey: 'taxi_vehicle_sedan_meta' },
-  { value: 'suv', labelKey: 'taxi_vehicle_suv', multiplier: 1.25, metaKey: 'taxi_vehicle_suv_meta' },
-  { value: 'van', labelKey: 'taxi_vehicle_van', multiplier: 1.45, metaKey: 'taxi_vehicle_van_meta' },
-  { value: 'luxury', labelKey: 'taxi_vehicle_luxury', multiplier: 1.85, metaKey: 'taxi_vehicle_luxury_meta' },
-  { value: 'airport_shuttle', labelKey: 'taxi_vehicle_airport_shuttle', multiplier: 1.15, metaKey: 'taxi_vehicle_airport_shuttle_meta' },
+  { value: 'sedan', labelKey: 'taxi_vehicle_sedan', icon: '🚘', multiplier: 1, metaKey: 'taxi_vehicle_sedan_meta' },
+  { value: 'suv', labelKey: 'taxi_vehicle_suv', icon: '🚙', multiplier: 1.25, metaKey: 'taxi_vehicle_suv_meta' },
+  { value: 'van', labelKey: 'taxi_vehicle_van', icon: '🚐', multiplier: 1.45, metaKey: 'taxi_vehicle_van_meta' },
+  { value: 'luxury', labelKey: 'taxi_vehicle_luxury', icon: '✨', multiplier: 1.85, metaKey: 'taxi_vehicle_luxury_meta' },
+  { value: 'airport_shuttle', labelKey: 'taxi_vehicle_airport_shuttle', icon: '🚌', multiplier: 1.15, metaKey: 'taxi_vehicle_airport_shuttle_meta' },
 ]
 
 const fallbackRoutes = [
@@ -399,6 +399,7 @@ export function TaxiBooking() {
               return (
                 <article key={vehicle.value} className={form.vehicleType === vehicle.value ? 'taxi-vehicle-card is-active' : 'taxi-vehicle-card'}>
                   <button type="button" onClick={() => setForm((prev) => ({ ...prev, vehicleType: vehicle.value }))}>
+                    <span style={{ fontSize: '32px', marginBottom: '12px', display: 'block', lineHeight: 1 }}>{vehicle.icon}</span>
                     <span>{t(vehicle.labelKey)}</span>
                     <strong>
                       {estimate
