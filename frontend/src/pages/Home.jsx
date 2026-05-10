@@ -110,6 +110,7 @@ export function Home() {
   const [aiPrompt, setAiPrompt] = useState('')
   const [aiHint, setAiHint] = useState('')
   const [isAiApplying, setIsAiApplying] = useState(false)
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false)
   const [packageWindowStart, setPackageWindowStart] = useState(0)
   const [packageImageTick, setPackageImageTick] = useState(0)
   const [isPackageImagePaused, setIsPackageImagePaused] = useState(false)
@@ -517,6 +518,12 @@ export function Home() {
       bedrooms: nextFilters.bedrooms || '',
       guests: nextFilters.guests || '',
     })
+    
+    // Scroll to results so it feels interactive when an experience tile or quick search is clicked
+    setTimeout(() => {
+      const el = document.getElementById('featured-stays')
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 100)
   }
 
   const handleSearchSubmit = (event) => {
@@ -690,144 +697,181 @@ export function Home() {
           </div>
           {aiHint ? <p className="search-ai-hint">{aiHint}</p> : null}
 
-          <form onSubmit={handleSearchSubmit}>
-            <div className="grid search-grid search-grid-top">
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label>{t('country_label')}</label>
-                <select
-                  value={draftFilters.country}
-                  onChange={(e) => {
-                    setDraftFilters((prev) => ({
-                      ...prev,
-                      country: e.target.value,
-                      region: '',
-                      destinationName: '',
-                    }))
-                  }}
+          {(activeTab === 'rent' || activeTab === 'hotel') && (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem', marginBottom: '1rem' }}>
+                <button 
+                  type="button" 
+                  className="btn btn-sm btn-outline" 
+                  onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
                 >
-                  <option value="">{t('all_countries')}</option>
-                  {countries.map((item) => <option key={item} value={item}>{item}</option>)}
-                </select>
-              </div>
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label>{t('region_label')}</label>
-                <select
-                  value={draftFilters.region}
-                  onChange={(e) => {
-                    setDraftFilters((prev) => ({
-                      ...prev,
-                      region: e.target.value,
-                      destinationName: '',
-                    }))
-                  }}
-                >
-                  <option value="">{t('all_regions')}</option>
-                  {regions.map((item) => <option key={item} value={item}>{item}</option>)}
-                </select>
-              </div>
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label>{t('destination_label')}</label>
-                <select
-                  value={draftFilters.destinationName}
-                  onChange={(e) => setDraftFilters((prev) => ({ ...prev, destinationName: e.target.value }))}
-                >
-                  <option value="">{t('all_destinations')}</option>
-                  {towns.map((item) => (
-                    <option key={item.destination_id} value={item.destination_name}>
-                      {item.destination_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label>{t('property_type')}</label>
-                <select
-                  value={draftFilters.category}
-                  onChange={(e) => setDraftFilters((prev) => ({ ...prev, category: e.target.value }))}
-                >
-                  {categoryOptions.map((item) => (
-                    <option key={item.value || 'all'} value={item.value}>{item.label}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="grid search-grid search-grid-bottom">
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label>{t('location')}</label>
-                <input
-                  type="text"
-                  value={draftFilters.location}
-                  onChange={(e) => setDraftFilters((prev) => ({ ...prev, location: e.target.value }))}
-                  placeholder={t('location')}
-                />
-              </div>
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label>🛏️ Bedrooms</label>
-                <select
-                  value={draftFilters.bedrooms}
-                  onChange={(e) => setDraftFilters((prev) => ({ ...prev, bedrooms: e.target.value }))}
-                >
-                  <option value="">Any</option>
-                  {[1,2,3,4,5].map((n) => (
-                    <option key={n} value={n}>{n}+</option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label>👥 Guests</label>
-                <select
-                  value={draftFilters.guests}
-                  onChange={(e) => setDraftFilters((prev) => ({ ...prev, guests: e.target.value }))}
-                >
-                  <option value="">Any</option>
-                  {[1,2,3,4,5,6,8,10,12].map((n) => (
-                    <option key={n} value={n}>{n}+</option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label>{t('price_min')}</label>
-                <input
-                  type="number"
-                  value={draftFilters.priceMin}
-                  onChange={(e) => setDraftFilters((prev) => ({ ...prev, priceMin: e.target.value }))}
-                  placeholder="0"
-                  min="0"
-                />
-              </div>
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label>{t('price_max')}</label>
-                <input
-                  type="number"
-                  value={draftFilters.priceMax}
-                  onChange={(e) => setDraftFilters((prev) => ({ ...prev, priceMax: e.target.value }))}
-                  placeholder=""
-                  min="0"
-                />
-              </div>
-              <div className="search-submit-wrap">
-                <button type="submit" className="btn btn-accent search-submit-btn">{t('search_now')}</button>
-              </div>
-            </div>
-
-            <div className="search-popular-row">
-              <strong>{t('popular_searches_label')}</strong>
-              {quickSearchTowns.map((town) => (
-                <button key={town} type="button" className="search-chip" onClick={() => handleQuickSearch(town)}>
-                  {town}
+                  {isAdvancedOpen ? t('hide_filters') : t('advanced_filters')}
                 </button>
-              ))}
-            </div>
-          </form>
+              </div>
 
-          <div className="search-trust-row">
-            <span>✓ {t('trust_verified')}</span>
-            <span>✓ {t('trust_secure')}</span>
-            <span>✓ {t('trust_local')}</span>
-          </div>
-          {activeTab === 'taxi' && <p className="hint-text">{t('taxi_intro')}</p>}
-          {activeTab === 'package' && <p className="hint-text">{t('featured_packages')}</p>}
+              {isAdvancedOpen && (
+                <form onSubmit={handleSearchSubmit}>
+                  <div className="grid search-grid search-grid-top">
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>{t('country_label')}</label>
+                      <select
+                        value={draftFilters.country}
+                        onChange={(e) => {
+                          setDraftFilters((prev) => ({
+                            ...prev,
+                            country: e.target.value,
+                            region: '',
+                            destinationName: '',
+                          }))
+                        }}
+                      >
+                        <option value="">{t('all_countries')}</option>
+                        {countries.map((item) => <option key={item} value={item}>{item}</option>)}
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>{t('region_label')}</label>
+                      <select
+                        value={draftFilters.region}
+                        onChange={(e) => {
+                          setDraftFilters((prev) => ({
+                            ...prev,
+                            region: e.target.value,
+                            destinationName: '',
+                          }))
+                        }}
+                      >
+                        <option value="">{t('all_regions')}</option>
+                        {regions.map((item) => <option key={item} value={item}>{item}</option>)}
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>{t('destination_label')}</label>
+                      <select
+                        value={draftFilters.destinationName}
+                        onChange={(e) => setDraftFilters((prev) => ({ ...prev, destinationName: e.target.value }))}
+                      >
+                        <option value="">{t('all_destinations')}</option>
+                        {towns.map((item) => (
+                          <option key={item.destination_id} value={item.destination_name}>
+                            {item.destination_name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>{t('property_type')}</label>
+                      <select
+                        value={draftFilters.category}
+                        onChange={(e) => setDraftFilters((prev) => ({ ...prev, category: e.target.value }))}
+                      >
+                        {categoryOptions.map((item) => (
+                          <option key={item.value || 'all'} value={item.value}>{item.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid search-grid search-grid-bottom">
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>{t('location')}</label>
+                      <input
+                        type="text"
+                        value={draftFilters.location}
+                        onChange={(e) => setDraftFilters((prev) => ({ ...prev, location: e.target.value }))}
+                        placeholder={t('location')}
+                      />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>🛏️ {t('bedrooms_label')}</label>
+                      <select
+                        value={draftFilters.bedrooms}
+                        onChange={(e) => setDraftFilters((prev) => ({ ...prev, bedrooms: e.target.value }))}
+                      >
+                        <option value="">{t('any_option')}</option>
+                        {[1,2,3,4,5].map((n) => (
+                          <option key={n} value={n}>{n}+</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>👥 {t('guests_label')}</label>
+                      <select
+                        value={draftFilters.guests}
+                        onChange={(e) => setDraftFilters((prev) => ({ ...prev, guests: e.target.value }))}
+                      >
+                        <option value="">{t('any_option')}</option>
+                        {[1,2,3,4,5,6,8,10,12].map((n) => (
+                          <option key={n} value={n}>{n}+</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>{t('price_min')}</label>
+                      <input
+                        type="number"
+                        value={draftFilters.priceMin}
+                        onChange={(e) => setDraftFilters((prev) => ({ ...prev, priceMin: e.target.value }))}
+                        placeholder="0"
+                      />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>{t('price_max')}</label>
+                      <input
+                        type="number"
+                        value={draftFilters.priceMax}
+                        onChange={(e) => setDraftFilters((prev) => ({ ...prev, priceMax: e.target.value }))}
+                        placeholder="1000000"
+                      />
+                    </div>
+                  </div>
+                </form>
+              )}
+              
+              <div className="search-popular-row">
+                <strong>{t('popular_searches_label')}</strong>
+                {quickSearchTowns.map((town) => (
+                  <button key={town} type="button" className="search-chip" onClick={() => handleQuickSearch(town)}>
+                    {town}
+                  </button>
+                ))}
+              </div>
+
+              <div className="search-submit-wrap" style={{ marginTop: '1rem', width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <button type="button" className="btn btn-primary" style={{ width: '100%', padding: '1rem' }} onClick={handleSearchSubmit}>
+                  {t('search_now')}
+                </button>
+              </div>
+
+              <div className="search-trust-row" style={{ marginTop: '1rem' }}>
+                <span>✓ {t('trust_verified')}</span>
+                <span>✓ {t('trust_secure')}</span>
+                <span>✓ {t('trust_local')}</span>
+              </div>
+            </>
+          )}
+
+          {activeTab === 'taxi' && (
+            <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+              <h3 style={{ marginBottom: '1rem' }}>{t('taxi_intro')}</h3>
+              <Link to="/taxi" className="btn btn-primary">{t('book_taxi_now')}</Link>
+            </div>
+          )}
+
+          {activeTab === 'package' && (
+            <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+              <h3 style={{ marginBottom: '1rem' }}>{t('pkg_subtitle')}</h3>
+              <a href="#packages" className="btn btn-primary">{t('all_packages')}</a>
+            </div>
+          )}
+
+          {activeTab === 'agent' && (
+            <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+              <h3 style={{ marginBottom: '1rem' }}>{t('agent_marketplace_subtitle')}</h3>
+              <a href="#agents" className="btn btn-primary">{t('agent_view_listings')}</a>
+            </div>
+          )}
+
         </div>
       </section>
 
@@ -1176,7 +1220,7 @@ export function Home() {
         )}
       </section>
 
-      <section className="card section-card final-cta-card agent-marketplace-card">
+      <section className="card section-card final-cta-card agent-marketplace-card" id="agents">
         <div className="agent-marketplace-head">
           <div>
             <span className="trust-kicker">{t('trust_cta_kicker')}</span>

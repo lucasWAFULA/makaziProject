@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
@@ -20,6 +20,8 @@ export function PropertyDetail() {
   const { id } = useParams()
   const { t } = useTranslation()
   const { user } = useAuth()
+  const [isSaved, setIsSaved] = useState(false)
+  const [showShareMenu, setShowShareMenu] = useState(false)
 
   const { data: property, isLoading } = useQuery({
     queryKey: ['property', id],
@@ -67,15 +69,15 @@ export function PropertyDetail() {
   const visibleAmenities = amenities.length ? amenities.slice(0, 8) : ['WiFi-ready', 'Security', 'Kitchen access', 'Local support']
   const verificationTier = String(property.verification_tier || '').toLowerCase()
   const verificationLabel = verificationTier === 'premium_verified'
-    ? 'Premium Verified'
+    ? t('premium_verified')
     : verificationTier === 'remote_verified'
-      ? 'Makazi Verified'
+      ? t('makazi_verified')
       : verificationTier === 'unverified'
-        ? 'Unverified'
+        ? t('unverified')
         : ''
   const listingTags = [
-    property.price_tier ? `${String(property.price_tier).replace(/\b\w/g, (char) => char.toUpperCase())} stay` : 'Verified stay',
-    ...(Array.isArray(property.experience_tags) ? property.experience_tags.slice(0, 2).map((tag) => String(tag).replace(/_/g, ' ')) : []),
+    property.price_tier ? `${String(property.price_tier).replace(/\b\w/g, (char) => char.toUpperCase())} stay` : t('verified_stay'),
+    ...(Array.isArray(property.experience_tags) ? property.experience_tags.slice(0, 2).map((tag) => String(tag).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())) : []),
   ]
   const whatsappMessage = encodeURIComponent(`Hello MakaziPlus, I am interested in ${property.title_sw} in ${property.location}.`)
   const whatsappLink = `https://wa.me/254725301031?text=${whatsappMessage}`
@@ -118,9 +120,34 @@ export function PropertyDetail() {
             )}
           </div>
         </div>
-        <div className="listing-floating-actions">
-          <button type="button">♡ Save</button>
-          <button type="button">Share</button>
+        <div className="listing-floating-actions" style={{ position: 'absolute', top: '1rem', right: '1rem', display: 'flex', gap: '0.5rem', zIndex: 10 }}>
+          <button 
+            type="button" 
+            className="btn btn-secondary btn-sm"
+            onClick={() => setIsSaved(!isSaved)}
+            style={{ background: isSaved ? '#ffed4a' : 'white', color: 'black', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+          >
+            {isSaved ? `♥ ${t('save_btn')}` : `♡ ${t('save_btn')}`}
+          </button>
+
+          <div style={{ position: 'relative' }}>
+            <button 
+              type="button" 
+              className="btn btn-secondary btn-sm"
+              onClick={() => setShowShareMenu(!showShareMenu)}
+              style={{ background: 'white', color: 'black', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+            >
+              {t('share_btn')}
+            </button>
+            {showShareMenu && (
+              <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem', background: 'white', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', width: 'max-content', zIndex: 20 }}>
+                <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noreferrer" style={{ padding: '0.5rem 1rem', textDecoration: 'none', color: '#1877F2', fontWeight: 'bold' }}>Facebook</a>
+                <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(property.title_sw)}`} target="_blank" rel="noreferrer" style={{ padding: '0.5rem 1rem', textDecoration: 'none', color: '#1DA1F2', fontWeight: 'bold' }}>X (Twitter)</a>
+                <a href={`https://api.whatsapp.com/send?text=${encodeURIComponent(property.title_sw + ' ' + window.location.href)}`} target="_blank" rel="noreferrer" style={{ padding: '0.5rem 1rem', textDecoration: 'none', color: '#25D366', fontWeight: 'bold' }}>WhatsApp</a>
+                <button type="button" onClick={() => { navigator.clipboard.writeText(window.location.href); alert(t('link_copied')); setShowShareMenu(false); }} style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', textAlign: 'left', cursor: 'pointer', fontWeight: 'bold' }}>Copy Link</button>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -128,7 +155,7 @@ export function PropertyDetail() {
         <main className="listing-detail-main">
           <div className="listing-title-block">
             <div>
-              <span className="section-kicker">{verificationLabel ? `${verificationLabel} MakaziPlus stay` : 'MakaziPlus stay'}</span>
+              <span className="section-kicker">{verificationLabel ? `${verificationLabel}` : 'MakaziPlus stay'}</span>
               <h1>{property.title_sw}</h1>
               <p>📍 {property.location}</p>
             </div>
@@ -140,39 +167,33 @@ export function PropertyDetail() {
 
           <div className="listing-tags">
             {verificationLabel && <span>{verificationLabel}</span>}
-            <span>Secure payment</span>
-            <span>WhatsApp support</span>
+            <span>{t('secure_payment')}</span>
+            <span>{t('whatsapp_support')}</span>
             {listingTags.map((tag) => <span key={tag}>{tag}</span>)}
           </div>
 
           <section className="card listing-section-card">
-            <h2>Verification</h2>
+            <h2>{t('verification_title')}</h2>
             {verificationTier === 'premium_verified' && (
-              <p>
-                Premium Verified listings have completed remote verification and additional checks through partners or on-ground review.
-              </p>
+              <p>{t('verification_premium_desc')}</p>
             )}
             {verificationTier === 'remote_verified' && (
-              <p>
-                Makazi Verified listings are remotely verified (identity, contact, location details, and walkthrough evidence).
-              </p>
+              <p>{t('verification_remote_desc')}</p>
             )}
             {verificationTier === 'unverified' && (
-              <p>
-                This listing is not verified yet. Book only if you are comfortable and confirm details on WhatsApp before paying.
-              </p>
+              <p>{t('verification_unverified_desc')}</p>
             )}
-            {!verificationTier && <p>Verification status is not available for this listing yet.</p>}
+            {!verificationTier && <p>{t('verification_unavailable')}</p>}
           </section>
 
           <section className="card listing-section-card">
-            <h2>About this stay</h2>
-            <p>{property.description_sw || 'A MakaziPlus stay selected for comfort, location and local support.'}</p>
+            <h2>{t('about_stay')}</h2>
+            <p>{property.description_sw || t('default_stay_desc')}</p>
             <div className="property-facts-grid">
-              <span>Entire stay</span>
-              <span>{property.listing_type || 'Property'}</span>
-              <span>{property.town || property.region || 'East Africa'}</span>
-              <span>Local support</span>
+              <span>{t('entire_stay')}</span>
+              <span>{property.listing_type || t('property')}</span>
+              <span>{property.town || property.region || t('east_africa')}</span>
+              <span>{t('local_support')}</span>
             </div>
           </section>
 
