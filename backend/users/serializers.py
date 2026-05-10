@@ -8,8 +8,18 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("id", "username", "email", "phone_number", "role", "is_verified")
-        read_only_fields = ("id", "is_verified")
+        fields = (
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "phone_number",
+            "role",
+            "is_verified",
+            "is_staff",
+        )
+        read_only_fields = ("id", "is_verified", "is_staff")
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -18,7 +28,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("username", "email", "phone_number", "password", "password_confirm", "role")
+        fields = ("first_name", "email", "phone_number", "password", "password_confirm", "role")
 
     def validate_role(self, value):
         allowed = {
@@ -32,6 +42,9 @@ class RegisterSerializer(serializers.ModelSerializer):
             return User.Role.CUSTOMER
         return value
 
+    def validate_email(self, value):
+        return value.strip().lower()
+
     def validate(self, attrs):
         if attrs["password"] != attrs["password_confirm"]:
             raise serializers.ValidationError({"password_confirm": "Passwords do not match."})
@@ -39,5 +52,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        return user
+        email = validated_data["email"]
+        validated_data["username"] = email
+        return User.objects.create_user(**validated_data)

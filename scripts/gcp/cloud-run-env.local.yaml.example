@@ -1,0 +1,31 @@
+# Copy to cloud-run-env.local.yaml (gitignored), fill secrets / real URLs, then:
+#   gcloud run jobs update karibumakazi-migrate --region europe-west1 --env-vars-file cloud-run-env.local.yaml
+#
+# Use the same DATABASE_URL, SECRET_KEY, and service settings as karibumakazi-api.
+# Prefer Secret Manager for SECRET_KEY / DB password and --set-secrets on the service;
+# for one-off jobs, YAML here is the quick path (do not commit real secrets).
+
+DEBUG: "False"
+SECURE_SSL_REDIRECT: "True"
+SECRET_KEY: "replace-or-use-secret-manager"
+ALLOWED_HOSTS: "makazi-plus.com,www.makazi-plus.com,admin.makazi-plus.com,karibumakazi-api-dpifguofja-ew.a.run.app"
+SITE_URL: "https://www.makazi-plus.com/"
+ADMIN_DOMAIN: "admin.makazi-plus.com"
+DATABASE_URL: "postgres://USER:PASS@/DB?host=/cloudsql/makazi240097:europe-west1:karibumakazi-db"
+REDIS_URL: ""
+CORS_ORIGINS: "https://makazi-plus.com,https://www.makazi-plus.com,https://makazi240097.web.app,https://makazi240097.firebaseapp.com"
+CSRF_TRUSTED_ORIGINS: "https://makazi-plus.com,https://www.makazi-plus.com,https://admin.makazi-plus.com,https://karibumakazi-api-dpifguofja-ew.a.run.app,https://makazi240097.web.app,https://makazi240097.firebaseapp.com"
+
+EMAIL_HOST: "smtp.zoho.com"
+EMAIL_PORT: "465"
+EMAIL_USE_SSL: "True"
+EMAIL_USE_TLS: "False"
+EMAIL_HOST_USER: "noreply@makazi-plus.com"
+EMAIL_HOST_PASSWORD: "zoho-app-password"
+EMAIL_TIMEOUT: "20"
+DEFAULT_FROM_EMAIL: "MakaziPlus <noreply@makazi-plus.com>"
+SUPPORT_EMAIL: "support@makazi-plus.com"
+BOOKINGS_EMAIL: "bookings@makazi-plus.com"
+HOSTS_EMAIL: "hosts@makazi-plus.com"
+EMAIL_REPLY_TO: "support@makazi-plus.com"
+EMAIL_NOTIFICATIONS_ENABLED: "True"

@@ -3,7 +3,9 @@ import { flushSync } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
+import { getUserDisplayName, getUserInitials, isOwnerDashboardUser } from '../utils/authProfile'
 import { ChatWidget } from './ChatWidget'
+import { SupportWidget } from './SupportWidget'
 
 function WhatsAppIcon() {
   return (
@@ -54,8 +56,10 @@ export function Layout({ children }) {
   const { user, logout } = useAuth()
   const location = useLocation()
   const navRef = useRef(null)
+  const accountRef = useRef(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [activeMenu, setActiveMenu] = useState(null)
+  const [accountOpen, setAccountOpen] = useState(false)
 
   const bookingMenu = [
     { label: 'All Packages', to: '/packages' },
@@ -106,6 +110,7 @@ export function Layout({ children }) {
   const closeMenus = () => {
     setMobileOpen(false)
     setActiveMenu(null)
+    setAccountOpen(false)
   }
 
   const closeMenusBeforeNavigation = () => {
@@ -129,7 +134,19 @@ export function Layout({ children }) {
   useEffect(() => {
     setActiveMenu(null)
     setMobileOpen(false)
+    setAccountOpen(false)
   }, [location.pathname, location.search, location.hash])
+
+  useEffect(() => {
+    if (!accountOpen) return undefined
+    const onPointerDown = (event) => {
+      if (accountRef.current && !accountRef.current.contains(event.target)) {
+        setAccountOpen(false)
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => document.removeEventListener('pointerdown', onPointerDown)
+  }, [accountOpen])
 
   useEffect(() => {
     const handlePointerDown = (event) => {
@@ -141,6 +158,7 @@ export function Layout({ children }) {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
         setActiveMenu(null)
+        setAccountOpen(false)
       }
     }
 
@@ -181,8 +199,8 @@ export function Layout({ children }) {
   return (
     <div className="app-layout">
       <div className="quick-actions">
-        <a href="tel:+255700000111">{t('quick_call')}</a>
-        <a href="https://wa.me/255700000111" target="_blank" rel="noreferrer">{t('quick_whatsapp')}</a>
+        <a href="tel:+254725301031">{t('quick_call')}</a>
+        <a href="https://wa.me/254725301031" target="_blank" rel="noreferrer">{t('quick_whatsapp')}</a>
         <a href="https://maps.google.com/?q=Mombasa" target="_blank" rel="noreferrer">{t('quick_directions')}</a>
       </div>
 
@@ -205,14 +223,12 @@ export function Layout({ children }) {
           <Link to="/agents" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('menu_agents')}</Link>
           {renderMenuButton('hotels', t('menu_hotels'))}
           {renderMenuButton('guide', t('menu_guide'))}
-          <a href="/#contact" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('menu_contact')}</a>
+          <Link to="/contact" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('menu_contact')}</Link>
           <Link to="/taxi" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('taxi_booking')}</Link>
-          {user && <Link to="/bookings" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('my_bookings')}</Link>}
-          {user?.role === 'host' && <Link to="/dashboard" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('manage_listings')}</Link>}
         </div>
         {renderMegaMenu()}
 
-        <span className="nav-right">
+        <span className={`nav-right ${mobileOpen ? 'open' : ''}`}>
           <button
             type="button"
             className="btn btn-secondary"
@@ -221,7 +237,44 @@ export function Layout({ children }) {
             {String(i18n.language).toUpperCase()}
           </button>
           {user ? (
-            <button type="button" className="btn btn-secondary" onClick={logout}>{t('logout')}</button>
+            <div className="nav-account" ref={accountRef}>
+              <button
+                type="button"
+                className="nav-account-trigger"
+                onClick={() => setAccountOpen((open) => !open)}
+                aria-expanded={accountOpen}
+                aria-haspopup="menu"
+              >
+                <span className="nav-account-avatar" aria-hidden="true">
+                  {getUserInitials(user)}
+                </span>
+                <span className="nav-account-name">{getUserDisplayName(user)}</span>
+                <span className="nav-account-chevron" aria-hidden="true">▾</span>
+              </button>
+              {accountOpen ? (
+                <div className="nav-account-dropdown" role="menu">
+                  {isOwnerDashboardUser(user) ? (
+                    <Link to="/owner-dashboard" role="menuitem" className="nav-account-item" onClick={() => setAccountOpen(false)}>
+                      {t('owner_dashboard')}
+                    </Link>
+                  ) : null}
+                  <Link to="/bookings" role="menuitem" className="nav-account-item" onClick={() => setAccountOpen(false)}>
+                    {t('my_bookings')}
+                  </Link>
+                  <Link to="/account" role="menuitem" className="nav-account-item" onClick={() => setAccountOpen(false)}>
+                    {t('nav_account_profile')}
+                  </Link>
+                  {user.is_staff ? (
+                    <a href="/admin/" role="menuitem" className="nav-account-item" onClick={() => setAccountOpen(false)}>
+                      {t('menu_site_admin')}
+                    </a>
+                  ) : null}
+                  <button type="button" role="menuitem" className="nav-account-item nav-account-logout" onClick={() => { setAccountOpen(false); logout() }}>
+                    {t('logout')}
+                  </button>
+                </div>
+              ) : null}
+            </div>
           ) : (
             <>
               <Link to="/login" className="btn btn-secondary">{t('login')}</Link>
@@ -231,31 +284,55 @@ export function Layout({ children }) {
         </span>
       </nav>
       <main className="container main">{children}</main>
+      <a
+        className="whatsapp-fab"
+        href="https://wa.me/254725301031"
+        target="_blank"
+        rel="noreferrer"
+        aria-label={t('quick_whatsapp')}
+        title={t('quick_whatsapp')}
+      >
+        <WhatsAppIcon />
+      </a>
       <footer className="site-footer">
         <div className="container site-footer-inner">
           <strong>{t('app_name')}</strong>
           <span>{t('tagline')}</span>
-          <div className="social-links" aria-label="Social media links">
-            <a href="https://wa.me/255700000111" target="_blank" rel="noreferrer" aria-label="WhatsApp">
-              <WhatsAppIcon />
-            </a>
-            <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook">
-              <FacebookIcon />
-            </a>
-            <a href="https://x.com" target="_blank" rel="noreferrer" aria-label="X">
-              <XIcon />
-            </a>
-            <a href="https://tiktok.com" target="_blank" rel="noreferrer" aria-label="TikTok">
-              <TikTokIcon />
-            </a>
+          <span className="footer-contact-line">
+            {t('footer_support_label')}{' '}
+            <a href="mailto:support@makazi-plus.com">support@makazi-plus.com</a>
+          </span>
+          <div className="social-links footer-legal-row" aria-label="Footer legal links">
+            <Link to="/contact" className="footer-legal-link">
+              {t('menu_contact')}
+            </Link>
+            <Link to="/terms" className="footer-legal-link">
+              {t('footer_terms')}
+            </Link>
+            <Link to="/privacy" className="footer-legal-link">
+              {t('footer_privacy')}
+            </Link>
           </div>
-          <span>© {new Date().getFullYear()} MakaziPlus</span>
+          <div className="footer-bottom-row">
+            <span className="footer-copyright">© {new Date().getFullYear()} MakaziPlus</span>
+            <div className="footer-social-icons" aria-label="Social media">
+              <a href="https://wa.me/254725301031" target="_blank" rel="noreferrer" aria-label="WhatsApp">
+                <WhatsAppIcon />
+              </a>
+              <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook">
+                <FacebookIcon />
+              </a>
+              <a href="https://x.com" target="_blank" rel="noreferrer" aria-label="X">
+                <XIcon />
+              </a>
+              <a href="https://tiktok.com" target="_blank" rel="noreferrer" aria-label="TikTok">
+                <TikTokIcon />
+              </a>
+            </div>
+          </div>
         </div>
       </footer>
-      <a className="whatsapp-fab" href="https://wa.me/255700000111" target="_blank" rel="noreferrer">
-        <WhatsAppIcon />
-        {t('cta_whatsapp_now')}
-      </a>
+      <SupportWidget />
       <ChatWidget />
     </div>
   )

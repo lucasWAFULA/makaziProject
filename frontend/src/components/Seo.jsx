@@ -42,13 +42,52 @@ const routeMeta = {
     noindex: true,
   },
   '/dashboard': {
-    title: 'Host Dashboard | MakaziPlus',
-    description: 'Manage your MakaziPlus property listings and bookings.',
+    title: 'Owner Dashboard | MakaziPlus',
+    description: 'Manage your MakaziPlus property listings, booking requests, and revenue.',
+    noindex: true,
+  },
+  '/owner-dashboard': {
+    title: 'Owner Dashboard | MakaziPlus',
+    description: 'Manage your MakaziPlus property listings, booking requests, and revenue.',
+    noindex: true,
+  },
+  '/account': {
+    title: 'My Profile | MakaziPlus',
+    description: 'View your MakaziPlus account details and quick links.',
     noindex: true,
   },
   '/property/new': {
     title: 'List Your Property | MakaziPlus',
     description: 'Add your apartment, BnB, hotel, villa, or house to MakaziPlus.',
+    noindex: true,
+  },
+  '/terms': {
+    title: 'Terms & Conditions | MakaziPlus',
+    description: 'Read the MakaziPlus terms for guests, hosts, property listings, verification, payments, and disputes.',
+  },
+  '/privacy': {
+    title: 'Privacy Policy | MakaziPlus',
+    description: 'How MakaziPlus collects, processes, stores, and protects personal information across Kenya and Tanzania.',
+  },
+  '/host-responsibility': {
+    title: 'Host Responsibility | MakaziPlus',
+    description: 'Learn what MakaziPlus expects from hosts, agents, and property managers who list stays on the platform.',
+  },
+  '/fraud-reporting': {
+    title: 'Fraud Reporting | MakaziPlus',
+    description: 'Report suspicious listings, misleading property information, or unsafe booking behavior to MakaziPlus.',
+  },
+  '/dispute-policy': {
+    title: 'Dispute Policy | MakaziPlus',
+    description: 'Understand how MakaziPlus helps guests and hosts handle booking disputes and listing concerns.',
+  },
+  '/contact': {
+    title: 'Contact MakaziPlus | Support, Bookings, Hosts, Legal & Privacy',
+    description: 'Reach the right MakaziPlus team fast: support, bookings & payments, hosts & agents, legal, privacy, and WhatsApp at +254 725 301 031.',
+  },
+  '/forgot-password': {
+    title: 'Forgot password | MakaziPlus',
+    description: 'Reset your MakaziPlus password.',
     noindex: true,
   },
 }

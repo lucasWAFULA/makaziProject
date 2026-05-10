@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
@@ -7,7 +8,7 @@ from django.conf.urls.static import static
 admin.site.site_header = "MakaziPlus administration"
 admin.site.site_title = "MakaziPlus admin"
 admin.site.index_title = "MakaziPlus site administration"
-admin.site.site_url = "https://www.makazi-plus.com/"
+admin.site.site_url = settings.SITE_URL
 
 
 api_urlpatterns = [
@@ -25,7 +26,15 @@ api_urlpatterns = [
     path("rbac/", include("roles.urls")),
 ]
 
+
+def admin_domain_home(request):
+    if request.get_host().split(":")[0].lower() == settings.ADMIN_DOMAIN.lower():
+        return redirect("/admin/")
+    return JsonResponse({"status": "ok"})
+
+
 urlpatterns = [
+    path("", admin_domain_home, name="admin-domain-home"),
     path("healthz/", lambda request: JsonResponse({"status": "ok"}), name="healthz"),
     path("admin/", admin.site.urls),
     path("api/", include(api_urlpatterns)),

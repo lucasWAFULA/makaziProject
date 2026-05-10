@@ -1,9 +1,14 @@
 from datetime import timedelta
 from django.db import transaction
+from django.db.models import Sum
 from rest_framework import generics
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+
+from django.contrib.auth import get_user_model
 
 from properties.models import Property
 from notifications.mailer import (
@@ -12,6 +17,8 @@ from notifications.mailer import (
 )
 from .models import Booking, Availability
 from .serializers import BookingSerializer, BookingCreateSerializer, AvailabilitySerializer
+
+User = get_user_model()
 
 
 def date_range(start, end):
@@ -27,6 +34,38 @@ class MyBookingsView(generics.ListAPIView):
 
     def get_queryset(self):
         return Booking.objects.filter(user=self.request.user).select_related("property").order_by("-created_at")
+
+
+class HostDashboardStatsView(APIView):
+    """Aggregates listing and booking metrics for property hosts."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        if not user.is_host and user.role != User.Role.AGENT and not user.is_staff:
+            raise PermissionDenied("Only hosts and agents can view owner dashboard stats.")
+
+        props = Property.objects.filter(host=user)
+        active_listings = props.filter(is_active=True).count()
+        bookings_qs = Booking.objects.filter(property__host=user)
+        total_bookings = bookings_qs.count()
+        pending_requests = bookings_qs.filter(status=Booking.Status.PENDING).count()
+        paid_statuses = (
+            Booking.Status.PAID,
+            Booking.Status.CONFIRMED,
+            Booking.Status.COMPLETED,
+        )
+        revenue = bookings_qs.filter(status__in=paid_statuses).aggregate(total=Sum("total_price"))["total"]
+        revenue_total = revenue if revenue is not None else 0
+        return Response(
+            {
+                "active_listings": active_listings,
+                "total_bookings": total_bookings,
+                "pending_requests": pending_requests,
+                "revenue_total": str(revenue_total),
+            }
+        )
 
 
 class BookingCreateView(generics.CreateAPIView):

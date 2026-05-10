@@ -56,6 +56,10 @@ yarn-error.log*
 firebase-debug.log
 firebase-debug.*.log
 
+# --- GCP helper files (local env exports) ------------------------
+scripts/gcp/cloud-run-env.local.yaml
+scripts/gcp/*.local.yaml
+
 # --- Editors / OS -----------------------------------------------
 .vscode/
 .idea/

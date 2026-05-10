@@ -2,31 +2,92 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { getMyProperties } from '../api/properties'
+import { getHostDashboardStats } from '../api/bookings'
 import { useAuth } from '../context/AuthContext'
+import { isOwnerDashboardUser, getUserDisplayName } from '../utils/authProfile'
 
 export function HostDashboard() {
   const { t } = useTranslation()
   const { user } = useAuth()
 
+  const allowed = user && isOwnerDashboardUser(user)
+
   const { data: list = [], isLoading } = useQuery({
     queryKey: ['my-properties'],
     queryFn: getMyProperties,
-    enabled: !!(user?.role === 'host' || user?.is_staff),
+    enabled: !!allowed && user.role !== 'agent',
+  })
+
+  const { data: stats } = useQuery({
+    queryKey: ['host-stats'],
+    queryFn: getHostDashboardStats,
+    enabled: !!allowed,
   })
 
   if (!user) return null
-  if (user.role !== 'host' && !user.is_staff) {
-    return <p>{t('error')}: Only hosts can access this page.</p>
+  if (!allowed) {
+    return <p>{t('owner_dashboard_denied')}</p>
+  }
+
+  const displayName = getUserDisplayName(user)
+  const canAddProperty =
+    user.role === 'host' || user.role === 'hotel_admin' || user.role === 'admin' || user.is_staff
+
+  const fmtMoney = (v) => {
+    const n = Number(v)
+    if (Number.isNaN(n)) return v
+    return n.toLocaleString()
   }
 
   return (
-    <div>
-      <h1>{t('manage_listings')}</h1>
-      <p><Link to="/property/new" className="btn btn-primary">{t('new_listing')}</Link> <Link to="/property/new" className="btn btn-accent">{t('register_your_stay')}</Link></p>
-      {isLoading ? (
+    <div className="owner-dashboard">
+      <header className="owner-dashboard-header">
+        <h1 className="owner-dashboard-title">{t('owner_dashboard')}</h1>
+        <p className="owner-dashboard-welcome">
+          {t('welcome_back_owner', { name: displayName })}
+        </p>
+      </header>
+
+      {stats && (
+        <div className="owner-stats-grid">
+          <div className="owner-stat-card">
+            <span className="owner-stat-label">{t('stat_active_listings')}</span>
+            <strong className="owner-stat-value">{stats.active_listings}</strong>
+          </div>
+          <div className="owner-stat-card">
+            <span className="owner-stat-label">{t('stat_total_bookings')}</span>
+            <strong className="owner-stat-value">{stats.total_bookings}</strong>
+          </div>
+          <div className="owner-stat-card">
+            <span className="owner-stat-label">{t('stat_pending_requests')}</span>
+            <strong className="owner-stat-value">{stats.pending_requests}</strong>
+          </div>
+          <div className="owner-stat-card">
+            <span className="owner-stat-label">{t('stat_revenue')}</span>
+            <strong className="owner-stat-value">{fmtMoney(stats.revenue_total)}</strong>
+          </div>
+        </div>
+      )}
+
+      {user.role === 'agent' && !user.is_staff ? (
+        <p className="owner-dashboard-agent-note">{t('owner_dashboard_agent_note')}</p>
+      ) : null}
+
+      <div className="owner-dashboard-actions">
+        {canAddProperty ? (
+          <>
+            <Link to="/property/new" className="btn btn-primary">{t('new_listing')}</Link>
+            <Link to="/property/new" className="btn btn-accent">{t('register_your_stay')}</Link>
+          </>
+        ) : null}
+      </div>
+
+      {user.role === 'agent' && !user.is_staff ? (
+        <p className="text-muted">{t('owner_dashboard_agent_listings')}</p>
+      ) : isLoading ? (
         <p>{t('loading')}</p>
       ) : list.length === 0 ? (
-        <p>{t('no_results')}. {t('register_your_stay')}.</p>
+        <p>{t('no_results')}. {canAddProperty ? t('register_your_stay') : null}</p>
       ) : (
         <div className="grid grid-2">
           {list.map((p) => (

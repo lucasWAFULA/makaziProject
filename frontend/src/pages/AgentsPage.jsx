@@ -11,7 +11,7 @@ const fallbackAgents = [
     languages: 'Kiswahili,English',
     verified_badge: true,
     rating: 4.8,
-    user: { phone_number: '255700000111' },
+    user: { phone_number: '254725301031' },
   },
   {
     id: 'juma',
@@ -20,12 +20,12 @@ const fallbackAgents = [
     languages: 'Kiswahili,English',
     verified_badge: true,
     rating: 4.7,
-    user: { phone_number: '255700000111' },
+    user: { phone_number: '254725301031' },
   },
 ]
 
 function buildAgentWhatsappLink(agent) {
-  const phone = (agent.user?.phone_number || '255700000111').replace(/[^\d]/g, '')
+  const phone = (agent.user?.phone_number || '254725301031').replace(/[^\d]/g, '')
   const name = agent.agency_name || agent.user?.username || 'MakaziPlus Agent'
   const message = encodeURIComponent(`Hello ${name}, I found you on MakaziPlus and need help finding a verified stay.`)
   return `https://wa.me/${phone}?text=${message}`

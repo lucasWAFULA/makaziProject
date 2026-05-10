@@ -10,6 +10,11 @@ export async function createBooking(propertyId, checkIn, checkOut) {
   return res.data
 }
 
+export async function getHostDashboardStats() {
+  const res = await api.get('bookings/host-stats/')
+  return res.data
+}
+
 export async function getMyBookings() {
   const res = await api.get('bookings/my/')
   return asList(res.data)

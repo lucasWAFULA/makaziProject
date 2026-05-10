@@ -81,7 +81,7 @@ export function PropertyForm() {
     mutationFn: createProperty,
     onSuccess: () => {
       queryClient.invalidateQueries(['my-properties', 'properties'])
-      navigate('/dashboard')
+      navigate('/owner-dashboard')
     },
     onError: (err) => setError(err.response?.data?.detail || err.message || t('error')),
   })
@@ -90,7 +90,7 @@ export function PropertyForm() {
     mutationFn: (data) => updateProperty(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries(['property', id, 'properties'])
-      navigate('/dashboard')
+      navigate('/owner-dashboard')
     },
     onError: (err) => setError(err.response?.data?.detail || err.message || t('error')),
   })

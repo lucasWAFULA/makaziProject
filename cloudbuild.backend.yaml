@@ -2,8 +2,8 @@ substitutions:
   _REGION: europe-west1
   _ARTIFACT_REPOSITORY: karibumakazi
   _SERVICE: karibumakazi-api
-  _CLOUD_SQL_INSTANCE: YOUR_PROJECT_ID:europe-west1:karibumakazi-db
-  _SERVICE_ACCOUNT: karibumakazi-cloudrun-sa@YOUR_PROJECT_ID.iam.gserviceaccount.com
+  _CLOUD_SQL_INSTANCE: makazi240097:europe-west1:karibumakazi-db
+  _SERVICE_ACCOUNT: karibumakazi-cloudrun-sa@makazi240097.iam.gserviceaccount.com
 
 steps:
   - name: gcr.io/cloud-builders/docker

@@ -28,3 +28,17 @@ export async function getMe() {
   const res = await api.get('auth/me/')
   return res.data
 }
+
+export async function requestPasswordReset(email) {
+  const res = await api.post('auth/password-reset/', { email })
+  return res.data
+}
+
+export async function confirmPasswordReset({ uid, token, newPassword }) {
+  const res = await api.post('auth/password-reset/confirm/', {
+    uid,
+    token,
+    new_password: newPassword,
+  })
+  return res.data
+}

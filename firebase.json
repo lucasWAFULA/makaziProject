@@ -8,6 +8,20 @@
     ],
     "rewrites": [
       {
+        "source": "/healthz/**",
+        "run": {
+          "serviceId": "karibumakazi-api",
+          "region": "europe-west1"
+        }
+      },
+      {
+        "source": "/healthz",
+        "run": {
+          "serviceId": "karibumakazi-api",
+          "region": "europe-west1"
+        }
+      },
+      {
         "source": "/api/**",
         "run": {
           "serviceId": "karibumakazi-api",

@@ -184,7 +184,7 @@ export function ChatWidget() {
                 ) : null}
                 {message.role === 'bot' && message.structured?.escalate_to_human ? (
                   <a
-                    href="https://wa.me/255700000111"
+                    href="https://wa.me/254725301031"
                     target="_blank"
                     rel="noreferrer"
                     className="ai-human-escalation"

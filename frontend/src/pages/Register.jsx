@@ -1,15 +1,18 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useAuth } from '../context/AuthContext'
-import { register as apiRegister, login, setTokens } from '../api/auth'
+import { register as apiRegister } from '../api/auth'
 
 export function Register() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { loginSuccess } = useAuth()
   const [form, setForm] = useState({
-    username: '', email: '', phone_number: '', password: '', password_confirm: '', role: 'guest'
+    first_name: '',
+    email: '',
+    phone_number: '',
+    password: '',
+    password_confirm: '',
+    role: 'customer',
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -22,18 +25,22 @@ export function Register() {
     e.preventDefault()
     setError('')
     if (form.password !== form.password_confirm) {
-      setError('Passwords do not match')
+      setError(t('register_password_mismatch'))
       return
     }
     setLoading(true)
     try {
-      await apiRegister(form)
-      const data = await login(form.username, form.password)
-      setTokens(data.access, data.refresh)
-      loginSuccess(data.user)
-      navigate('/')
+      await apiRegister({
+        first_name: form.first_name.trim(),
+        email: form.email.trim(),
+        phone_number: form.phone_number.trim(),
+        password: form.password,
+        password_confirm: form.password_confirm,
+        role: form.role,
+      })
+      navigate('/login', { state: { registered: true } })
     } catch (err) {
-      const msg = err.response?.data;
+      const msg = err.response?.data
       setError(typeof msg === 'object' ? JSON.stringify(msg) : (msg || err.message || t('error')))
     } finally {
       setLoading(false)
@@ -41,40 +48,90 @@ export function Register() {
   }
 
   return (
-    <div className="card" style={{ maxWidth: 400, margin: '2rem auto', padding: '1.5rem' }}>
+    <div className="card register-card" style={{ maxWidth: 440, margin: '2rem auto', padding: '1.5rem' }}>
       <h1 style={{ marginTop: 0 }}>{t('register')}</h1>
-      <form onSubmit={handleSubmit}>
+      <p className="register-role-intro">{t('register_role_intro')}</p>
+      <div className="register-role-cards" role="group" aria-label={t('role')}>
+        <button
+          type="button"
+          className={`register-role-card ${form.role === 'customer' ? 'is-selected' : ''}`}
+          onClick={() => update('role', 'customer')}
+        >
+          <span className="register-role-card-title">{t('register_card_customer_title')}</span>
+          <span className="register-role-card-hint">{t('register_card_customer_hint')}</span>
+        </button>
+        <button
+          type="button"
+          className={`register-role-card ${form.role === 'host' ? 'is-selected' : ''}`}
+          onClick={() => update('role', 'host')}
+        >
+          <span className="register-role-card-title">{t('register_card_owner_title')}</span>
+          <span className="register-role-card-hint">{t('register_card_owner_hint')}</span>
+        </button>
+      </div>
+      <form onSubmit={handleSubmit} className="register-form">
         <div className="form-group">
-          <label>Username</label>
-          <input type="text" value={form.username} onChange={(e) => update('username', e.target.value)} required />
+          <label htmlFor="reg-name">{t('register_full_name')}</label>
+          <input
+            id="reg-name"
+            type="text"
+            value={form.first_name}
+            onChange={(e) => update('first_name', e.target.value)}
+            required
+            autoComplete="name"
+          />
         </div>
         <div className="form-group">
-          <label>{t('email')}</label>
-          <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} required />
+          <label htmlFor="reg-email">{t('email')}</label>
+          <input
+            id="reg-email"
+            type="email"
+            value={form.email}
+            onChange={(e) => update('email', e.target.value)}
+            required
+            autoComplete="email"
+          />
         </div>
         <div className="form-group">
-          <label>{t('phone_number')}</label>
-          <input type="tel" value={form.phone_number} onChange={(e) => update('phone_number', e.target.value)} />
+          <label htmlFor="reg-phone">{t('phone_number')}</label>
+          <input
+            id="reg-phone"
+            type="tel"
+            value={form.phone_number}
+            onChange={(e) => update('phone_number', e.target.value)}
+            autoComplete="tel"
+          />
         </div>
         <div className="form-group">
-          <label>{t('password')}</label>
-          <input type="password" value={form.password} onChange={(e) => update('password', e.target.value)} required />
+          <label htmlFor="reg-pw">{t('password')}</label>
+          <input
+            id="reg-pw"
+            type="password"
+            value={form.password}
+            onChange={(e) => update('password', e.target.value)}
+            required
+            autoComplete="new-password"
+          />
         </div>
         <div className="form-group">
-          <label>{t('confirm_password')}</label>
-          <input type="password" value={form.password_confirm} onChange={(e) => update('password_confirm', e.target.value)} required />
-        </div>
-        <div className="form-group">
-          <label>{t('role')}</label>
-          <select value={form.role} onChange={(e) => update('role', e.target.value)}>
-            <option value="guest">{t('role_guest')}</option>
-            <option value="host">{t('role_host')}</option>
-          </select>
+          <label htmlFor="reg-pw2">{t('confirm_password')}</label>
+          <input
+            id="reg-pw2"
+            type="password"
+            value={form.password_confirm}
+            onChange={(e) => update('password_confirm', e.target.value)}
+            required
+            autoComplete="new-password"
+          />
         </div>
         {error && <p style={{ color: '#dc3545', marginBottom: '1rem' }}>{error}</p>}
-        <button type="submit" className="btn btn-primary" disabled={loading}>{loading ? t('loading') : t('submit')}</button>
+        <button type="submit" className="btn btn-primary" disabled={loading}>
+          {loading ? t('loading') : t('register_submit')}
+        </button>
       </form>
-      <p style={{ marginTop: '1rem' }}><Link to="/login">{t('login')}</Link></p>
+      <p style={{ marginTop: '1rem' }}>
+        <Link to="/login">{t('register_already_account')}</Link>
+      </p>
     </div>
   )
 }
