@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getProperty, getAvailability } from '../api/properties'
 import { getPropertyReviews } from '../api/properties'
 import { useAuth } from '../context/AuthContext'
+import { TransportWidget } from '../components/TransportWidget'
 
 function clampRating(value) {
   const numeric = Number(value)
@@ -76,16 +77,42 @@ export function PropertyDetail() {
   const whatsappMessage = encodeURIComponent(`Hello MakaziPlus, I am interested in ${property.title_sw} in ${property.location}.`)
   const whatsappLink = `https://wa.me/254725301031?text=${whatsappMessage}`
 
+  // ── Gallery image fallbacks ────────────────────────────────────────────────
+  const CATEGORY_FALLBACKS = {
+    villa: 'https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4?auto=format&fit=crop&w=900&q=75',
+    apartment: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=75',
+    bnb: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=75',
+    hotel: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=900&q=75',
+    'guest-house': 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=900&q=75',
+    resort: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=900&q=75',
+    lodge: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=900&q=75',
+    'serviced-apartment': 'https://images.unsplash.com/photo-1560448204-603b3fc33ddc?auto=format&fit=crop&w=900&q=75',
+    'vacation-home': 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=900&q=75',
+    'beach-house': 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=900&q=75',
+    'safari-camp': 'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=900&q=75',
+  }
+  const DEFAULT_FALLBACK = 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=900&q=75'
+  const galleryFallback = (
+    CATEGORY_FALLBACKS[property.category_detail?.slug]
+    || CATEGORY_FALLBACKS[property.listing_type]
+    || DEFAULT_FALLBACK
+  )
+
   return (
     <div className="listing-detail-page">
       <section className="listing-gallery-shell">
         <div className="listing-gallery-grid">
           <div className="listing-main-image">
-            {imageUrls[0] ? <img src={imageUrls[0]} alt="" /> : <span>No image</span>}
+            <img src={imageUrls[0] || galleryFallback} alt={property.title_sw || 'Property'} />
           </div>
           <div className="listing-side-images">
             {imageUrls.slice(1, 5).map((url, i) => <img key={url || i} src={url} alt="" />)}
-            {imageUrls.length <= 1 && <span className="listing-image-placeholder">More photos coming soon</span>}
+            {imageUrls.length <= 1 && (
+              <>
+                <img src={galleryFallback} alt="" className="gallery-fallback-tile" />
+                <img src={galleryFallback} alt="" className="gallery-fallback-tile" />
+              </>
+            )}
           </div>
         </div>
         <div className="listing-floating-actions">
@@ -153,20 +180,22 @@ export function PropertyDetail() {
             </div>
           </section>
 
+          <TransportWidget property={property} />
+
           <section className="card listing-section-card">
-            <h2>Enhance your stay</h2>
+            <h2>Tours &amp; experiences</h2>
             <div className="addon-grid">
-              <Link to={`/taxi?destination=${encodeURIComponent(property.location || property.title_sw || '')}`}>
-                <strong>🚕 Airport pickup</strong>
-                <span>Book transfer to this stay</span>
-              </Link>
               <Link to="/booking/beach-holiday-packages">
-                <strong>🌍 Tours & experiences</strong>
-                <span>Add local packages and activities</span>
+                <strong>🌍 Beach &amp; coastal tours</strong>
+                <span>Snorkelling, dhow safaris, sunset cruises</span>
+              </Link>
+              <Link to="/booking/family-vacation-packages">
+                <strong>👨‍👩‍👧 Family packages</strong>
+                <span>Kid-friendly activities and day trips</span>
               </Link>
               <a href={whatsappLink} target="_blank" rel="noreferrer">
-                <strong>💬 WhatsApp agent</strong>
-                <span>Ask questions before booking</span>
+                <strong>💬 Custom experience</strong>
+                <span>Tell us what you want — we'll arrange it</span>
               </a>
             </div>
           </section>
