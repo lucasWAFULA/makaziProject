@@ -241,9 +241,10 @@ export function Layout({ children }) {
         {renderMegaMenu()}
 
         <span className={`nav-right ${mobileOpen ? 'open' : ''}`}>
+          <Link to="/property/new" className="nav-list-property-btn">{t('add_property')}</Link>
           <button
             type="button"
-            className="btn btn-secondary"
+            className="btn btn-secondary nav-icon-btn"
             onClick={switchLanguage}
           >
             {String(i18n.language).toUpperCase()}
@@ -261,7 +262,12 @@ export function Layout({ children }) {
                 <span className="nav-account-avatar" aria-hidden="true">
                   {getUserInitials(user)}
                 </span>
-                <span className="nav-account-name">{getUserDisplayName(user)}</span>
+                <span className="nav-account-name" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.2 }}>
+                  <span>{getUserDisplayName(user)}</span>
+                  <span style={{ fontSize: '0.65rem', background: 'var(--color-primary-dark)', color: '#fff', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {user.is_staff ? 'Admin' : (t(`role_label_${user.role}`) || String(user.role || 'Guest').replace('_', ' '))}
+                  </span>
+                </span>
                 <span className="nav-account-chevron" aria-hidden="true">▾</span>
               </button>
               {accountOpen ? (
