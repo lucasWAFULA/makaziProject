@@ -336,10 +336,10 @@ export function Layout({ children }) {
               <a href="https://www.tiktok.com/@makaziplus0" target="_blank" rel="noreferrer" aria-label="TikTok">
                 <TikTokIcon />
               </a>
-              <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook">
+              <a href="https://www.facebook.com/KaribuMakazi" target="_blank" rel="noreferrer" aria-label="Facebook">
                 <FacebookIcon />
               </a>
-              <a href="https://x.com" target="_blank" rel="noreferrer" aria-label="X">
+              <a href="https://x.com/MakaziPlus26" target="_blank" rel="noreferrer" aria-label="X (Twitter)">
                 <XIcon />
               </a>
             </div>
