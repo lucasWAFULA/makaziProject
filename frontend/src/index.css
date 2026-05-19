@@ -3842,4 +3842,58 @@ input, select, textarea, button { font-family: var(--font-body); font: inherit; 
   .media-video-title-input { max-width: none; }
 }
 
+/* Mobile Horizontal Scroll (Auto Flow) for Grids & Chips */
+@media (max-width: 768px) {
+  .listing-tags,
+  .property-facts-grid,
+  .amenity-grid,
+  .addon-grid,
+  .availability-pill-row,
+  .trust-grid,
+  .package-premium-grid,
+  .featured-stays-grid {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    margin-right: -1rem; /* Full bleed to the edge of screen */
+    padding-right: 1rem;
+    padding-bottom: 0.5rem; /* Space for hidden scrollbars */
+  }
 
+  .listing-tags::-webkit-scrollbar,
+  .property-facts-grid::-webkit-scrollbar,
+  .amenity-grid::-webkit-scrollbar,
+  .addon-grid::-webkit-scrollbar,
+  .availability-pill-row::-webkit-scrollbar,
+  .trust-grid::-webkit-scrollbar,
+  .package-premium-grid::-webkit-scrollbar,
+  .featured-stays-grid::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+  /* Ensure the children do not shrink and maintain their structure */
+  .property-facts-grid span,
+  .amenity-grid span,
+  .availability-pill-row span,
+  .listing-tags span,
+  .trust-grid span {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  /* Make the experience cards wide enough to look like standard swipeable cards */
+  .addon-grid a {
+    flex: 0 0 85%;
+    min-width: 260px;
+  }
+
+  .package-premium-grid .package-premium-card,
+  .featured-stays-grid .property-card,
+  .featured-stays-grid .promo-card {
+    flex: 0 0 85%;
+    min-width: 280px;
+  }
+}

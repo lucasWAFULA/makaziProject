@@ -15,6 +15,7 @@ from .serializers import (
     PropertyCategorySerializer, PropertyFeatureSerializer,
 )
 from .filters import PropertyFilter
+from .scraper import PropertyScraper
 
 
 # ── Catalogue endpoints ────────────────────────────────────────────────────────
@@ -261,4 +262,27 @@ class PropertyVideoDetailView(APIView):
                 pass
         vid.delete()
         return Response(status=204)
+
+
+# ── Property Import ────────────────────────────────────────────────────────────
+
+class PropertyImportView(APIView):
+    """
+    POST /api/properties/import-url/
+    Extracts property details from a shared link (e.g. Jumuika).
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        url = request.data.get("url")
+        if not url:
+            return Response({"detail": "URL is required."}, status=400)
+
+        scraper = PropertyScraper()
+        result = scraper.scrape(url)
+
+        if "error" in result:
+            return Response({"detail": result["error"]}, status=400)
+
+        return Response(result)
 

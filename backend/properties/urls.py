@@ -8,12 +8,16 @@ from .views import (
     PropertyVideoDetailView,
     PropertyCategoryListView,
     PropertyFeatureListView,
+    PropertyImportView,
 )
 
 urlpatterns = [
     # Catalogue (public)
     path("categories/", PropertyCategoryListView.as_view(), name="property-categories"),
     path("features/", PropertyFeatureListView.as_view(), name="property-features"),
+
+    # Import
+    path("import-url/", PropertyImportView.as_view(), name="property-import-url"),
 
     # Properties CRUD
     path("", PropertyListCreateView.as_view(), name="property-list-create"),

@@ -10,6 +10,7 @@ import { getFeaturedDestinations, getDestinations } from '../api/destinations'
 import { getPackages } from '../api/packages'
 import { getAgents } from '../api/agents'
 import { sendAiChat } from '../api/ai'
+import { FaqSection } from '../components/FaqSection'
 
 function TrustBadgeIcon({ type }) {
   if (type === 'shield') {
@@ -966,7 +967,7 @@ export function Home() {
             <h2>{t('featured_stays')}</h2>
             <Link to="/stays" className="btn btn-secondary btn-sm">{t('view_all_stays')}</Link>
           </div>
-          <div className="grid grid-3">
+          <div className="grid grid-3 featured-stays-grid">
             {Array.from({ length: 6 }).map((_, idx) => (
               <article key={`stay-skeleton-${idx}`} className="card property-card skeleton-card">
                 <div className="property-card-image skeleton" />
@@ -988,11 +989,11 @@ export function Home() {
             <Link to="/stays" className="btn btn-secondary btn-sm">{t('view_all_stays')}</Link>
           </div>
           {!isLoading && promoted.length > 0 && (
-            <div className="grid grid-3" style={{ marginBottom: '1.5rem' }}>
+            <div className="grid grid-3 featured-stays-grid" style={{ marginBottom: '1.5rem' }}>
               {promoted.map((p, idx) => (
                 <article key={`promoted-${p.id}`} className="promo-card reveal-item" style={{ '--stagger': idx }}>
                   <span className="promo-badge">{t('sponsored')}</span>
-                  <Link to={`/property/${p.id}`} className="property-card-image-link">
+                  <Link to={`/property/${p.id}${p.slug ? '-' + p.slug : ''}`} className="property-card-image-link">
                     <div className="property-card-image">
                       <img src={resolvePropertyImage(p)} alt={p.title_sw || 'Property'} loading="lazy" />
                     </div>
@@ -1006,10 +1007,10 @@ export function Home() {
               ))}
             </div>
           )}
-          <div className="grid grid-3">
+          <div className="grid grid-3 featured-stays-grid">
             {list.map((p, idx) => (
               <article key={p.id} className="card property-card reveal-item" style={{ '--stagger': idx }}>
-                <Link to={`/property/${p.id}`} className="property-card-image-link">
+                <Link to={`/property/${p.id}${p.slug ? '-' + p.slug : ''}`} className="property-card-image-link">
                   <div className="property-card-image">
                     <img src={resolvePropertyImage(p)} alt={p.title_sw || 'Property'} loading="lazy" />
                   </div>
@@ -1019,7 +1020,7 @@ export function Home() {
                   <p className="property-card-meta">{p.location}</p>
                   <PriceDisplay amount={p.price_per_night} baseCurrency={p.base_currency} className="property-card-price" />
                   <div className="property-card-actions">
-                    <Link to={`/property/${p.id}`} className="btn btn-secondary btn-sm">{t('view_details')}</Link>
+                    <Link to={`/property/${p.id}${p.slug ? '-' + p.slug : ''}`} className="btn btn-secondary btn-sm">{t('view_details')}</Link>
                     <Link to={`/book/${p.id}`} className="btn btn-primary btn-sm">{t('book_now')}</Link>
                   </div>
                 </div>
@@ -1212,7 +1213,7 @@ export function Home() {
                     </div>
                   </div>
                   <p>{t('reviews')}: {property.review_count || 0}</p>
-                  <Link to={`/property/${property.id}`} className="btn btn-secondary btn-sm">{t('view_details')}</Link>
+                  <Link to={`/property/${property.id}${property.slug ? '-' + property.slug : ''}`} className="btn btn-secondary btn-sm">{t('view_details')}</Link>
                 </article>
               ))}
             </div>
@@ -1321,6 +1322,9 @@ export function Home() {
           <Link to="/property/new" className="btn btn-accent btn-sm">{t('add_property')}</Link>
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <FaqSection />
 
     </div>
   )

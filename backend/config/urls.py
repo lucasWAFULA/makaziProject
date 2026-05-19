@@ -37,11 +37,21 @@ def admin_domain_home(request):
     return JsonResponse({"status": "ok"})
 
 
+from django.contrib.sitemaps.views import sitemap
+from properties.sitemaps import PropertySitemap, DestinationSitemap, StaticViewSitemap
+
+sitemaps = {
+    'static': StaticViewSitemap,
+    'properties': PropertySitemap,
+    'destinations': DestinationSitemap,
+}
+
 urlpatterns = [
     path("", admin_domain_home, name="admin-domain-home"),
     path("healthz/", lambda request: JsonResponse({"status": "ok"}), name="healthz"),
     path("admin/", admin.site.urls),
     path("api/", include(api_urlpatterns)),
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
     *api_urlpatterns,
 ]
 if settings.DEBUG:

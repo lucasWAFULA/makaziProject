@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
@@ -9,6 +9,7 @@ import { TransportWidget } from '../components/TransportWidget'
 import { PlusServices } from '../components/PlusServices'
 import { PriceDisplay } from '../components/PriceDisplay'
 import { useCurrency } from '../context/CurrencyContext'
+import { CalendarWidget } from '../components/CalendarWidget'
 
 function clampRating(value) {
   const numeric = Number(value)
@@ -17,11 +18,30 @@ function clampRating(value) {
 }
 
 export function PropertyDetail() {
-  const { id } = useParams()
+  const { id: rawId } = useParams()
+  const id = useMemo(() => {
+    if (!rawId) return null
+    // If the URL is /property/123-slug, the ID is 123
+    return rawId.split('-')[0]
+  }, [rawId])
   const { t } = useTranslation()
   const { user } = useAuth()
   const [isSaved, setIsSaved] = useState(false)
   const [showShareMenu, setShowShareMenu] = useState(false)
+  const [showTopNav, setShowTopNav] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show sticky nav when scrolled past hero (approx 400px)
+      if (window.scrollY > 400) {
+        setShowTopNav(true)
+      } else {
+        setShowTopNav(false)
+      }
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const { data: property, isLoading } = useQuery({
     queryKey: ['property', id],
@@ -105,6 +125,39 @@ export function PropertyDetail() {
 
   return (
     <div className="listing-detail-page">
+      {/* Sticky Top Nav Bar */}
+      <div className={`property-top-nav ${showTopNav ? 'visible' : ''}`} style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        background: '#fff',
+        zIndex: 50,
+        boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+        padding: '0.75rem 2rem',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        transform: showTopNav ? 'translateY(0)' : 'translateY(-100%)',
+        transition: 'transform 0.3s ease',
+        visibility: showTopNav ? 'visible' : 'hidden'
+      }}>
+        <div style={{ display: 'flex', gap: '1.5rem', fontWeight: '600' }}>
+          <a href="#amenities" style={{ color: 'var(--color-text)', textDecoration: 'none' }}>Amenities</a>
+          <a href="#calendar" style={{ color: 'var(--color-text)', textDecoration: 'none' }}>Availability</a>
+          <a href="#reviews" style={{ color: 'var(--color-text)', textDecoration: 'none' }}>Reviews</a>
+          <a href="#location" style={{ color: 'var(--color-text)', textDecoration: 'none' }}>Location</a>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <PriceDisplay amount={price} baseCurrency={baseCurrency} suffix={` / ${t('night', 'night')}`} />
+          {user ? (
+            <Link to={`/book/${id}`} className="btn btn-accent btn-sm">Reserve</Link>
+          ) : (
+            <Link to="/login" className="btn btn-accent btn-sm">{t('login')}</Link>
+          )}
+        </div>
+      </div>
+
       <section className="listing-gallery-shell">
         <div className="listing-gallery-grid">
           <div className="listing-main-image">
@@ -197,7 +250,7 @@ export function PropertyDetail() {
             </div>
           </section>
 
-          <section className="card listing-section-card">
+          <section id="amenities" className="card listing-section-card">
             <h2>Amenities</h2>
             <div className="amenity-grid">
               {visibleAmenities.map((item) => <span key={item}>✓ {item}</span>)}
@@ -225,14 +278,10 @@ export function PropertyDetail() {
             </div>
           </section>
 
-          <section className="card listing-section-card">
-            <h2>{t('available_dates')}</h2>
-            <div className="availability-pill-row">
-              {availableDates.slice(0, 30).map((a) => (
-                <span key={a.id}>{a.date}</span>
-              ))}
-              {availableDates.length === 0 && <p>{t('not_available')}</p>}
-            </div>
+          <section id="calendar" className="card listing-section-card">
+            <h2>{t('available_dates', 'Select dates')}</h2>
+            <p style={{ color: 'var(--color-text-muted)', marginBottom: '1.5rem' }}>Minimum stay: 1 night</p>
+            <CalendarWidget availableDates={availableDates} />
           </section>
 
           <section className="card listing-section-card">
@@ -246,7 +295,7 @@ export function PropertyDetail() {
             {property.rules_sw && <p className="listing-rules"><strong>{t('rules')}:</strong> {property.rules_sw}</p>}
           </section>
 
-          <section className="card detail-review-card">
+          <section id="reviews" className="card detail-review-card">
             <h2>{t('reviews')}</h2>
             {sortedReviews.length === 0 ? <p>{t('no_reviews_yet')}</p> : (
               <>
@@ -308,6 +357,25 @@ export function PropertyDetail() {
                 </ul>
               </>
             )}
+          </section>
+
+          <section id="location" className="card listing-section-card" style={{ marginBottom: '2rem' }}>
+            <h2>{t('location', 'Where you\'ll be')}</h2>
+            <p style={{ color: 'var(--color-text-muted)', marginBottom: '1rem' }}>{property.location}</p>
+            <div style={{ width: '100%', height: '400px', borderRadius: '16px', overflow: 'hidden', border: '1px solid #e2e8f0', background: '#f8fafc' }}>
+              <iframe 
+                title="Property Location Map"
+                width="100%" 
+                height="100%" 
+                frameBorder="0" 
+                scrolling="no" 
+                marginHeight="0" 
+                marginWidth="0" 
+                src={`https://www.openstreetmap.org/export/embed.html?bbox=39.0,-7.0,40.0,-6.0&layer=mapnik&marker=${property.latitude || '-6.1659'},${property.longitude || '39.2026'}`} 
+                style={{ border: 'none' }}
+              />
+            </div>
+            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>Exact location provided after booking.</p>
           </section>
         </main>
 

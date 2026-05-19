@@ -108,7 +108,7 @@ class PropertyListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Property
         fields = (
-            "id", "title_sw", "location",
+            "id", "slug", "title_sw", "location",
             "destination", "destination_detail",
             "country", "region", "town",
             "category", "category_detail",
@@ -167,7 +167,7 @@ class PropertyDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Property
         fields = (
-            "id", "host", "title_sw", "description_sw",
+            "id", "slug", "host", "title_sw", "description_sw",
             "location", "destination", "destination_detail",
             "country", "region", "town",
             "category", "category_detail",

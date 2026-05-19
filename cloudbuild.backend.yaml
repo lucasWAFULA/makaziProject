@@ -3,7 +3,7 @@ substitutions:
   _ARTIFACT_REPOSITORY: karibumakazi
   _SERVICE: karibumakazi-api
   _CLOUD_SQL_INSTANCE: makazi240097:europe-west1:karibumakazi-db
-  _SERVICE_ACCOUNT: karibumakazi-cloudrun-sa@makazi240097.iam.gserviceaccount.com
+  _SERVICE_ACCOUNT: 109470817797-compute@developer.gserviceaccount.com
 
 steps:
   - name: gcr.io/cloud-builders/docker

@@ -61,7 +61,7 @@ function StayCard({ item }) {
         </div>
         <div className="listing-card-footer">
           <b>TZS {Number(item.price_per_night || 0).toLocaleString()}</b>
-          <Link to={`/property/${item.id}`} className="btn btn-secondary btn-sm">View details</Link>
+          <Link to={`/property/${item.id}${item.slug ? '-' + item.slug : ''}`} className="btn btn-secondary btn-sm">View details</Link>
         </div>
       </div>
     </article>

@@ -48,3 +48,8 @@ export async function getPropertyFeatures(group = null) {
   const res = await api.get('properties/features/', { params })
   return Array.isArray(res.data) ? res.data : (res.data?.results ?? [])
 }
+
+export async function importPropertyFromUrl(url) {
+  const res = await api.post('properties/import-url/', { url })
+  return res.data
+}

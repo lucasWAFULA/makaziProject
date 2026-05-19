@@ -8,8 +8,8 @@ const DEFAULT_IMAGE = `${SITE_URL}/logo.png`
 
 const routeMeta = {
   '/': {
-    title: 'MakaziPlus | Verified Stays, Taxi and Travel Packages',
-    description: 'Book verified apartments, villas, BnBs, hotels, taxi transfers, and holiday packages across Kenya and Tanzania.',
+    title: 'MakaziPlus | Verified Stays, Apartments & Taxi Transfers in East Africa',
+    description: 'Book verified apartments, villas, BnBs, hotels, taxi transfers, and holiday packages in Kenya and Tanzania. MakaziPlus (Makazi Plus) is your trusted coastal travel partner.',
   },
   '/stays': {
     title: 'Stays in Kenya and Tanzania | MakaziPlus',
@@ -193,12 +193,18 @@ function buildStructuredData(canonicalUrl) {
         '@type': 'TravelAgency',
         '@id': `${SITE_URL}/#organization`,
         name: SITE_NAME,
+        alternateName: ['Makazi Plus', 'MakaziPlus Kenya', 'MakaziPlus Tanzania', 'Makaxi Plus'],
+        description: 'Premium verified stays, coastal villas, city apartments, and taxi transfers across Kenya and Tanzania.',
         url: SITE_URL,
         logo: DEFAULT_IMAGE,
         areaServed: ['Kenya', 'Tanzania'],
         knowsAbout: ['vacation rentals', 'apartments', 'hotels', 'taxi transfers', 'holiday packages'],
         sameAs: [
           'https://www.makazi-plus.com',
+          'https://www.facebook.com/KaribuMakazi',
+          'https://www.instagram.com/karibumakazi',
+          'https://www.tiktok.com/@makaziplus0',
+          'https://x.com/MakaziPlus26'
         ],
       },
       {

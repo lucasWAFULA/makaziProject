@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   getProperty, createProperty, updateProperty,
   getPropertyCategories, getPropertyFeatures,
+  importPropertyFromUrl,
 } from '../api/properties'
 import { getDestinations } from '../api/destinations'
 import { useAuth } from '../context/AuthContext'
@@ -83,6 +84,8 @@ export function PropertyForm() {
     walkthrough_video_url: '',
     is_active: true,
   })
+  const [importUrl, setImportUrl] = useState('')
+  const [isImporting, setIsImporting] = useState(false)
   const [error, setError] = useState('')
 
   // ── Data fetching ────────────────────────────────────────────────────────
@@ -198,6 +201,27 @@ export function PropertyForm() {
     setForm((prev) => ({ ...prev, category: categoryId, property_type: '' }))
   }
 
+  async function handleImport() {
+    if (!importUrl) return
+    setIsImporting(true)
+    setError('')
+    try {
+      const data = await importPropertyFromUrl(importUrl)
+      setForm((prev) => ({
+        ...prev,
+        title_sw: data.title || prev.title_sw,
+        description_sw: data.description ? `${data.description}\n\n[Ref: ${importUrl}]` : prev.description_sw,
+        price_per_night: data.price || prev.price_per_night,
+        amenities_text: data.features ? data.features.join(', ') : prev.amenities_text,
+      }))
+      // Optional: show a success message
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to import property details.')
+    } finally {
+      setIsImporting(false)
+    }
+  }
+
   function handleSubmit(e) {
     e.preventDefault()
     setError('')
@@ -261,6 +285,40 @@ export function PropertyForm() {
           <p style={{ marginTop: 0, color: 'var(--color-text-muted)' }}>
             New listings are reviewed before they appear publicly. Save your details first, then upload photos.
           </p>
+        )}
+
+        {!isEdit && (
+          <div style={{ marginBottom: '2rem', padding: '1.25rem', background: '#f8fafc', borderRadius: '8px', border: '1.5px solid var(--color-border)', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+            <h4 style={{ marginTop: 0, marginBottom: '0.4rem', color: 'var(--color-primary)' }}>✨ Smart Listing Assistant</h4>
+            <p style={{ margin: '0 0 0.85rem', fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.4 }}>
+              Paste a property URL from popular platforms (like Jumuika, BuyRentKenya, etc.), and the AI will help extract key details for your review. 
+              <br />
+              <small style={{ display: 'block', marginTop: '0.4rem', fontStyle: 'italic' }}>
+                Note: Descriptions are automatically summarized and rewritten to ensure uniqueness.
+              </small>
+            </p>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <input
+                type="url"
+                placeholder="https://website.com/property-link..."
+                value={importUrl}
+                onChange={(e) => setImportUrl(e.target.value)}
+                style={{ flex: 1, marginBottom: 0 }}
+              />
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleImport}
+                disabled={isImporting || !importUrl}
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                {isImporting ? 'Processing...' : 'Assist Me'}
+              </button>
+            </div>
+            <p style={{ marginTop: '0.75rem', fontSize: 11, color: 'var(--color-text-muted)' }}>
+              ⚠️ Only import listings you have permission to reuse. All imported content should be reviewed before publishing.
+            </p>
+          </div>
         )}
 
       <form onSubmit={handleSubmit}>

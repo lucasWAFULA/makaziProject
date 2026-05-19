@@ -175,6 +175,7 @@ class Property(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="properties"
     )
     title_sw = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=300, blank=True, db_index=True)
     description_sw = models.TextField(blank=True)
     location = models.CharField(max_length=255)
     destination = models.ForeignKey(
@@ -259,6 +260,19 @@ class Property(models.Model):
 
     def __str__(self):
         return self.title_sw
+
+    def save(self, *args, **kwargs):
+        if not self.slug and self.title_sw:
+            # Create a slug from title and location info
+            base = f"{self.title_sw} {self.town or ''} {self.region or ''}"
+            self.slug = slugify(base)
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        """Returns the SEO-friendly frontend path."""
+        if self.slug:
+            return f"/property/{self.pk}-{self.slug}"
+        return f"/property/{self.pk}"
 
 
 def property_image_upload_to(instance, filename):

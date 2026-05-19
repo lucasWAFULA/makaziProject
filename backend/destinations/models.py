@@ -30,3 +30,6 @@ class Destination(models.Model):
 
     def __str__(self):
         return f"{self.destination_name}, {self.region}, {self.country}"
+
+    def get_absolute_url(self):
+        return f"/destinations/{self.destination_slug}"
