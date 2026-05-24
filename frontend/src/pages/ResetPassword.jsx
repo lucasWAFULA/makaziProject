@@ -12,6 +12,8 @@ export function ResetPassword() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [done, setDone] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -37,59 +39,74 @@ export function ResetPassword() {
   }
 
   return (
-    <div className="card" style={{ maxWidth: 440, margin: '2rem auto', padding: '1.5rem' }}>
-      <h1 style={{ marginTop: 0 }}>{t('reset_password_title')}</h1>
-      <p style={{ color: 'var(--color-text-muted)', marginTop: 0 }}>{t('reset_password_subtitle')}</p>
-
-      {done ? (
-        <div>
-          <div style={{
-            background: 'rgba(34, 197, 94, 0.08)',
-            border: '1px solid rgba(34, 197, 94, 0.25)',
-            color: '#0F5F2F',
-            padding: '12px 14px',
-            borderRadius: 10,
-            marginBottom: 12,
-          }}>
-            {t('reset_password_success')}
-          </div>
-          <p>
-            <Link to="/login">{t('forgot_password_back_to_login')}</Link>
-          </p>
+    <div className="auth-page">
+      <div className="auth-card auth-animate-in">
+        <div className="auth-header">
+          <div className="auth-logo-icon">🔑</div>
+          <span className="auth-brand">MakaziPlus</span>
         </div>
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>{t('reset_password_new_label')}</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={8}
-              autoComplete="new-password"
-            />
+        <h1 className="auth-title">{t('reset_password_title')}</h1>
+        <p className="auth-subtitle">{t('reset_password_subtitle')}</p>
+
+        {done ? (
+          <div>
+            <div className="auth-success">
+              <span style={{ fontSize: 20, marginRight: 8 }}>✅</span>
+              {t('reset_password_success')}
+            </div>
+            <div className="auth-links" style={{ justifyContent: 'center' }}>
+              <Link to="/login">{t('forgot_password_back_to_login')}</Link>
+            </div>
           </div>
-          <div className="form-group">
-            <label>{t('reset_password_confirm_label')}</label>
-            <input
-              type="password"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              required
-              minLength={8}
-              autoComplete="new-password"
-            />
-          </div>
-          {error && <p style={{ color: '#dc3545', marginBottom: '1rem' }}>{error}</p>}
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? t('loading') : t('reset_password_submit')}
-          </button>
-          <p style={{ marginTop: '1rem' }}>
-            <Link to="/login">{t('forgot_password_back_to_login')}</Link>
-          </p>
-        </form>
-      )}
+        ) : (
+          <>
+            {error && <div className="auth-error">{error}</div>}
+            <form onSubmit={handleSubmit} className="auth-form">
+              <div className="auth-field">
+                <label>{t('reset_password_new_label')}</label>
+                <div className="auth-password-wrap">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={8}
+                    autoComplete="new-password"
+                    placeholder="••••••••"
+                  />
+                  <button type="button" className="auth-password-toggle" onClick={() => setShowPassword(v => !v)} tabIndex={-1}>
+                    {showPassword ? '🙈' : '👁️'}
+                  </button>
+                </div>
+              </div>
+              <div className="auth-field">
+                <label>{t('reset_password_confirm_label')}</label>
+                <div className="auth-password-wrap">
+                  <input
+                    type={showConfirm ? 'text' : 'password'}
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
+                    required
+                    minLength={8}
+                    autoComplete="new-password"
+                    placeholder="••••••••"
+                  />
+                  <button type="button" className="auth-password-toggle" onClick={() => setShowConfirm(v => !v)} tabIndex={-1}>
+                    {showConfirm ? '🙈' : '👁️'}
+                  </button>
+                </div>
+              </div>
+              <button type="submit" className="auth-submit" disabled={loading}>
+                {loading ? <span className="auth-spinner" /> : null}
+                {loading ? t('loading') : t('reset_password_submit')}
+              </button>
+            </form>
+            <div className="auth-links" style={{ justifyContent: 'center' }}>
+              <Link to="/login">{t('forgot_password_back_to_login')}</Link>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   )
 }

@@ -2,7 +2,9 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from rest_framework import generics, serializers, status
@@ -111,9 +113,19 @@ class PasswordResetConfirmView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Run Django password validators (common passwords, numeric-only, etc.)
+        try:
+            validate_password(new_password, user=user)
+        except DjangoValidationError as exc:
+            return Response(
+                {"detail": " ".join(exc.messages)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         user.set_password(new_password)
         user.save(update_fields=["password"])
         return Response(
             {"detail": "Your password has been reset. You can now sign in with your new password."},
             status=status.HTTP_200_OK,
         )
+

@@ -90,7 +90,14 @@ const routeMeta = {
     description: 'Reset your MakaziPlus password.',
     noindex: true,
   },
+  '/owner-dashboard/billing': {
+    title: 'Billing Center | MakaziPlus',
+    description: 'Manage your MakaziPlus billing, commissions, and payments.',
+    noindex: true,
+  },
 }
+
+// Handle dynamic reset-password routes in getMeta() below
 
 const destinationMeta = {
   zanzibar: {
@@ -165,6 +172,14 @@ function getMeta(pathname) {
     return {
       title: 'Booking | MakaziPlus',
       description: 'Complete or manage your MakaziPlus booking.',
+      noindex: true,
+    }
+  }
+
+  if (pathname.startsWith('/reset-password')) {
+    return {
+      title: 'Reset Password | MakaziPlus',
+      description: 'Set a new password for your MakaziPlus account.',
       noindex: true,
     }
   }

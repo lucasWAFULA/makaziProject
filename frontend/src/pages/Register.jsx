@@ -16,6 +16,8 @@ export function Register() {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   function update(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -48,90 +50,121 @@ export function Register() {
   }
 
   return (
-    <div className="card register-card" style={{ maxWidth: 440, margin: '2rem auto', padding: '1.5rem' }}>
-      <h1 style={{ marginTop: 0 }}>{t('register')}</h1>
-      <p className="register-role-intro">{t('register_role_intro')}</p>
-      <div className="register-role-cards" role="group" aria-label={t('role')}>
-        <button
-          type="button"
-          className={`register-role-card ${form.role === 'customer' ? 'is-selected' : ''}`}
-          onClick={() => update('role', 'customer')}
-        >
-          <span className="register-role-card-title">{t('register_card_customer_title')}</span>
-          <span className="register-role-card-hint">{t('register_card_customer_hint')}</span>
-        </button>
-        <button
-          type="button"
-          className={`register-role-card ${form.role === 'host' ? 'is-selected' : ''}`}
-          onClick={() => update('role', 'host')}
-        >
-          <span className="register-role-card-title">{t('register_card_owner_title')}</span>
-          <span className="register-role-card-hint">{t('register_card_owner_hint')}</span>
-        </button>
+    <div className="auth-page">
+      <div className="auth-card auth-card-wide auth-animate-in">
+        <div className="auth-header">
+          <div className="auth-logo-icon">🏠</div>
+          <span className="auth-brand">MakaziPlus</span>
+        </div>
+        <h1 className="auth-title">{t('register')}</h1>
+        <p className="auth-subtitle">{t('register_role_intro')}</p>
+
+        <div className="auth-role-selector" role="group" aria-label={t('role')}>
+          <button
+            type="button"
+            className={`auth-role-option ${form.role === 'customer' ? 'is-active' : ''}`}
+            onClick={() => update('role', 'customer')}
+          >
+            <span className="auth-role-emoji">🧳</span>
+            <span className="auth-role-label">{t('register_card_customer_title')}</span>
+            <span className="auth-role-hint">{t('register_card_customer_hint')}</span>
+          </button>
+          <button
+            type="button"
+            className={`auth-role-option ${form.role === 'host' ? 'is-active' : ''}`}
+            onClick={() => update('role', 'host')}
+          >
+            <span className="auth-role-emoji">🏡</span>
+            <span className="auth-role-label">{t('register_card_owner_title')}</span>
+            <span className="auth-role-hint">{t('register_card_owner_hint')}</span>
+          </button>
+        </div>
+
+        {error && <div className="auth-error">{error}</div>}
+
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="auth-field-row">
+            <div className="auth-field">
+              <label htmlFor="reg-name">{t('register_full_name')}</label>
+              <input
+                id="reg-name"
+                type="text"
+                value={form.first_name}
+                onChange={(e) => update('first_name', e.target.value)}
+                required
+                autoComplete="name"
+                placeholder="John Doe"
+              />
+            </div>
+            <div className="auth-field">
+              <label htmlFor="reg-phone">{t('phone_number')}</label>
+              <input
+                id="reg-phone"
+                type="tel"
+                value={form.phone_number}
+                onChange={(e) => update('phone_number', e.target.value)}
+                autoComplete="tel"
+                placeholder="+254 7XX XXX XXX"
+              />
+            </div>
+          </div>
+          <div className="auth-field">
+            <label htmlFor="reg-email">{t('email')}</label>
+            <input
+              id="reg-email"
+              type="email"
+              value={form.email}
+              onChange={(e) => update('email', e.target.value)}
+              required
+              autoComplete="email"
+              placeholder="you@example.com"
+            />
+          </div>
+          <div className="auth-field-row">
+            <div className="auth-field">
+              <label htmlFor="reg-pw">{t('password')}</label>
+              <div className="auth-password-wrap">
+                <input
+                  id="reg-pw"
+                  type={showPassword ? 'text' : 'password'}
+                  value={form.password}
+                  onChange={(e) => update('password', e.target.value)}
+                  required
+                  autoComplete="new-password"
+                  placeholder="••••••••"
+                />
+                <button type="button" className="auth-password-toggle" onClick={() => setShowPassword(v => !v)} tabIndex={-1}>
+                  {showPassword ? '🙈' : '👁️'}
+                </button>
+              </div>
+            </div>
+            <div className="auth-field">
+              <label htmlFor="reg-pw2">{t('confirm_password')}</label>
+              <div className="auth-password-wrap">
+                <input
+                  id="reg-pw2"
+                  type={showConfirm ? 'text' : 'password'}
+                  value={form.password_confirm}
+                  onChange={(e) => update('password_confirm', e.target.value)}
+                  required
+                  autoComplete="new-password"
+                  placeholder="••••••••"
+                />
+                <button type="button" className="auth-password-toggle" onClick={() => setShowConfirm(v => !v)} tabIndex={-1}>
+                  {showConfirm ? '🙈' : '👁️'}
+                </button>
+              </div>
+            </div>
+          </div>
+          <button type="submit" className="auth-submit" disabled={loading}>
+            {loading ? <span className="auth-spinner" /> : null}
+            {loading ? t('loading') : t('register_submit')}
+          </button>
+        </form>
+        <div className="auth-links" style={{ justifyContent: 'center' }}>
+          <Link to="/login">{t('register_already_account')}</Link>
+        </div>
       </div>
-      <form onSubmit={handleSubmit} className="register-form">
-        <div className="form-group">
-          <label htmlFor="reg-name">{t('register_full_name')}</label>
-          <input
-            id="reg-name"
-            type="text"
-            value={form.first_name}
-            onChange={(e) => update('first_name', e.target.value)}
-            required
-            autoComplete="name"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="reg-email">{t('email')}</label>
-          <input
-            id="reg-email"
-            type="email"
-            value={form.email}
-            onChange={(e) => update('email', e.target.value)}
-            required
-            autoComplete="email"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="reg-phone">{t('phone_number')}</label>
-          <input
-            id="reg-phone"
-            type="tel"
-            value={form.phone_number}
-            onChange={(e) => update('phone_number', e.target.value)}
-            autoComplete="tel"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="reg-pw">{t('password')}</label>
-          <input
-            id="reg-pw"
-            type="password"
-            value={form.password}
-            onChange={(e) => update('password', e.target.value)}
-            required
-            autoComplete="new-password"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="reg-pw2">{t('confirm_password')}</label>
-          <input
-            id="reg-pw2"
-            type="password"
-            value={form.password_confirm}
-            onChange={(e) => update('password_confirm', e.target.value)}
-            required
-            autoComplete="new-password"
-          />
-        </div>
-        {error && <p style={{ color: '#dc3545', marginBottom: '1rem' }}>{error}</p>}
-        <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? t('loading') : t('register_submit')}
-        </button>
-      </form>
-      <p style={{ marginTop: '1rem' }}>
-        <Link to="/login">{t('register_already_account')}</Link>
-      </p>
     </div>
   )
 }

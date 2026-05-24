@@ -25,51 +25,52 @@ export function ForgotPassword() {
   }
 
   return (
-    <div className="card" style={{ maxWidth: 440, margin: '2rem auto', padding: '1.5rem' }}>
-      <h1 style={{ marginTop: 0 }}>{t('forgot_password_title')}</h1>
-      <p style={{ color: 'var(--color-text-muted)', marginTop: 0 }}>{t('forgot_password_subtitle')}</p>
-
-      {submitted ? (
-        <div>
-          <div style={{
-            background: 'rgba(15, 95, 95, 0.08)',
-            border: '1px solid rgba(15, 95, 95, 0.2)',
-            color: '#0F5F5F',
-            padding: '12px 14px',
-            borderRadius: 10,
-            marginBottom: 12,
-          }}>
-            {t('forgot_password_sent')}
-          </div>
-          <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
-            {t('forgot_password_check_spam')}
-          </p>
-          <p style={{ marginTop: '1rem' }}>
-            <Link to="/login">{t('forgot_password_back_to_login')}</Link>
-          </p>
+    <div className="auth-page">
+      <div className="auth-card auth-animate-in">
+        <div className="auth-header">
+          <div className="auth-logo-icon">🔐</div>
+          <span className="auth-brand">MakaziPlus</span>
         </div>
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>{t('email')}</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-              placeholder="you@example.com"
-            />
+        <h1 className="auth-title">{t('forgot_password_title')}</h1>
+        <p className="auth-subtitle">{t('forgot_password_subtitle')}</p>
+
+        {submitted ? (
+          <div>
+            <div className="auth-success">
+              <span style={{ fontSize: 20, marginRight: 8 }}>✉️</span>
+              {t('forgot_password_sent')}
+            </div>
+            <p className="auth-hint">{t('forgot_password_check_spam')}</p>
+            <div className="auth-links" style={{ justifyContent: 'center' }}>
+              <Link to="/login">{t('forgot_password_back_to_login')}</Link>
+            </div>
           </div>
-          {error && <p style={{ color: '#dc3545', marginBottom: '1rem' }}>{error}</p>}
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? t('loading') : t('forgot_password_submit')}
-          </button>
-          <p style={{ marginTop: '1rem' }}>
-            <Link to="/login">{t('forgot_password_back_to_login')}</Link>
-          </p>
-        </form>
-      )}
+        ) : (
+          <>
+            {error && <div className="auth-error">{error}</div>}
+            <form onSubmit={handleSubmit} className="auth-form">
+              <div className="auth-field">
+                <label>{t('email')}</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                />
+              </div>
+              <button type="submit" className="auth-submit" disabled={loading}>
+                {loading ? <span className="auth-spinner" /> : null}
+                {loading ? t('loading') : t('forgot_password_submit')}
+              </button>
+            </form>
+            <div className="auth-links" style={{ justifyContent: 'center' }}>
+              <Link to="/login">{t('forgot_password_back_to_login')}</Link>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   )
 }

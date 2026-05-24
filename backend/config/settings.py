@@ -128,6 +128,11 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework_simplejwt.authentication.JWTAuthentication"],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.ScopedRateThrottle"],
+    "DEFAULT_THROTTLE_RATES": {
+        "password_reset": "5/hour",
+        "password_reset_confirm": "10/hour",
+    },
 }
 
 from datetime import timedelta
@@ -243,3 +248,40 @@ if not DEBUG:
     X_FRAME_OPTIONS = "DENY"
 else:
     SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
+
+# Password reset tokens expire in 24 hours (matches email copy)
+PASSWORD_RESET_TIMEOUT = 86400
+
+# Structured logging — ensures tracebacks appear in Cloud Run logs
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {name} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
+}

@@ -1,4 +1,13 @@
 User-agent: *
 Allow: /
 
+Disallow: /bookings
+Disallow: /dashboard
+Disallow: /owner-dashboard
+Disallow: /account
+Disallow: /property/new
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /login
+
 Sitemap: https://www.makazi-plus.com/sitemap.xml
