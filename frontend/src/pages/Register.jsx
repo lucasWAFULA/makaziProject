@@ -42,8 +42,31 @@ export function Register() {
       })
       navigate('/login', { state: { registered: true } })
     } catch (err) {
-      const msg = err.response?.data
-      setError(typeof msg === 'object' ? JSON.stringify(msg) : (msg || err.message || t('error')))
+      let errMsg = t('error') || 'Registration failed. Please try again.'
+      if (err.response?.data) {
+        const data = err.response.data
+        if (typeof data === 'string') {
+          errMsg = data
+        } else if (data.detail) {
+          errMsg = data.detail
+        } else if (typeof data === 'object') {
+          const errors = []
+          for (const [key, val] of Object.entries(data)) {
+            const fieldName = key.replace('_', ' ')
+            const fieldError = Array.isArray(val) ? val.join(' ') : String(val)
+            if (key === 'non_field_errors') {
+              errors.push(fieldError)
+            } else {
+              const prettyKey = fieldName.charAt(0).toUpperCase() + fieldName.slice(1)
+              errors.push(`${prettyKey}: ${fieldError}`)
+            }
+          }
+          if (errors.length > 0) errMsg = errors.join(' | ')
+        }
+      } else if (err.message) {
+        errMsg = err.message
+      }
+      setError(errMsg)
     } finally {
       setLoading(false)
     }

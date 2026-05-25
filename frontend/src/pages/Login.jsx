@@ -33,7 +33,23 @@ export function Login() {
       loginSuccess(data.user)
       navigate(getPostLoginPath(data.user), { replace: true })
     } catch (err) {
-      setError(err.response?.data?.detail || err.message || t('error'))
+      let errMsg = t('error') || 'An error occurred during sign in. Please try again.'
+      if (err.response?.data) {
+        const data = err.response.data
+        if (typeof data === 'string') {
+          errMsg = data
+        } else if (data.detail) {
+          errMsg = data.detail
+        } else if (data.non_field_errors) {
+          errMsg = Array.isArray(data.non_field_errors) ? data.non_field_errors[0] : data.non_field_errors
+        } else if (typeof data === 'object') {
+          const errors = Object.values(data).flat()
+          if (errors.length > 0) errMsg = errors[0]
+        }
+      } else if (err.message) {
+        errMsg = err.message
+      }
+      setError(errMsg)
     } finally {
       setLoading(false)
     }
