@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getProperties } from '../api/properties'
+import { PriceDisplay } from '../components/PriceDisplay'
 
 const priceChips = [
   { label: 'All prices', value: '' },
@@ -60,7 +61,7 @@ function StayCard({ item }) {
           {tags.map((tag) => <span key={`${item.id}-${tag}`}>{tag}</span>)}
         </div>
         <div className="listing-card-footer">
-          <b>TZS {Number(item.price_per_night || 0).toLocaleString()}</b>
+          <PriceDisplay amount={item.price_per_night} baseCurrency={item.base_currency} />
           <Link to={`/property/${item.id}${item.slug ? '-' + item.slug : ''}`} className="btn btn-secondary btn-sm">View details</Link>
         </div>
       </div>

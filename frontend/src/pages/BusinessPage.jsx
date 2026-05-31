@@ -27,27 +27,27 @@ export function BusinessPage() {
           <h2>{t('biz_how_it_works_title', 'How It Works')}</h2>
         </div>
         <div className="biz-workflow">
-          <div className="biz-workflow-step reveal-item" style={{ '--stagger': 0 }}>
+          <div className="biz-workflow-step " style={{ '--stagger': 0 }}>
             <span className="biz-step-icon">📋</span>
             <strong>{t('biz_step_1', '1. Select Service')}</strong>
           </div>
           <span className="biz-workflow-arrow">→</span>
-          <div className="biz-workflow-step reveal-item" style={{ '--stagger': 1 }}>
+          <div className="biz-workflow-step " style={{ '--stagger': 1 }}>
             <span className="biz-step-icon">📤</span>
             <strong>{t('biz_step_2', '2. Upload Documents')}</strong>
           </div>
           <span className="biz-workflow-arrow">→</span>
-          <div className="biz-workflow-step reveal-item" style={{ '--stagger': 2 }}>
+          <div className="biz-workflow-step " style={{ '--stagger': 2 }}>
             <span className="biz-step-icon">💳</span>
             <strong>{t('biz_step_3', '3. Make Payment')}</strong>
           </div>
           <span className="biz-workflow-arrow">→</span>
-          <div className="biz-workflow-step reveal-item" style={{ '--stagger': 3 }}>
+          <div className="biz-workflow-step " style={{ '--stagger': 3 }}>
             <span className="biz-step-icon">⏳</span>
             <strong>{t('biz_step_4', '4. Processing')}</strong>
           </div>
           <span className="biz-workflow-arrow">→</span>
-          <div className="biz-workflow-step reveal-item" style={{ '--stagger': 4 }}>
+          <div className="biz-workflow-step " style={{ '--stagger': 4 }}>
             <span className="biz-step-icon">✅</span>
             <strong>{t('biz_step_5', '5. Completion')}</strong>
           </div>
@@ -67,7 +67,7 @@ export function BusinessPage() {
             { icon: "🏢", title: "Company Registration Support", desc: "Expert guidance for setting up your company." },
             { icon: "👤", title: "Business Profile Setup", desc: "Set up your profile to attract the right clients." },
           ].map((svc, idx) => (
-            <article key={`biz-${idx}`} className="biz-service-card reveal-item" style={{ '--stagger': idx }}>
+            <article key={`biz-${idx}`} className="biz-service-card " style={{ '--stagger': idx }}>
               <span className="biz-svc-icon">{svc.icon}</span>
               <div className="biz-svc-content">
                 <strong>{svc.title}</strong>
@@ -87,7 +87,7 @@ export function BusinessPage() {
             { icon: "💻", title: "eTIMS Registration Support", desc: "Get set up on the eTIMS platform." },
             { icon: "📊", title: "Tax Return Filing", desc: "Assistance with filing your tax returns." },
           ].map((svc, idx) => (
-            <article key={`tax-${idx}`} className="biz-service-card reveal-item" style={{ '--stagger': idx }}>
+            <article key={`tax-${idx}`} className="biz-service-card " style={{ '--stagger': idx }}>
               <span className="biz-svc-icon">{svc.icon}</span>
               <div className="biz-svc-content">
                 <strong>{svc.title}</strong>
@@ -104,7 +104,7 @@ export function BusinessPage() {
             { icon: "🏠", title: "Property Management Support", desc: "Business support for property managers." },
             { icon: "🛏️", title: "Short-stay & Hospitality Setup", desc: "Assistance setting up your BNB or short-stay." },
           ].map((svc, idx) => (
-            <article key={`prop-${idx}`} className="biz-service-card reveal-item" style={{ '--stagger': idx }}>
+            <article key={`prop-${idx}`} className="biz-service-card " style={{ '--stagger': idx }}>
               <span className="biz-svc-icon">{svc.icon}</span>
               <div className="biz-svc-content">
                 <strong>{svc.title}</strong>
@@ -120,22 +120,22 @@ export function BusinessPage() {
           <h2>Why Choose Makazi Plus?</h2>
         </div>
         <div className="food-steps-grid">
-          <div className="food-step-card reveal-item" style={{ '--stagger': 0 }}>
+          <div className="food-step-card " style={{ '--stagger': 0 }}>
             <span className="food-step-icon">🌐</span>
             <strong>One Platform</strong>
             <p>For property and business needs.</p>
           </div>
-          <div className="food-step-card reveal-item" style={{ '--stagger': 1 }}>
+          <div className="food-step-card " style={{ '--stagger': 1 }}>
             <span className="food-step-icon">✨</span>
             <strong>Simplified Processes</strong>
             <p>Easy registration processes.</p>
           </div>
-          <div className="food-step-card reveal-item" style={{ '--stagger': 2 }}>
+          <div className="food-step-card " style={{ '--stagger': 2 }}>
             <span className="food-step-icon">👨‍💼</span>
             <strong>Professional Support</strong>
             <p>Expert guidance at every step.</p>
           </div>
-          <div className="food-step-card reveal-item" style={{ '--stagger': 3 }}>
+          <div className="food-step-card " style={{ '--stagger': 3 }}>
             <span className="food-step-icon">🔒</span>
             <strong>Secure Handling</strong>
             <p>Secure document handling.</p>

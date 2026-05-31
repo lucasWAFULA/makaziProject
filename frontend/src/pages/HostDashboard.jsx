@@ -95,7 +95,7 @@ export function HostDashboard() {
             <div key={p.id} className="card" style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <strong>{p.title_sw}</strong>
-                <p style={{ margin: '0.25rem 0', color: 'var(--color-text-muted)' }}>{p.location} · TZS {Number(p.price_per_night).toLocaleString()}</p>
+                <p style={{ margin: '0.25rem 0', color: 'var(--color-text-muted)' }}>{p.location} · {p.base_currency || 'KES'} {Number(p.price_per_night).toLocaleString()}</p>
               </div>
               <Link to={`/property/${p.id}/edit`} className="btn btn-secondary">{t('edit_property')}</Link>
             </div>

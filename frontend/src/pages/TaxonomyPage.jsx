@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getProperties } from '../api/properties'
 import { getPackages } from '../api/packages'
 import { getAgents } from '../api/agents'
+import { PriceDisplay } from '../components/PriceDisplay'
 
 const stayMap = {
   'budget-rooms': { title: 'Budget Rooms', params: { listing_type: 'hotel', catalog_slug: 'budget-rooms' } },
@@ -92,7 +93,7 @@ function StayCard({ item }) {
           {getStayTags(item).map((tag) => <span key={tag}>{tag}</span>)}
         </div>
         <div className="listing-card-footer">
-          <b>TZS {price.toLocaleString()}</b>
+          <PriceDisplay amount={price} baseCurrency={item.base_currency} />
           <Link to={`/property/${item.id}${item.slug ? '-' + item.slug : ''}`} className="btn btn-secondary btn-sm">View details</Link>
         </div>
       </div>

@@ -63,7 +63,7 @@ export function BookProperty() {
           <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} required min={checkIn || new Date().toISOString().slice(0, 10)} />
         </div>
         {nights > 0 && (
-          <p><strong>{t('price_per_night')}:</strong> TZS {Number(property.price_per_night).toLocaleString()} × {nights} = TZS {totalPrice.toLocaleString()}</p>
+          <p><strong>{t('price_per_night')}:</strong> {property.base_currency || 'KES'} {Number(property.price_per_night).toLocaleString()} × {nights} = {property.base_currency || 'KES'} {totalPrice.toLocaleString()}</p>
         )}
         {error && <p style={{ color: '#dc3545' }}>{error}</p>}
         <button type="submit" className="btn btn-primary" disabled={createMutation.isPending || nights < 1}>

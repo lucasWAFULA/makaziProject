@@ -21,7 +21,7 @@ export function ProvidersPage() {
           <h2>Who Can Register?</h2>
         </div>
         <div className="grid grid-3">
-          <article className="biz-service-card reveal-item" style={{ '--stagger': 0 }}>
+          <article className="biz-service-card " style={{ '--stagger': 0 }}>
             <span className="biz-svc-icon">🍔</span>
             <div className="biz-svc-content">
               <strong>Food Service Providers</strong>
@@ -33,7 +33,7 @@ export function ProvidersPage() {
               </ul>
             </div>
           </article>
-          <article className="biz-service-card reveal-item" style={{ '--stagger': 1 }}>
+          <article className="biz-service-card " style={{ '--stagger': 1 }}>
             <span className="biz-svc-icon">🛵</span>
             <div className="biz-svc-content">
               <strong>Delivery Partners</strong>
@@ -44,7 +44,7 @@ export function ProvidersPage() {
               </ul>
             </div>
           </article>
-          <article className="biz-service-card reveal-item" style={{ '--stagger': 2 }}>
+          <article className="biz-service-card " style={{ '--stagger': 2 }}>
             <span className="biz-svc-icon">💼</span>
             <div className="biz-svc-content">
               <strong>Business Service Providers</strong>
@@ -65,27 +65,27 @@ export function ProvidersPage() {
           <h2>How Registration Works</h2>
         </div>
         <div className="biz-workflow" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', alignItems: 'stretch' }}>
-          <div className="biz-workflow-step reveal-item" style={{ width: 'auto', '--stagger': 0 }}>
+          <div className="biz-workflow-step " style={{ width: 'auto', '--stagger': 0 }}>
             <span className="biz-step-icon">📝</span>
             <strong>Step 1: Sign Up</strong>
             <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Create an account with basic details.</p>
           </div>
-          <div className="biz-workflow-step reveal-item" style={{ width: 'auto', '--stagger': 1 }}>
+          <div className="biz-workflow-step " style={{ width: 'auto', '--stagger': 1 }}>
             <span className="biz-step-icon">🏷️</span>
             <strong>Step 2: Select Category</strong>
             <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Food, Delivery, or Business services.</p>
           </div>
-          <div className="biz-workflow-step reveal-item" style={{ width: 'auto', '--stagger': 2 }}>
+          <div className="biz-workflow-step " style={{ width: 'auto', '--stagger': 2 }}>
             <span className="biz-step-icon">📄</span>
             <strong>Step 3: Submit Docs</strong>
             <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Provide ID and business details.</p>
           </div>
-          <div className="biz-workflow-step reveal-item" style={{ width: 'auto', '--stagger': 3 }}>
+          <div className="biz-workflow-step " style={{ width: 'auto', '--stagger': 3 }}>
             <span className="biz-step-icon">✅</span>
             <strong>Step 4: Activation</strong>
             <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Profile becomes active once verified.</p>
           </div>
-          <div className="biz-workflow-step reveal-item" style={{ width: 'auto', '--stagger': 4 }}>
+          <div className="biz-workflow-step " style={{ width: 'auto', '--stagger': 4 }}>
             <span className="biz-step-icon">🚀</span>
             <strong>Step 5: Receive Requests</strong>
             <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Begin receiving customer orders.</p>

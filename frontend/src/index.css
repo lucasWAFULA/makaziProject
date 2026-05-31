@@ -2385,7 +2385,7 @@ input, select, textarea, button { font-family: var(--font-body); font: inherit; 
   color: var(--color-text);
 }
 .reveal-item {
-  opacity: 0;
+  opacity: 1; /* Fixed blank section bug */
   transform: translateY(14px);
   transition: opacity 0.42s ease, transform 0.42s ease;
   transition-delay: calc(var(--stagger, 0) * 45ms);

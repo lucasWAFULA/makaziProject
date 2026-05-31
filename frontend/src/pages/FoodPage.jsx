@@ -11,7 +11,7 @@ export function FoodPage() {
         <h1 className="hero-title">Food Delivery for Homes, Apartments, Offices, and Communities</h1>
         <p className="hero-tagline">Makazi Plus makes everyday living more convenient by connecting residents, tenants, homeowners, offices, and communities with nearby restaurants and food vendors. Whether you are at home, at work, or managing a property, you can order meals and have them delivered quickly and reliably.</p>
         <div className="hero-actions" style={{ justifyContent: 'center' }}>
-          <a href="#restaurants" className="btn btn-primary">{t('cta_browse_restaurants')}</a>
+          <a href="#restaurants" className="btn btn-primary">{t('cta_browse_restaurants', 'Browse Restaurants')}</a>
         </div>
       </header>
 
@@ -24,27 +24,27 @@ export function FoodPage() {
           <h2>Services Offered</h2>
         </div>
         <div className="food-categories-grid">
-          <div className="food-category-card reveal-item" style={{ '--stagger': 0 }}>
+          <div className="food-category-card " style={{ '--stagger': 0 }}>
             <span className="food-cat-icon">🍽️</span>
             <strong>Restaurant meal delivery</strong>
           </div>
-          <div className="food-category-card reveal-item" style={{ '--stagger': 1 }}>
+          <div className="food-category-card " style={{ '--stagger': 1 }}>
             <span className="food-cat-icon">🛒</span>
             <strong>Grocery & convenience item delivery</strong>
           </div>
-          <div className="food-category-card reveal-item" style={{ '--stagger': 2 }}>
+          <div className="food-category-card " style={{ '--stagger': 2 }}>
             <span className="food-cat-icon">🍱</span>
             <strong>Office lunch delivery</strong>
           </div>
-          <div className="food-category-card reveal-item" style={{ '--stagger': 3 }}>
+          <div className="food-category-card " style={{ '--stagger': 3 }}>
             <span className="food-cat-icon">🏘️</span>
             <strong>Apartment & gated-community delivery</strong>
           </div>
-          <div className="food-category-card reveal-item" style={{ '--stagger': 4 }}>
+          <div className="food-category-card " style={{ '--stagger': 4 }}>
             <span className="food-cat-icon">🎉</span>
             <strong>Catering requests for events</strong>
           </div>
-          <div className="food-category-card reveal-item" style={{ '--stagger': 5 }}>
+          <div className="food-category-card " style={{ '--stagger': 5 }}>
             <span className="food-cat-icon">📅</span>
             <strong>Scheduled meal deliveries</strong>
           </div>
@@ -56,22 +56,22 @@ export function FoodPage() {
           <h2>Why Use Makazi Food?</h2>
         </div>
         <div className="food-steps-grid">
-          <div className="food-step-card reveal-item" style={{ '--stagger': 0 }}>
+          <div className="food-step-card " style={{ '--stagger': 0 }}>
             <span className="food-step-icon">📱</span>
             <strong>Convenient Ordering</strong>
             <p>Order easily from one platform.</p>
           </div>
-          <div className="food-step-card reveal-item" style={{ '--stagger': 1 }}>
+          <div className="food-step-card " style={{ '--stagger': 1 }}>
             <span className="food-step-icon">🏠</span>
             <strong>Direct Delivery</strong>
             <p>Delivery to homes, apartments, and offices.</p>
           </div>
-          <div className="food-step-card reveal-item" style={{ '--stagger': 2 }}>
+          <div className="food-step-card " style={{ '--stagger': 2 }}>
             <span className="food-step-icon">💳</span>
             <strong>Secure Payments</strong>
             <p>Safe and reliable payment options.</p>
           </div>
-          <div className="food-step-card reveal-item" style={{ '--stagger': 3 }}>
+          <div className="food-step-card " style={{ '--stagger': 3 }}>
             <span className="food-step-icon">🤝</span>
             <strong>Reliable Partners</strong>
             <p>Access to local restaurants and verified vendors.</p>
@@ -93,7 +93,7 @@ export function FoodPage() {
             { name: "Mombasa Street Food", cuisine: "Street Food", rating: "4.7", time: "20-30 min" },
             { name: "Pwani Café", cuisine: "Coffee & Brunch", rating: "4.4", time: "15-20 min" },
           ].map((rest, idx) => (
-            <article key={rest.name} className="food-restaurant-card reveal-item" style={{ '--stagger': idx }}>
+            <article key={rest.name} className="food-restaurant-card " style={{ '--stagger': idx }}>
               <div className="food-rest-header">
                 <strong>{rest.name}</strong>
                 <span className="food-rest-rating">★ {rest.rating}</span>

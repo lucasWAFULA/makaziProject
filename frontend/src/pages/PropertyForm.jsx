@@ -9,6 +9,7 @@ import {
 } from '../api/properties'
 import { getDestinations } from '../api/destinations'
 import { useAuth } from '../context/AuthContext'
+import { useCurrency } from '../context/CurrencyContext'
 import { GooglePlacePicker } from '../components/GooglePlacePicker'
 import { PropertyMediaUpload } from '../components/PropertyMediaUpload'
 
@@ -45,6 +46,7 @@ export function PropertyForm() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { user } = useAuth()
+  const { currencies: apiCurrencies } = useCurrency()
 
   const [form, setForm] = useState({
     title_sw: '',
@@ -283,18 +285,18 @@ export function PropertyForm() {
         <h1 style={{ marginTop: 0 }}>{isEdit ? t('edit_property') : t('add_property')}</h1>
         {!isEdit && (
           <p style={{ marginTop: 0, color: 'var(--color-text-muted)' }}>
-            New listings are reviewed before they appear publicly. Save your details first, then upload photos.
+            {t('pf_review_note')}
           </p>
         )}
 
         {!isEdit && (
           <div style={{ marginBottom: '2rem', padding: '1.25rem', background: '#f8fafc', borderRadius: '8px', border: '1.5px solid var(--color-border)', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
-            <h4 style={{ marginTop: 0, marginBottom: '0.4rem', color: 'var(--color-primary)' }}>✨ Smart Listing Assistant</h4>
+            <h4 style={{ marginTop: 0, marginBottom: '0.4rem', color: 'var(--color-primary)' }}>{t('pf_smart_assist_title')}</h4>
             <p style={{ margin: '0 0 0.85rem', fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.4 }}>
-              Paste a property URL from popular platforms (like Jumuika, BuyRentKenya, etc.), and the AI will help extract key details for your review. 
+              {t('pf_smart_assist_desc')} 
               <br />
               <small style={{ display: 'block', marginTop: '0.4rem', fontStyle: 'italic' }}>
-                Note: Descriptions are automatically summarized and rewritten to ensure uniqueness.
+                {t('pf_smart_assist_note')}
               </small>
             </p>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -312,11 +314,11 @@ export function PropertyForm() {
                 disabled={isImporting || !importUrl}
                 style={{ whiteSpace: 'nowrap' }}
               >
-                {isImporting ? 'Processing...' : 'Assist Me'}
+                {isImporting ? t('pf_importing') : t('pf_assist_me')}
               </button>
             </div>
             <p style={{ marginTop: '0.75rem', fontSize: 11, color: 'var(--color-text-muted)' }}>
-              ⚠️ Only import listings you have permission to reuse. All imported content should be reviewed before publishing.
+              {t('pf_import_warning')}
             </p>
           </div>
         )}
@@ -324,46 +326,47 @@ export function PropertyForm() {
       <form onSubmit={handleSubmit}>
 
         {/* ── BASICS ── */}
-        <h3 style={sectionStyle}>Basics</h3>
+        <h3 style={sectionStyle}>{t('pf_basics')}</h3>
         <div className="form-group">
-          <label>{t('title')} (Kiswahili)</label>
+          <label>{t('title')}</label>
           <input type="text" value={form.title_sw} onChange={(e) => update('title_sw', e.target.value)} required />
+          <small style={{ color: 'var(--color-text-muted)' }}>{t('pf_content_lang')}</small>
         </div>
         <div className="form-group">
           <label>{t('description')}</label>
           <textarea value={form.description_sw} onChange={(e) => update('description_sw', e.target.value)} rows={3} />
         </div>
         <div className="form-group">
-          <label>Destination</label>
+          <label>{t('destination')}</label>
           <select value={form.destination} onChange={(e) => update('destination', e.target.value)}>
-            <option value="">Select destination</option>
+            <option value="">{t('pf_select_destination')}</option>
             {destinations.map((d) => (
               <option key={d.id} value={d.id}>{d.destination_name} ({d.country})</option>
             ))}
           </select>
-          <small style={{ color: 'var(--color-text-muted)' }}>Used for discovery and correct region filters.</small>
+          <small style={{ color: 'var(--color-text-muted)' }}>{t('pf_destination_hint')}</small>
         </div>
 
         {/* ── TAXONOMY ── */}
-        <h3 style={sectionStyle}>🏷️ Stay Classification</h3>
+        <h3 style={sectionStyle}>{t('pf_classification')}</h3>
         <div style={gridTwo}>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Category</label>
+            <label>{t('pf_category')}</label>
             <select value={form.category} onChange={(e) => handleCategoryChange(e.target.value)}>
-              <option value="">Select category</option>
+              <option value="">{t('pf_select_category')}</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
               ))}
             </select>
           </div>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Stay Type</label>
+            <label>{t('pf_stay_type')}</label>
             <select
               value={form.property_type}
               onChange={(e) => update('property_type', e.target.value)}
               disabled={!form.category}
             >
-              <option value="">{form.category ? 'Select type' : '← Pick category first'}</option>
+              <option value="">{form.category ? t('pf_select_type') : t('pf_pick_category_first')}</option>
               {typeOptions.map((t) => (
                 <option key={t.id} value={t.id}>{t.name}</option>
               ))}
@@ -372,13 +375,13 @@ export function PropertyForm() {
         </div>
         <div style={{ ...gridTwo, marginTop: '0.75rem' }}>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Stay Style</label>
+            <label>{t('pf_stay_style')}</label>
             <select value={form.stay_style} onChange={(e) => update('stay_style', e.target.value)}>
               {STAY_STYLES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
             </select>
           </div>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Price Tier</label>
+            <label>{t('pf_price_tier')}</label>
             <select value={form.price_tier} onChange={(e) => update('price_tier', e.target.value)}>
               {PRICE_TIERS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
             </select>
@@ -386,40 +389,40 @@ export function PropertyForm() {
         </div>
 
         {/* ── CONFIGURATION ── */}
-        <h3 style={sectionStyle}>🛏️ Configuration</h3>
+        <h3 style={sectionStyle}>{t('pf_configuration')}</h3>
         <div style={gridThree}>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Bedrooms</label>
+            <label>{t('pf_bedrooms')}</label>
             <input type="number" min="0" value={form.bedrooms} onChange={(e) => update('bedrooms', e.target.value)} placeholder="0" />
           </div>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Beds</label>
+            <label>{t('pf_beds')}</label>
             <input type="number" min="0" value={form.beds} onChange={(e) => update('beds', e.target.value)} placeholder="1" />
           </div>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Bathrooms</label>
+            <label>{t('pf_bathrooms')}</label>
             <input type="number" min="0" value={form.bathrooms} onChange={(e) => update('bathrooms', e.target.value)} placeholder="1" />
           </div>
         </div>
         <div style={{ ...gridThree, marginTop: '0.75rem' }}>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Max Guests</label>
+            <label>{t('pf_max_guests')}</label>
             <input type="number" min="1" value={form.max_guests} onChange={(e) => update('max_guests', e.target.value)} placeholder="2" />
           </div>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Floors</label>
+            <label>{t('pf_floors')}</label>
             <input type="number" min="1" value={form.floor_count} onChange={(e) => update('floor_count', e.target.value)} placeholder="1" />
           </div>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Size (m²)</label>
+            <label>{t('pf_size_sqm')}</label>
             <input type="number" min="0" step="0.1" value={form.room_size_sqm} onChange={(e) => update('room_size_sqm', e.target.value)} placeholder="45" />
           </div>
         </div>
 
         {/* ── FEATURES ── */}
-        <h3 style={sectionStyle}>✨ Features &amp; Amenities</h3>
+        <h3 style={sectionStyle}>{t('pf_features_title')}</h3>
         <small style={{ color: 'var(--color-text-muted)', display: 'block', marginBottom: '0.75rem' }}>
-          Select all that apply — these power search and AI recommendations.
+          {t('pf_features_hint')}
         </small>
         {Object.entries(featuresByGroup).map(([group, feats]) => (
           <div key={group} style={{ marginBottom: '1rem' }}>
@@ -455,20 +458,28 @@ export function PropertyForm() {
         ))}
 
         {/* ── PRICING ── */}
-        <h3 style={sectionStyle}>💰 Pricing &amp; Rules</h3>
+        <h3 style={sectionStyle}>{t('pf_pricing')}</h3>
         <div className="form-group">
-          <label>Base Currency</label>
+          <label>{t('pf_base_currency')}</label>
           <select value={form.base_currency} onChange={(e) => update('base_currency', e.target.value)}>
-            <option value="KES">Kenyan Shilling (KES)</option>
-            <option value="TZS">Tanzanian Shilling (TZS)</option>
-            <option value="UGX">Ugandan Shilling (UGX)</option>
-            <option value="USD">US Dollar (USD)</option>
-            <option value="RWF">Rwandan Franc (RWF)</option>
-            <option value="ETB">Ethiopian Birr (ETB)</option>
-            <option value="EUR">Euro (EUR)</option>
-            <option value="GBP">British Pound (GBP)</option>
+            {apiCurrencies.length > 0 ? (
+              apiCurrencies.map((c) => (
+                <option key={c.code} value={c.code}>{c.flag_emoji} {c.name} ({c.code})</option>
+              ))
+            ) : (
+              <>
+                <option value="KES">Kenyan Shilling (KES)</option>
+                <option value="TZS">Tanzanian Shilling (TZS)</option>
+                <option value="UGX">Ugandan Shilling (UGX)</option>
+                <option value="USD">US Dollar (USD)</option>
+                <option value="RWF">Rwandan Franc (RWF)</option>
+                <option value="ETB">Ethiopian Birr (ETB)</option>
+                <option value="EUR">Euro (EUR)</option>
+                <option value="GBP">British Pound (GBP)</option>
+              </>
+            )}
           </select>
-          <small style={{ color: 'var(--color-text-muted)' }}>The currency you set your price in. We convert it automatically for users.</small>
+          <small style={{ color: 'var(--color-text-muted)' }}>{t('pf_currency_hint')}</small>
         </div>
         <div className="form-group">
           <label>{t('price_per_night')} ({form.base_currency} / night)</label>
@@ -479,22 +490,22 @@ export function PropertyForm() {
           <textarea value={form.rules_sw} onChange={(e) => update('rules_sw', e.target.value)} rows={2} />
         </div>
         <div className="form-group">
-          <label>Amenities (comma-separated)</label>
+          <label>{t('pf_amenities')}</label>
           <input
             type="text"
             value={form.amenities_text}
             onChange={(e) => update('amenities_text', e.target.value)}
-            placeholder="WiFi, Pool, Parking, Kitchen…"
+            placeholder={t('pf_amenities_placeholder')}
           />
         </div>
 
         {/* ── LOCATION ── */}
-        <h3 style={sectionStyle}>📍 Location</h3>
+        <h3 style={sectionStyle}>{t('pf_location')}</h3>
         <div className="form-group">
-          <label>Search address (Google Maps)</label>
+          <label>{t('pf_search_address')}</label>
           <GooglePlacePicker
             value={form.location}
-            placeholder="Start typing an address, landmark or area…"
+            placeholder={t('pf_address_placeholder')}
             onChange={({ address, lat, lng, country, city }) => {
               setForm((prev) => ({
                 ...prev,
@@ -506,59 +517,59 @@ export function PropertyForm() {
               }))
             }}
           />
-          <small style={{ color: 'var(--color-text-muted)' }}>Lat/Lng are auto-filled from the map pin.</small>
+          <small style={{ color: 'var(--color-text-muted)' }}>{t('pf_latlng_hint')}</small>
         </div>
         <div className="form-group">
-          <label>Landmark / nearby place</label>
-          <input type="text" value={form.landmark} onChange={(e) => update('landmark', e.target.value)} placeholder="e.g. Near Kendwa Rocks, Nyali Centre…" />
+          <label>{t('pf_landmark')}</label>
+          <input type="text" value={form.landmark} onChange={(e) => update('landmark', e.target.value)} placeholder={t('pf_landmark_placeholder')} />
         </div>
         <div style={gridTwo}>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Latitude <small style={{ fontWeight: 400 }}>(auto)</small></label>
+            <label>{t('pf_latitude')} <small style={{ fontWeight: 400 }}>({t('pf_auto')})</small></label>
             <input type="number" step="0.000001" value={form.latitude} onChange={(e) => update('latitude', e.target.value)} placeholder="-6.165917" readOnly={!!form.latitude} style={{ background: form.latitude ? '#f8fafc' : undefined }} />
           </div>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Longitude <small style={{ fontWeight: 400 }}>(auto)</small></label>
+            <label>{t('pf_longitude')} <small style={{ fontWeight: 400 }}>({t('pf_auto')})</small></label>
             <input type="number" step="0.000001" value={form.longitude} onChange={(e) => update('longitude', e.target.value)} placeholder="39.202641" readOnly={!!form.longitude} style={{ background: form.longitude ? '#f8fafc' : undefined }} />
           </div>
         </div>
 
         {/* ── VERIFICATION ── */}
-        <h3 style={sectionStyle}>🔒 Verification Details</h3>
+        <h3 style={sectionStyle}>{t('pf_verification')}</h3>
         <div className="form-group">
-          <label>Walkthrough video link</label>
+          <label>{t('pf_walkthrough_video')}</label>
           <input
             type="url"
             value={form.walkthrough_video_url}
             onChange={(e) => update('walkthrough_video_url', e.target.value)}
-            placeholder="YouTube, Google Drive, Dropbox, etc."
+            placeholder={t('pf_walkthrough_placeholder')}
           />
-          <small style={{ color: 'var(--color-text-muted)' }}>Or use the Photos & Videos section below to upload directly.</small>
+          <small style={{ color: 'var(--color-text-muted)' }}>{t('pf_walkthrough_hint')}</small>
         </div>
         <div style={gridTwo}>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Contact person</label>
-            <input type="text" value={form.contact_name} onChange={(e) => update('contact_name', e.target.value)} placeholder="Name" />
+            <label>{t('pf_contact_person')}</label>
+            <input type="text" value={form.contact_name} onChange={(e) => update('contact_name', e.target.value)} placeholder={t('pf_contact_person')} />
           </div>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>Contact phone</label>
-            <input type="tel" value={form.contact_phone} onChange={(e) => update('contact_phone', e.target.value)} placeholder="e.g. 2557xxxxxxx" />
+            <label>{t('pf_contact_phone')}</label>
+            <input type="tel" value={form.contact_phone} onChange={(e) => update('contact_phone', e.target.value)} placeholder={t('pf_phone_placeholder')} />
           </div>
         </div>
         <div className="form-group">
-          <label>Ownership / management details</label>
+          <label>{t('pf_ownership')}</label>
           <textarea
             value={form.ownership_details}
             onChange={(e) => update('ownership_details', e.target.value)}
             rows={3}
-            placeholder="Explain how you manage this property (owner, manager, agent) and any proof you can provide."
+            placeholder={t('pf_ownership_placeholder')}
           />
         </div>
 
         {isEdit && (
           <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <input type="checkbox" id="active" checked={form.is_active} onChange={(e) => update('is_active', e.target.checked)} />
-            <label htmlFor="active" style={{ marginBottom: 0 }}>Active</label>
+            <label htmlFor="active" style={{ marginBottom: 0 }}>{t('pf_active')}</label>
           </div>
         )}
 
@@ -578,9 +589,9 @@ export function PropertyForm() {
       {/* ── MEDIA UPLOAD (only after property exists) ── */}
       {isEdit && id && (
         <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
-          <h2 style={{ marginTop: 0, marginBottom: '0.25rem' }}>📁 Photos &amp; Videos</h2>
+          <h2 style={{ marginTop: 0, marginBottom: '0.25rem' }}>{t('pf_media_title')}</h2>
           <p style={{ margin: '0 0 1.25rem', color: 'var(--color-text-muted)', fontSize: 14 }}>
-            Upload photos and videos of your property. The first photo becomes the cover image.
+            {t('pf_media_desc')}
           </p>
           <PropertyMediaUpload
             propertyId={id}
@@ -590,9 +601,9 @@ export function PropertyForm() {
       )}
       {!isEdit && (
         <div className="card" style={{ padding: '1.25rem', marginBottom: '2rem', background: 'linear-gradient(135deg, #f0fdf4, #fefffe)', border: '1px dashed #86efac' }}>
-          <strong>📸 Next step: add photos</strong>
+          <strong>{t('pf_next_step_photos')}</strong>
           <p style={{ margin: '0.35rem 0 0', fontSize: 14, color: 'var(--color-text-muted)' }}>
-            After saving, you'll be taken to the property page where you can upload photos and videos.
+            {t('pf_next_step_photos_desc')}
           </p>
         </div>
       )}

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getDestinationBySlug } from '../api/destinations'
 import { getProperties } from '../api/properties'
 import { PlusServices } from '../components/PlusServices'
+import { PriceDisplay } from '../components/PriceDisplay'
 
 const destinationGuides = {
   zanzibar: {
@@ -148,7 +149,7 @@ export function DestinationPage() {
                     <span>{item.listing_type || 'Stay'}</span>
                   </div>
                   <div className="listing-card-footer">
-                    <b>TZS {Number(item.price_per_night).toLocaleString()}</b>
+                    <PriceDisplay amount={item.price_per_night} baseCurrency={item.base_currency} />
                     <Link to={`/property/${item.id}${item.slug ? '-' + item.slug : ''}`} className="btn btn-secondary btn-sm">View details</Link>
                   </div>
                 </div>

@@ -34,7 +34,7 @@ export function MyBookings() {
               <div>
                 <strong>{b.property_detail?.title_sw || `Booking #${b.id}`}</strong>
                 <p style={{ margin: '0.25rem 0', color: '#666' }}>{b.check_in} — {b.check_out}</p>
-                <p style={{ margin: 0 }}>TZS {Number(b.total_price).toLocaleString()} · {b.status}</p>
+                <p style={{ margin: 0 }}>{b.base_currency || 'KES'} {Number(b.total_price).toLocaleString()} · {b.status}</p>
               </div>
               {b.status === 'pending' && (
                 <Link to={`/pay/${b.id}`} className="btn btn-primary">{t('pay_now')}</Link>
