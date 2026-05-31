@@ -6,17 +6,49 @@ from destinations.serializers import DestinationSerializer
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-def get_price_tier(price):
+def get_price_tier(price, base_currency='KES'):
+    """
+    Auto-detect price tier by first normalising the amount to USD,
+    then applying universal thresholds.
+
+    USD thresholds:
+      ≤ 50   → budget
+      ≤ 120  → standard
+      ≤ 250  → premium
+      ≤ 500  → luxury
+      > 500  → ultra_luxury
+    """
     amount = float(price or 0)
-    if amount <= 80000:
+    if amount <= 0:
         return "budget"
-    if amount <= 180000:
+
+    # Convert to USD using stored exchange rates (1 USD = X target)
+    usd_amount = amount
+    if base_currency and base_currency != 'USD':
+        try:
+            from currencies.models import ExchangeRate
+            rate_obj = ExchangeRate.objects.filter(target_currency=base_currency).first()
+            if rate_obj and float(rate_obj.rate) > 0:
+                usd_amount = amount / float(rate_obj.rate)
+        except Exception:
+            # Fallback: use rough static rates if DB unavailable
+            _fallback_rates = {
+                'KES': 130, 'TZS': 2500, 'UGX': 3700,
+                'RWF': 1300, 'ETB': 57, 'EUR': 0.92, 'GBP': 0.79,
+            }
+            divisor = _fallback_rates.get(base_currency, 1)
+            usd_amount = amount / divisor
+
+    if usd_amount <= 50:
+        return "budget"
+    if usd_amount <= 120:
         return "standard"
-    if amount <= 350000:
+    if usd_amount <= 250:
         return "premium"
-    if amount <= 800000:
+    if usd_amount <= 500:
         return "luxury"
     return "ultra_luxury"
+
 
 
 def get_search_text(obj):
@@ -34,7 +66,7 @@ def get_search_text(obj):
 
 def get_experience_tags(obj):
     text = get_search_text(obj)
-    tags = [obj.price_tier or get_price_tier(obj.price_per_night)]
+    tags = [obj.price_tier or get_price_tier(obj.price_per_night, getattr(obj, 'base_currency', 'KES'))]
     if any(t in text for t in ["beach", "ocean", "sea", "nungwi", "kendwa", "paje", "diani", "jambiani"]):
         tags.append("beachfront")
     if any(t in text for t in ["wifi", "work", "desk", "business", "masaki", "oyster", "dar"]):
@@ -131,7 +163,7 @@ class PropertyListSerializer(serializers.ModelSerializer):
         return None
 
     def get_price_tier(self, obj):
-        return obj.price_tier or get_price_tier(obj.price_per_night)
+        return obj.price_tier or get_price_tier(obj.price_per_night, getattr(obj, 'base_currency', 'KES'))
 
     def get_experience_tags(self, obj):
         return get_experience_tags(obj)
@@ -197,7 +229,7 @@ class PropertyDetailSerializer(serializers.ModelSerializer):
         ]
 
     def get_price_tier(self, obj):
-        return obj.price_tier or get_price_tier(obj.price_per_night)
+        return obj.price_tier or get_price_tier(obj.price_per_night, getattr(obj, 'base_currency', 'KES'))
 
     def get_experience_tags(self, obj):
         return get_experience_tags(obj)

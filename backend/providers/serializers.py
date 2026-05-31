@@ -27,4 +27,4 @@ class ServiceRequestSerializer(serializers.ModelSerializer):
             'provider', 'provider_name', 'service_type', 'details',
             'status', 'price', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['customer', 'status', 'created_at', 'updated_at', 'price']
+        read_only_fields = ['customer', 'created_at', 'updated_at']

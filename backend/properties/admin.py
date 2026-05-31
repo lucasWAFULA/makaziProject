@@ -85,6 +85,7 @@ class PropertyAdmin(admin.ModelAdmin):
         "property_type",
         "destination",
         "price_per_night",
+        "base_currency",
         "price_tier",
         "bedrooms",
         "max_guests",
@@ -136,7 +137,7 @@ class PropertyAdmin(admin.ModelAdmin):
             "fields": ("bedrooms", "beds", "bathrooms", "max_guests", "floor_count", "room_size_sqm"),
         }),
         ("Pricing", {
-            "fields": ("price_per_night", "price_tier"),
+            "fields": ("price_per_night", "base_currency", "price_tier"),
         }),
         ("Stay Style", {
             "fields": ("stay_style",),

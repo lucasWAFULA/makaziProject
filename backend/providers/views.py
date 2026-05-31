@@ -1,3 +1,4 @@
+from django.db import models
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -13,9 +14,13 @@ class ServiceProviderViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceProviderSerializer
 
     def get_queryset(self):
-        # Admins see all, regular users see only their own profile
+        # Admins see all
         if self.request.user.is_staff:
             return ServiceProvider.objects.all()
+        # For listing and retrieving, show approved providers so they are browsable
+        if self.action in ['list', 'retrieve']:
+            return ServiceProvider.objects.filter(status='APPROVED')
+        # Otherwise, regular users only manage their own profile
         return ServiceProvider.objects.filter(user=self.request.user)
 
     def get_permissions(self):
@@ -86,6 +91,22 @@ class ServiceRequestViewSet(viewsets.ModelViewSet):
         if not (is_customer or is_provider or request.user.is_staff):
             return Response({"detail": "Not authorized to update this request."}, status=status.HTTP_403_FORBIDDEN)
             
+        # Role-based status & price validations
+        new_status = request.data.get('status')
+        new_price = request.data.get('price')
+        
+        if not request.user.is_staff:
+            if is_customer:
+                # Customer can only cancel
+                if new_status and new_status != 'CANCELLED':
+                    return Response({"detail": "Customers can only cancel requests."}, status=status.HTTP_400_BAD_REQUEST)
+                if new_price is not None:
+                    return Response({"detail": "Customers cannot modify the price."}, status=status.HTTP_400_BAD_REQUEST)
+            elif is_provider:
+                # Provider can accept, start, complete, or reject, and set price
+                if new_status and new_status not in ['ACCEPTED', 'IN_PROGRESS', 'COMPLETED', 'REJECTED']:
+                    return Response({"detail": "Invalid status update for provider."}, status=status.HTTP_400_BAD_REQUEST)
+        
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)

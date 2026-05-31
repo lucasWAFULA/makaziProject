@@ -23,3 +23,23 @@ export async function updateProviderProfile(id, formData) {
   })
   return data
 }
+
+export async function getServiceRequests() {
+  const { data } = await api.get('/providers/requests/')
+  return data
+}
+
+export async function createServiceRequest(requestData) {
+  const { data } = await api.post('/providers/requests/', requestData)
+  return data
+}
+
+export async function updateServiceRequest(id, requestData) {
+  const { data } = await api.patch(`/providers/requests/${id}/`, requestData)
+  return data
+}
+
+export async function getApprovedProviders() {
+  const { data } = await api.get('/providers/profiles/')
+  return data
+}

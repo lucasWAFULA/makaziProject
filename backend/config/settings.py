@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "currencies",
     "billing",
     "services",
+    "providers",
 ]
 
 SITE_ID = 1
