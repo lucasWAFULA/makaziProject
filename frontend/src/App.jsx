@@ -29,6 +29,11 @@ import { Contact } from './pages/Contact'
 import { ForgotPassword } from './pages/ForgotPassword'
 import { ResetPassword } from './pages/ResetPassword'
 import { AccountPage } from './pages/AccountPage'
+import { FoodPage } from './pages/FoodPage'
+import { BusinessPage } from './pages/BusinessPage'
+import { ProvidersPage } from './pages/ProvidersPage'
+import { ProviderRegistration } from './pages/ProviderRegistration'
+import { ProviderDashboard } from './pages/ProviderDashboard'
 
 function App() {
   const [showSplash, setShowSplash] = useState(() => sessionStorage.getItem('makaziplus_intro_seen') !== '1')
@@ -61,6 +66,11 @@ function App() {
             <Route path="/agents" element={<AgentsPage />} />
             <Route path="/packages" element={<PackagesPage />} />
             <Route path="/taxi" element={<TaxiBooking />} />
+            <Route path="/food" element={<FoodPage />} />
+            <Route path="/business" element={<BusinessPage />} />
+            <Route path="/providers" element={<ProvidersPage />} />
+            <Route path="/register-provider" element={<ProviderRegistration />} />
+            <Route path="/provider-dashboard" element={<ProviderDashboard />} />
             <Route path="/destinations/:slug" element={<DestinationPage />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />

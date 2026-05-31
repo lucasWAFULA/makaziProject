@@ -231,6 +231,9 @@ export function Layout({ children }) {
         <div className={`nav-menu ${mobileOpen ? 'open' : ''}`}>
           <Link to="/" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('home')}</Link>
           <Link to="/stays" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('menu_stays')}</Link>
+          <Link to="/food" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('menu_food')}</Link>
+          <Link to="/business" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('menu_business')}</Link>
+          <Link to="/providers" className="nav-link" onClick={closeMenusBeforeNavigation}>Partner with us</Link>
           {renderMenuButton('booking', t('menu_booking'))}
           <Link to="/agents" className="nav-link" onClick={closeMenusBeforeNavigation}>{t('menu_agents')}</Link>
           {renderMenuButton('hotels', t('menu_hotels'))}
@@ -277,6 +280,9 @@ export function Layout({ children }) {
                       {t('owner_dashboard')}
                     </Link>
                   ) : null}
+                  <Link to="/provider-dashboard" role="menuitem" className="nav-account-item" onClick={() => setAccountOpen(false)}>
+                    {t('provider_dashboard')}
+                  </Link>
                   <Link to="/bookings" role="menuitem" className="nav-account-item" onClick={() => setAccountOpen(false)}>
                     {t('my_bookings')}
                   </Link>

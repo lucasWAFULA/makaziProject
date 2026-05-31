@@ -649,7 +649,7 @@ export function Home() {
       ) : null}
       <header className="hero hero-coastal hero-animate">
         <div className="hero-content">
-          <span className="hero-kicker">MakaziPlus East Africa</span>
+          <span className="hero-kicker">{t('hero_kicker')}</span>
           <h1 className="hero-title">{t('hero_headline')}</h1>
           <p className="hero-tagline">{t('hero_subline')}</p>
           <div className="hero-search-strip" aria-label="Popular destination shortcuts">
@@ -660,7 +660,8 @@ export function Home() {
           </div>
           <div className="hero-actions">
             <a href="#listings" className="btn btn-primary">{t('cta_find_stays')}</a>
-            <a href="#packages" className="btn btn-accent">{t('cta_book_package')}</a>
+            <Link to="/food" className="btn btn-accent">{t('cta_order_food')}</Link>
+            <Link to="/business" className="btn btn-secondary">{t('cta_business_services')}</Link>
           </div>
         </div>
       </header>
@@ -873,6 +874,61 @@ export function Home() {
             </div>
           )}
 
+        </div>
+      </section>
+
+      {/* ── OUR SERVICES ECOSYSTEM ── */}
+      <section className="card section-card services-ecosystem">
+        <div className="section-heading">
+          <div>
+            <span className="section-kicker">{t('svc_kicker')}</span>
+            <h2>{t('svc_title')}</h2>
+            <p>{t('svc_subtitle')}</p>
+          </div>
+        </div>
+        <div className="services-ecosystem-grid">
+          <article className="service-eco-card reveal-item" style={{ '--stagger': 0 }}>
+            <div className="service-eco-icon" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>🏠</div>
+            <div className="service-eco-body">
+              <strong>{t('svc_homes_title')}</strong>
+              <p>{t('svc_homes_desc')}</p>
+              <ul className="service-eco-list">
+                <li>{t('svc_homes_1')}</li>
+                <li>{t('svc_homes_2')}</li>
+                <li>{t('svc_homes_3')}</li>
+                <li>{t('svc_homes_4')}</li>
+              </ul>
+              <Link to="/stays" className="btn btn-primary btn-sm">{t('cta_find_stays')}</Link>
+            </div>
+          </article>
+          <article className="service-eco-card reveal-item" style={{ '--stagger': 1 }}>
+            <div className="service-eco-icon" style={{ background: 'linear-gradient(135deg, #f59e0b, #ef4444)' }}>🍔</div>
+            <div className="service-eco-body">
+              <strong>{t('svc_food_title')}</strong>
+              <p>{t('svc_food_desc')}</p>
+              <ul className="service-eco-list">
+                <li>{t('svc_food_1')}</li>
+                <li>{t('svc_food_2')}</li>
+                <li>{t('svc_food_3')}</li>
+                <li>{t('svc_food_4')}</li>
+              </ul>
+              <Link to="/food" className="btn btn-accent btn-sm">{t('cta_order_food')}</Link>
+            </div>
+          </article>
+          <article className="service-eco-card reveal-item" style={{ '--stagger': 2 }}>
+            <div className="service-eco-icon" style={{ background: 'linear-gradient(135deg, #3b82f6, #1e3a5f)' }}>📄</div>
+            <div className="service-eco-body">
+              <strong>{t('svc_biz_title')}</strong>
+              <p>{t('svc_biz_desc')}</p>
+              <ul className="service-eco-list">
+                <li>{t('svc_biz_1')}</li>
+                <li>{t('svc_biz_2')}</li>
+                <li>{t('svc_biz_3')}</li>
+                <li>{t('svc_biz_4')}</li>
+              </ul>
+              <Link to="/business" className="btn btn-secondary btn-sm">{t('cta_business_services')}</Link>
+            </div>
+          </article>
         </div>
       </section>
 

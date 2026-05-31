@@ -28,6 +28,7 @@ api_urlpatterns = [
     path("currencies/", include("currencies.urls")),
     path("billing/", include("billing.urls")),
     path("services/", include("services.urls")),
+    path("providers/", include("providers.urls")),
 ]
 
 
