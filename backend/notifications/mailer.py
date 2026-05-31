@@ -278,3 +278,27 @@ def send_test_email(to: str) -> bool:
         "transactional booking emails will reach your guests and hosts.\n"
     )
     return send_html_email(subject, text, _wrap_html(subject, intro, body), [to])
+
+
+def send_registration_success_email(user) -> bool:
+    """Email a successful registration welcome message to the user."""
+    if not user or not getattr(user, "email", ""):
+        return False
+    name = (getattr(user, "first_name", "") or user.get_username() or "there").strip()
+    subject = "Welcome to MakaziPlus!"
+    intro = (
+        f"<p>Hi <strong>{escape(name)}</strong>,</p>"
+        "<p>Welcome to <strong>MakaziPlus</strong>! Your account has been successfully created.</p>"
+    )
+    body = (
+        "<p>You can now book premium stays, order delicious food, and request business support services "
+        "all across East Africa, all in one seamless ecosystem.</p>"
+    )
+    cta = {"label": "Log in to your account", "href": f"{_SITE_URL}/login"}
+    text = (
+        f"Hi {name},\n\nWelcome to MakaziPlus! Your account has been successfully created.\n\n"
+        f"Log in to your account: {_SITE_URL}/login\n\n"
+        "— MakaziPlus"
+    )
+    return send_html_email(subject, text, _wrap_html(subject, intro, body, cta), [user.email])
+

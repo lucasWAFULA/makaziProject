@@ -25,10 +25,11 @@ class UserSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True)
+    username = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = User
-        fields = ("first_name", "email", "phone_number", "password", "password_confirm", "role")
+        fields = ("first_name", "email", "phone_number", "password", "password_confirm", "role", "username")
 
     def validate_role(self, value):
         allowed = {

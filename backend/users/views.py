@@ -38,6 +38,14 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
 
+    def perform_create(self, serializer):
+        user = serializer.save()
+        try:
+            from notifications.mailer import send_registration_success_email
+            send_registration_success_email(user)
+        except Exception as exc:
+            logger.warning("Failed to send welcome email: %s", exc)
+
 
 class MeView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
