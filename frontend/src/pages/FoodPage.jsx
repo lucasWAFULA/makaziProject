@@ -244,10 +244,6 @@ export function FoodPage() {
   ]
 
   const handleOpenOrderModal = (restaurant) => {
-    if (!user) {
-      navigate(`/login?redirect=/food`)
-      return
-    }
     setSelectedRest(restaurant)
     setOrderSuccess(false)
     setOrderDetails({
@@ -270,6 +266,10 @@ export function FoodPage() {
 
   const handleSubmitOrder = (e) => {
     e.preventDefault()
+    if (!user) {
+      navigate(`/login?redirect=/food`)
+      return
+    }
     if (orderDetails.selectedItems.length === 0) {
       alert('Please select at least one item.')
       return
@@ -390,7 +390,7 @@ export function FoodPage() {
             <h2>Select Your Country</h2>
             <p>We partner with local restaurants and vendors in all major East African cities.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.85rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.85rem' }}>
             {EA_FOOD_COUNTRIES.map((country) => (
               <button
                 key={country.code}
@@ -580,14 +580,7 @@ export function FoodPage() {
           }}
           onClick={(e) => { if (e.target === e.currentTarget) setSelectedRest(null) }}
         >
-          <div
-            className="card reveal-item"
-            style={{
-              maxWidth: '560px', width: '100%', padding: '2rem',
-              background: 'var(--color-card)', border: '1px solid var(--color-border)',
-              position: 'relative', overflowY: 'auto', maxHeight: '90vh', borderRadius: '20px',
-            }}
-          >
+          <div className="card reveal-item responsive-modal-card">
             <button
               onClick={() => setSelectedRest(null)}
               style={{
@@ -623,6 +616,25 @@ export function FoodPage() {
                   </div>
                 </div>
 
+                {!user && (
+                  <div style={{
+                    background: 'rgba(245, 158, 11, 0.1)',
+                    border: '1px solid rgba(245, 158, 11, 0.25)',
+                    padding: '0.75rem 1rem',
+                    borderRadius: '10px',
+                    color: '#d97706',
+                    fontSize: '0.85rem',
+                    marginBottom: '1.25rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontWeight: '600'
+                  }}>
+                    <span>⚠️</span>
+                    <span>You are browsing as a guest. Please log in to complete your order.</span>
+                  </div>
+                )}
+
                 {/* Menu Items */}
                 <div className="form-group" style={{ marginBottom: '1.5rem' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '700' }}>Select Menu Items</label>
@@ -632,12 +644,10 @@ export function FoodPage() {
                       return (
                         <label
                           key={dish.id}
+                          className="food-dish-item"
                           style={{
-                            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                            padding: '0.75rem', background: orderDetails.selectedItems.includes(dishLabel) ? 'rgba(245,158,11,0.1)' : 'rgba(255,255,255,0.03)',
-                            borderRadius: '8px', cursor: 'pointer',
+                            background: orderDetails.selectedItems.includes(dishLabel) ? 'rgba(245,158,11,0.1)' : 'rgba(255,255,255,0.03)',
                             border: `1px solid ${orderDetails.selectedItems.includes(dishLabel) ? 'rgba(245,158,11,0.4)' : 'transparent'}`,
-                            transition: 'all 0.2s',
                           }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -708,14 +718,25 @@ export function FoodPage() {
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  style={{ width: '100%', padding: '1rem', borderRadius: '12px', background: 'linear-gradient(135deg, #f59e0b, #ef4444)', border: 'none' }}
-                  disabled={createRequestMutation.isLoading}
-                >
-                  {createRequestMutation.isLoading ? 'Placing Order...' : `Confirm & Order — ${currentCountry.currency}`}
-                </button>
+                {!user ? (
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/login?redirect=/food`)}
+                    className="btn btn-accent"
+                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', background: 'linear-gradient(135deg, #f59e0b, #ef4444)', border: 'none' }}
+                  >
+                    🔐 Log In to Place Order
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', background: 'linear-gradient(135deg, #f59e0b, #ef4444)', border: 'none' }}
+                    disabled={createRequestMutation.isLoading}
+                  >
+                    {createRequestMutation.isLoading ? 'Placing Order...' : `Confirm & Order — ${currentCountry.currency}`}
+                  </button>
+                )}
               </form>
             )}
           </div>

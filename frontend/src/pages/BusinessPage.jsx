@@ -222,10 +222,6 @@ export function BusinessPage() {
   const currentCountry = EA_COUNTRIES.find((c) => c.code === activeCountry) || EA_COUNTRIES[0]
 
   const handleOpenInquiryModal = (serviceName) => {
-    if (!user) {
-      navigate(`/login?redirect=/business`)
-      return
-    }
     setSelectedService(serviceName)
     setInquirySuccess(false)
     setSelectedProviderId(backendBusinessProviders[0]?.id || '')
@@ -238,6 +234,10 @@ export function BusinessPage() {
 
   const handleSubmitInquiry = (e) => {
     e.preventDefault()
+    if (!user) {
+      navigate(`/login?redirect=/business`)
+      return
+    }
     let providerId = selectedProviderId
     if (!providerId) {
       if (backendBusinessProviders.length > 0) {
@@ -339,9 +339,9 @@ export function BusinessPage() {
           </div>
 
           {/* Progress Bar */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: '2rem', padding: '0 1rem' }}>
+          <div className="biz-progress-bar">
             {STEP_ACTIONS.map((step, idx) => (
-              <div key={step.id} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+              <div key={step.id} className="biz-progress-step">
                 <button
                   type="button"
                   onClick={() => {
@@ -391,14 +391,14 @@ export function BusinessPage() {
                   </span>
                 </button>
                 {idx < STEP_ACTIONS.length - 1 && (
-                  <div style={{ flex: 1, height: '2px', background: `linear-gradient(90deg, ${STEP_ACTIONS[idx].color}, ${STEP_ACTIONS[idx + 1].color})`, opacity: 0.4, margin: '0 4px' }} />
+                  <div className="biz-progress-line" style={{ background: `linear-gradient(90deg, ${STEP_ACTIONS[idx].color}, ${STEP_ACTIONS[idx + 1].color})` }} />
                 )}
               </div>
             ))}
           </div>
 
           {/* Step Labels Row */}
-          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${STEP_ACTIONS.length}, 1fr)`, gap: '0.5rem', marginBottom: '2rem', textAlign: 'center' }}>
+          <div className="biz-step-labels">
             {STEP_ACTIONS.map((step) => (
               <button
                 key={`label-${step.id}`}
@@ -431,17 +431,10 @@ export function BusinessPage() {
             if (!step) return null
             return (
               <div
+                className="biz-step-detail-panel"
                 style={{
                   background: `linear-gradient(135deg, ${step.color}10, ${step.color}06)`,
                   border: `2px solid ${step.color}55`,
-                  borderRadius: '20px',
-                  padding: '2rem',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '1.5rem',
-                  flexWrap: 'wrap',
-                  animation: 'fadeIn 0.3s ease',
-                  marginBottom: '1rem',
                 }}
               >
                 <div style={{
@@ -477,7 +470,7 @@ export function BusinessPage() {
                   <p style={{ color: 'var(--color-text)', margin: '0 0 0.5rem', lineHeight: 1.6 }}>{step.desc}</p>
                   <p style={{ color: 'var(--color-text-muted)', margin: 0, fontSize: '0.875rem', lineHeight: 1.5 }}>{step.detail}</p>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end' }}>
+                <div className="biz-step-actions">
                   {step.to ? (
                     <Link
                       to={step.to}
@@ -547,7 +540,7 @@ export function BusinessPage() {
             <h2>Select Your Country</h2>
             <p>Services are tailored to each country's regulatory framework.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1rem' }}>
             {EA_COUNTRIES.map((country) => (
               <button
                 key={country.code}
@@ -706,14 +699,7 @@ export function BusinessPage() {
           }}
           onClick={(e) => { if (e.target === e.currentTarget) setSelectedService(null) }}
         >
-          <div
-            className="card reveal-item"
-            style={{
-              maxWidth: '560px', width: '100%', padding: '2rem',
-              background: 'var(--color-card)', border: '1px solid var(--color-border)',
-              position: 'relative', overflowY: 'auto', maxHeight: '90vh', borderRadius: '20px',
-            }}
-          >
+          <div className="card reveal-item responsive-modal-card">
             <button
               onClick={() => setSelectedService(null)}
               style={{ position: 'absolute', top: '1rem', right: '1rem', border: 'none', background: 'rgba(0,0,0,0.1)', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', color: 'var(--color-text)', cursor: 'pointer' }}
@@ -745,6 +731,25 @@ export function BusinessPage() {
                 <p style={{ color: 'var(--color-text-muted)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
                   Submit your details and a verified {currentCountry.name} specialist will begin processing.
                 </p>
+
+                {!user && (
+                  <div style={{
+                    background: 'rgba(15, 139, 141, 0.1)',
+                    border: '1px solid rgba(15, 139, 141, 0.25)',
+                    padding: '0.75rem 1rem',
+                    borderRadius: '10px',
+                    color: 'var(--color-primary)',
+                    fontSize: '0.85rem',
+                    marginBottom: '1.25rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontWeight: '600'
+                  }}>
+                    <span>⚠️</span>
+                    <span>You are browsing as a guest. Please log in to submit this request.</span>
+                  </div>
+                )}
 
                 {backendBusinessProviders.length > 0 && (
                   <div className="form-group" style={{ marginBottom: '1.25rem' }}>
@@ -785,14 +790,25 @@ export function BusinessPage() {
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  style={{ width: '100%', padding: '1rem', borderRadius: '12px' }}
-                  disabled={createRequestMutation.isLoading}
-                >
-                  {createRequestMutation.isLoading ? 'Submitting...' : `Submit Request for ${currentCountry.name}`}
-                </button>
+                {!user ? (
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/login?redirect=/business`)}
+                    className="btn btn-accent"
+                    style={{ width: '100%', padding: '1rem', borderRadius: '12px' }}
+                  >
+                    🔐 Log In to Submit Request
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    style={{ width: '100%', padding: '1rem', borderRadius: '12px' }}
+                    disabled={createRequestMutation.isLoading}
+                  >
+                    {createRequestMutation.isLoading ? 'Submitting...' : `Submit Request for ${currentCountry.name}`}
+                  </button>
+                )}
               </form>
             )}
           </div>

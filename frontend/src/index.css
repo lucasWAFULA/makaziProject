@@ -4398,3 +4398,135 @@ input, select, textarea, button { font-family: var(--font-body); font: inherit; 
   .biz-workflow-arrow { transform: rotate(90deg); margin: 0.5rem 0; }
   .biz-workflow { flex-direction: column; }
 }
+
+/* ── Custom responsive utilities for mobile refinements ── */
+.responsive-modal-card {
+  max-width: 560px;
+  width: 100%;
+  padding: 2rem;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  position: relative;
+  overflow-y: auto;
+  max-height: 90vh;
+  border-radius: 20px;
+}
+
+.food-dish-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* ── Interactive Funnel CSS classes ── */
+.biz-progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+}
+
+.biz-progress-step {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.biz-progress-line {
+  flex: 1;
+  height: 2px;
+  opacity: 0.4;
+  margin: 0 4px;
+}
+
+.biz-step-labels {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.biz-step-detail-panel {
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  animation: fadeIn 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.biz-step-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+@media (max-width: 640px) {
+  .responsive-modal-card {
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+    max-height: 95vh;
+  }
+
+  .food-dish-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .biz-progress-bar {
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-around;
+  }
+
+  .biz-progress-step {
+    flex: 0 0 auto;
+  }
+
+  .biz-progress-line {
+    display: none;
+  }
+
+  .biz-step-labels {
+    display: none;
+  }
+
+  .biz-step-detail-panel {
+    flex-direction: column;
+    padding: 1.5rem;
+    gap: 1.25rem;
+  }
+
+  .biz-step-detail-panel > div {
+    width: 100% !important;
+    text-align: center;
+  }
+
+  .biz-step-actions {
+    align-items: center;
+    width: 100%;
+  }
+
+  .biz-step-actions .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
