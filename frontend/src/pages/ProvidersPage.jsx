@@ -12,7 +12,7 @@ export function ProvidersPage() {
         <p className="hero-tagline">Join Our Network of Trusted Service Partners. We connect customers with reliable professionals across housing, food delivery, and essential business services.</p>
         <div className="hero-actions" style={{ justifyContent: 'center' }}>
           <a href="#how-it-works" className="btn btn-primary">Learn More</a>
-          <Link to="/register" className="btn btn-secondary">Register Now</Link>
+          <Link to="/register-provider" className="btn btn-secondary">Register Now</Link>
         </div>
       </header>
 
@@ -131,7 +131,7 @@ export function ProvidersPage() {
           <span>🔗 Long-term relationships</span>
         </div>
         <div style={{ textAlign: 'center', display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link to="/register" className="btn btn-primary">Register Now</Link>
+          <Link to="/register-provider" className="btn btn-primary">Register Now</Link>
           <a href="https://wa.me/254725301031" className="btn btn-secondary" target="_blank" rel="noreferrer">Contact Support</a>
         </div>
       </section>

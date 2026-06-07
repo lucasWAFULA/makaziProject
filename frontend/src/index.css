@@ -4383,13 +4383,17 @@ input, select, textarea, button { font-family: var(--font-body); font: inherit; 
 }
 .biz-providers-section .service-eco-list li { color: white; }
 
-/* Responsive overrides for new components */
 @media (max-width: 768px) {
   .services-ecosystem-grid { grid-template-columns: 1fr; }
   .food-categories-grid { grid-template-columns: repeat(2, 1fr); }
   .food-steps-grid { grid-template-columns: repeat(2, 1fr); }
   .biz-services-grid { grid-template-columns: 1fr; }
   .food-hero, .biz-hero { padding: 3rem 1.5rem; }
+  .section-heading {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
 }
 
 @media (max-width: 480px) {
