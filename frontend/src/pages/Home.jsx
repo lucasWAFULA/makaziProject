@@ -938,7 +938,7 @@ export function Home() {
         {/* Background pattern */}
         <div style={{ position: 'absolute', inset: 0, background: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.02\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'10\'/%3E%3C/g%3E%3C/svg%3E")', pointerEvents: 'none' }} />
         <div style={{ position: 'relative' }}>
-          <div className="section-heading" style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+          <div className="section-heading centered" style={{ marginBottom: '2.5rem' }}>
             <span className="section-kicker" style={{ color: '#f59e0b' }}>Business Services</span>
             <h2 style={{ color: '#fff' }}>How Registration Works</h2>
             <p style={{ color: 'rgba(255,255,255,0.7)' }}>Get your business registered across East Africa in 5 easy steps. Click any step to begin.</p>
@@ -1504,7 +1504,7 @@ export function Home() {
 
       {/* ── HOW REGISTRATION WORKS (Interactive) ── */}
       <section className="card section-card" style={{ overflow: 'visible' }}>
-        <div className="section-heading" style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <div className="section-heading centered" style={{ marginBottom: '2rem' }}>
           <span className="section-kicker">Get Started Easily</span>
           <h2>How Registration Works</h2>
           <p style={{ color: 'var(--color-text-muted)' }}>5 simple steps to register and access all Makazi services — click each step to learn more</p>

@@ -4530,3 +4530,11 @@ input, select, textarea, button { font-family: var(--font-body); font: inherit; 
   }
 }
 
+.section-heading.centered {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  justify-content: center !important;
+}
+

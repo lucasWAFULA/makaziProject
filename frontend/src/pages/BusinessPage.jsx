@@ -332,7 +332,7 @@ export function BusinessPage() {
 
         {/* ── How Registration Works (Interactive Steps) ── */}
         <section ref={stepSectionRef} className="card section-card" style={{ marginTop: '2.5rem', marginBottom: '2.5rem' }}>
-          <div className="section-heading" style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+          <div className="section-heading centered" style={{ marginBottom: '2.5rem' }}>
             <span className="section-kicker">Simple Process</span>
             <h2>How Registration Works</h2>
             <p style={{ color: 'var(--color-text-muted)' }}>5 easy steps — click any step to instantly take action</p>
@@ -641,7 +641,7 @@ export function BusinessPage() {
 
         {/* ── Why Choose Us ── */}
         <section className="card section-card" style={{ marginBottom: '2.5rem' }}>
-          <div className="section-heading" style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <div className="section-heading centered" style={{ marginBottom: '2rem' }}>
             <span className="section-kicker">Our Advantage</span>
             <h2>Why Choose Makazi Plus?</h2>
           </div>
