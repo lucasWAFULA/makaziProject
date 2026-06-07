@@ -216,7 +216,7 @@ export function Layout({ children }) {
         <a href="https://maps.google.com/?q=Mombasa" target="_blank" rel="noreferrer">{t('quick_directions')}</a>
       </div>
 
-      <nav className="nav nav-main" ref={navRef}>
+      <nav className={`nav nav-main ${mobileOpen ? 'open' : ''}`} ref={navRef}>
         <div className="nav-row">
           <Link to="/" className="nav-brand" onClick={closeMenusBeforeNavigation}>
             <img src="/logo.png" alt="" className="nav-logo" onError={(e) => { e.target.style.display = 'none' }} />
