@@ -108,6 +108,7 @@ export function Home() {
     guests: '',
   })
   const [activeTab, setActiveTab] = useState('rent')
+  const [activeRegStep, setActiveRegStep] = useState(null)
   const [aiPrompt, setAiPrompt] = useState('')
   const [aiHint, setAiHint] = useState('')
   const [isAiApplying, setIsAiApplying] = useState(false)
@@ -883,7 +884,7 @@ export function Home() {
           <div>
             <span className="section-kicker">{t('svc_kicker')}</span>
             <h2>{t('svc_title')}</h2>
-            <p>{t('svc_subtitle')}</p>
+            <p>Serving Kenya, Tanzania, Uganda, Rwanda, Burundi, South Sudan, Ethiopia &amp; DR Congo</p>
           </div>
         </div>
         <div className="services-ecosystem-grid">
@@ -893,10 +894,10 @@ export function Home() {
               <strong>{t('svc_homes_title')}</strong>
               <p>{t('svc_homes_desc')}</p>
               <ul className="service-eco-list">
-                <li>{t('svc_homes_1')}</li>
-                <li>{t('svc_homes_2')}</li>
-                <li>{t('svc_homes_3')}</li>
-                <li>{t('svc_homes_4')}</li>
+                <li>🇰🇪 Mombasa, Diani, Nairobi</li>
+                <li>🇹🇿 Zanzibar, Dar es Salaam</li>
+                <li>🇺🇬 Kampala, Entebbe</li>
+                <li>🇷🇼 Kigali &amp; more destinations</li>
               </ul>
               <Link to="/stays" className="btn btn-primary btn-sm">{t('cta_find_stays')}</Link>
             </div>
@@ -905,12 +906,12 @@ export function Home() {
             <div className="service-eco-icon" style={{ background: 'linear-gradient(135deg, #f59e0b, #ef4444)' }}>🍔</div>
             <div className="service-eco-body">
               <strong>{t('svc_food_title')}</strong>
-              <p>{t('svc_food_desc')}</p>
+              <p>Order from local restaurants across East Africa. Delivered to your stay, home, or office.</p>
               <ul className="service-eco-list">
-                <li>{t('svc_food_1')}</li>
-                <li>{t('svc_food_2')}</li>
-                <li>{t('svc_food_3')}</li>
-                <li>{t('svc_food_4')}</li>
+                <li>🇰🇪 Swahili Pilau, Nyama Choma</li>
+                <li>🇹🇿 Zanzibar Spice, Urojo Soup</li>
+                <li>🇺🇬 Rolex, Matoke, Luwombo</li>
+                <li>🇷🇼 Brochettes, Isombe &amp; more</li>
               </ul>
               <Link to="/food" className="btn btn-accent btn-sm">{t('cta_order_food')}</Link>
             </div>
@@ -919,16 +920,138 @@ export function Home() {
             <div className="service-eco-icon" style={{ background: 'linear-gradient(135deg, #3b82f6, #1e3a5f)' }}>📄</div>
             <div className="service-eco-body">
               <strong>{t('svc_biz_title')}</strong>
-              <p>{t('svc_biz_desc')}</p>
+              <p>Business registration, tax compliance, and property licensing across all East African countries.</p>
               <ul className="service-eco-list">
-                <li>{t('svc_biz_1')}</li>
-                <li>{t('svc_biz_2')}</li>
-                <li>{t('svc_biz_3')}</li>
-                <li>{t('svc_biz_4')}</li>
+                <li>🇰🇪 KRA, BRS Kenya</li>
+                <li>🇹🇿 TRA, BRELA Tanzania</li>
+                <li>🇺🇬 URA, URSB Uganda</li>
+                <li>🇷🇼 RRA, RDB Rwanda &amp; more</li>
               </ul>
               <Link to="/business" className="btn btn-secondary btn-sm">{t('cta_business_services')}</Link>
             </div>
           </article>
+        </div>
+      </section>
+
+      {/* ── HOW REGISTRATION WORKS (Interactive Steps) ── */}
+      <section className="card section-card" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)', border: 'none', overflow: 'hidden', position: 'relative' }}>
+        {/* Background pattern */}
+        <div style={{ position: 'absolute', inset: 0, background: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.02\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'10\'/%3E%3C/g%3E%3C/svg%3E")', pointerEvents: 'none' }} />
+        <div style={{ position: 'relative' }}>
+          <div className="section-heading" style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <span className="section-kicker" style={{ color: '#f59e0b' }}>Business Services</span>
+            <h2 style={{ color: '#fff' }}>How Registration Works</h2>
+            <p style={{ color: 'rgba(255,255,255,0.7)' }}>Get your business registered across East Africa in 5 easy steps. Click any step to begin.</p>
+          </div>
+
+          {/* Steps Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+            {[
+              {
+                step: 1, icon: '👤', label: 'Sign Up Free',
+                desc: 'Create your Makazi Plus account — free, takes 2 minutes.',
+                color: '#10b981', gradient: 'linear-gradient(135deg, #10b981, #059669)',
+                to: '/register', cta: 'Sign Up Now →',
+              },
+              {
+                step: 2, icon: '📋', label: 'Select Service',
+                desc: 'Browse services by country: Kenya, Tanzania, Uganda, Rwanda & more.',
+                color: '#3b82f6', gradient: 'linear-gradient(135deg, #3b82f6, #1e3a5f)',
+                to: '/business#services', cta: 'Browse Services →',
+              },
+              {
+                step: 3, icon: '📤', label: 'Upload Documents',
+                desc: 'Securely upload your ID and business documents via your dashboard.',
+                color: '#f59e0b', gradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                to: '/provider-dashboard', cta: 'Open Dashboard →',
+              },
+              {
+                step: 4, icon: '💳', label: 'Make Payment',
+                desc: 'Pay via M-Pesa, MTN MoMo, Airtel Money, or bank transfer.',
+                color: '#8b5cf6', gradient: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+                to: '/business#services', cta: 'View Pricing →',
+              },
+              {
+                step: 5, icon: '✅', label: 'Get Certificate',
+                desc: 'Receive your official certificate digitally in 3–7 business days.',
+                color: '#ef4444', gradient: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                to: '/provider-dashboard', cta: 'Track Progress →',
+              },
+            ].map((item, idx) => (
+              <Link
+                key={item.step}
+                to={item.to}
+                className="reveal-item"
+                style={{
+                  '--stagger': idx,
+                  background: 'rgba(255,255,255,0.05)',
+                  border: `1px solid ${item.color}40`,
+                  borderRadius: '16px',
+                  padding: '1.5rem 1.25rem',
+                  textDecoration: 'none',
+                  display: 'block',
+                  transition: 'all 0.3s ease',
+                  position: 'relative',
+                  backdropFilter: 'blur(8px)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = `${item.color}20`
+                  e.currentTarget.style.borderColor = item.color
+                  e.currentTarget.style.transform = 'translateY(-4px)'
+                  e.currentTarget.style.boxShadow = `0 12px 32px ${item.color}30`
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                  e.currentTarget.style.borderColor = `${item.color}40`
+                  e.currentTarget.style.transform = 'translateY(0)'
+                  e.currentTarget.style.boxShadow = 'none'
+                }}
+              >
+                {/* Step badge */}
+                <span style={{
+                  position: 'absolute',
+                  top: '-12px',
+                  left: '1.25rem',
+                  background: item.gradient,
+                  color: '#fff',
+                  borderRadius: '20px',
+                  padding: '0.15rem 0.6rem',
+                  fontSize: '0.7rem',
+                  fontWeight: '800',
+                  letterSpacing: '0.05em',
+                }}>
+                  STEP {item.step}
+                </span>
+                <div style={{
+                  width: '52px', height: '52px', borderRadius: '14px',
+                  background: item.gradient, display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', fontSize: '1.6rem', marginBottom: '1rem',
+                  boxShadow: `0 6px 16px ${item.color}40`,
+                }}>
+                  {item.icon}
+                </div>
+                <strong style={{ color: '#fff', fontSize: '1rem', display: 'block', marginBottom: '0.5rem' }}>
+                  {item.label}
+                </strong>
+                <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.85rem', margin: '0 0 1rem', lineHeight: 1.5 }}>
+                  {item.desc}
+                </p>
+                <span style={{ color: item.color, fontSize: '0.85rem', fontWeight: '700' }}>
+                  {item.cta}
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          {/* Bottom CTA */}
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginTop: '1rem' }}>
+            <Link to="/register" className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}>
+              Get Started Free →
+            </Link>
+            <Link to="/business" className="btn" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.25)', backdropFilter: 'blur(8px)' }}>
+              Explore All Business Services
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -1376,6 +1499,159 @@ export function Home() {
           <Link to="/agents" className="btn btn-secondary btn-sm">{t('menu_agents')}</Link>
           <Link to="/register" className="btn btn-secondary btn-sm">{t('agent_register_cta')}</Link>
           <Link to="/property/new" className="btn btn-accent btn-sm">{t('add_property')}</Link>
+        </div>
+      </section>
+
+      {/* ── HOW REGISTRATION WORKS (Interactive) ── */}
+      <section className="card section-card" style={{ overflow: 'visible' }}>
+        <div className="section-heading" style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <span className="section-kicker">Get Started Easily</span>
+          <h2>How Registration Works</h2>
+          <p style={{ color: 'var(--color-text-muted)' }}>5 simple steps to register and access all Makazi services — click each step to learn more</p>
+        </div>
+
+        {/* Step cards grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+          {[
+            {
+              id: 'signup',
+              step: 1,
+              icon: '👤',
+              label: 'Sign Up',
+              desc: 'Create your free Makazi Plus account in under 2 minutes.',
+              cta: { label: 'Sign Up Free →', to: '/register', className: 'btn btn-primary btn-sm' },
+            },
+            {
+              id: 'login',
+              step: 2,
+              icon: '🔐',
+              label: 'Log In',
+              desc: 'Log in to your account to access your personalised dashboard.',
+              cta: { label: 'Log In →', to: '/login', className: 'btn btn-secondary btn-sm' },
+            },
+            {
+              id: 'select',
+              step: 3,
+              icon: '📋',
+              label: 'Select a Service',
+              desc: 'Choose from Stays, Food Delivery, or Business Services across East Africa.',
+              cta: { label: 'Browse Services →', href: '#listings', className: 'btn btn-secondary btn-sm' },
+            },
+            {
+              id: 'book',
+              step: 4,
+              icon: '💳',
+              label: 'Book & Pay',
+              desc: 'Complete your booking or order with secure mobile money or card payment.',
+              cta: { label: 'Find Stays →', to: '/stays', className: 'btn btn-secondary btn-sm' },
+            },
+            {
+              id: 'track',
+              step: 5,
+              icon: '✅',
+              label: 'Track & Enjoy',
+              desc: 'Monitor your booking, order, or registration status from your dashboard.',
+              cta: { label: 'Go to Dashboard →', to: '/owner-dashboard', className: 'btn btn-accent btn-sm' },
+            },
+          ].map((step) => (
+            <button
+              key={step.id}
+              type="button"
+              onClick={() => setActiveRegStep(activeRegStep === step.id ? null : step.id)}
+              style={{
+                background: activeRegStep === step.id
+                  ? 'linear-gradient(135deg, var(--color-primary), #1e3a5f)'
+                  : 'var(--color-card)',
+                border: `2px solid ${activeRegStep === step.id ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                borderRadius: '16px',
+                padding: '1.5rem 1rem 1.25rem',
+                cursor: 'pointer',
+                textAlign: 'center',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                transform: activeRegStep === step.id ? 'translateY(-6px)' : 'translateY(0)',
+                boxShadow: activeRegStep === step.id
+                  ? '0 10px 30px rgba(15, 139, 141, 0.35)'
+                  : '0 2px 8px rgba(0,0,0,0.06)',
+                color: activeRegStep === step.id ? '#fff' : 'var(--color-heading)',
+                position: 'relative',
+              }}
+              aria-expanded={activeRegStep === step.id}
+            >
+              <span style={{
+                position: 'absolute',
+                top: '-12px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                background: activeRegStep === step.id ? '#f59e0b' : 'var(--color-primary)',
+                color: '#fff',
+                borderRadius: '50%',
+                width: '26px',
+                height: '26px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.8rem',
+                fontWeight: '700',
+                border: '2px solid var(--color-card)',
+              }}>
+                {step.step}
+              </span>
+              <div style={{ fontSize: '2rem', marginBottom: '0.6rem', marginTop: '0.25rem' }}>{step.icon}</div>
+              <strong style={{ fontSize: '0.9rem', display: 'block', lineHeight: 1.3 }}>{step.label}</strong>
+            </button>
+          ))}
+        </div>
+
+        {/* Expanded detail panel */}
+        {activeRegStep && (() => {
+          const steps = [
+            { id: 'signup', step: 1, icon: '👤', label: 'Sign Up', desc: 'Create your free Makazi Plus account in under 2 minutes.', cta: { label: 'Sign Up Free →', to: '/register', className: 'btn btn-primary btn-sm' } },
+            { id: 'login', step: 2, icon: '🔐', label: 'Log In', desc: 'Log in to your account to access your personalised dashboard.', cta: { label: 'Log In →', to: '/login', className: 'btn btn-secondary btn-sm' } },
+            { id: 'select', step: 3, icon: '📋', label: 'Select a Service', desc: 'Choose from Stays, Food Delivery, or Business Services across East Africa.', cta: { label: 'Browse Services →', href: '#listings', className: 'btn btn-secondary btn-sm' } },
+            { id: 'book', step: 4, icon: '💳', label: 'Book & Pay', desc: 'Complete your booking or order with secure mobile money or card payment.', cta: { label: 'Find Stays →', to: '/stays', className: 'btn btn-secondary btn-sm' } },
+            { id: 'track', step: 5, icon: '✅', label: 'Track & Enjoy', desc: 'Monitor your booking, order, or registration status from your dashboard.', cta: { label: 'Go to Dashboard →', to: '/owner-dashboard', className: 'btn btn-accent btn-sm' } },
+          ]
+          const found = steps.find((s) => s.id === activeRegStep)
+          if (!found) return null
+          return (
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(15,139,141,0.09), rgba(30,58,95,0.07))',
+              border: '1px solid var(--color-primary)',
+              borderRadius: '16px',
+              padding: '1.75rem 2rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1.5rem',
+              flexWrap: 'wrap',
+              marginBottom: '1rem',
+            }}>
+              <span style={{ fontSize: '3rem' }}>{found.icon}</span>
+              <div style={{ flex: 1, minWidth: '200px' }}>
+                <strong style={{ fontSize: '1.1rem', color: 'var(--color-primary)', display: 'block', marginBottom: '0.4rem' }}>
+                  Step {found.step}: {found.label}
+                </strong>
+                <p style={{ color: 'var(--color-text-muted)', margin: 0 }}>{found.desc}</p>
+              </div>
+              {found.cta.to ? (
+                <Link to={found.cta.to} className={found.cta.className} style={{ whiteSpace: 'nowrap' }}>
+                  {found.cta.label}
+                </Link>
+              ) : (
+                <a href={found.cta.href} className={found.cta.className} style={{ whiteSpace: 'nowrap' }}>
+                  {found.cta.label}
+                </a>
+              )}
+            </div>
+          )
+        })()}
+
+        {/* Inline step shortcuts for non-expanded view */}
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center', marginTop: '0.5rem' }}>
+          <Link to="/register" className="btn btn-primary btn-sm">👤 Sign Up</Link>
+          <Link to="/login" className="btn btn-secondary btn-sm">🔐 Log In</Link>
+          <Link to="/food" className="btn btn-accent btn-sm">🍔 Order Food</Link>
+          <Link to="/business" className="btn btn-secondary btn-sm">📄 Business Services</Link>
+          <Link to="/stays" className="btn btn-secondary btn-sm">🏠 Find Stays</Link>
         </div>
       </section>
 
