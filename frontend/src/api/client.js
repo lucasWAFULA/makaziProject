@@ -18,7 +18,8 @@ api.interceptors.response.use(
   (err) => {
     if (err.response?.status === 401) {
       const isLoginRequest = err.config?.url?.includes('auth/login')
-      if (!isLoginRequest) {
+      const hasAuthHeader = !!err.config?.headers?.Authorization
+      if (!isLoginRequest && hasAuthHeader) {
         localStorage.removeItem('access_token')
         localStorage.removeItem('refresh_token')
         window.location.href = '/login'
