@@ -128,61 +128,61 @@ const STEP_ACTIONS = [
     id: 'signup',
     step: 1,
     icon: '👤',
-    label: 'Sign Up Free',
-    desc: 'Create your free Makazi Plus account in under 2 minutes. No credit card required.',
+    labelKey: 'biz_page_step1_label',
+    descKey: 'biz_page_step1_desc',
     to: '/register',
-    btnLabel: 'Create Account →',
+    btnLabelKey: 'biz_page_step1_btnLabel',
     color: '#10b981',
     bgColor: 'linear-gradient(135deg, #10b981, #059669)',
-    detail: 'Fill in your name, email, and choose a secure password. You will receive a verification email immediately.',
+    detailKey: 'biz_page_step1_detail',
   },
   {
     id: 'choose',
     step: 2,
     icon: '📋',
-    label: 'Select Service',
-    desc: 'Choose your country and the service you need — registration, tax, or property licensing.',
+    labelKey: 'biz_page_step2_label',
+    descKey: 'biz_page_step2_desc',
     anchor: '#services',
-    btnLabel: 'Browse Services →',
+    btnLabelKey: 'biz_page_step2_btnLabel',
     color: '#3b82f6',
     bgColor: 'linear-gradient(135deg, #3b82f6, #1e3a5f)',
-    detail: 'All services are organised by country and regulatory framework. Each service shows what documents you need.',
+    detailKey: 'biz_page_step2_detail',
   },
   {
     id: 'upload',
     step: 3,
     icon: '📤',
-    label: 'Upload Documents',
-    desc: 'Securely upload your ID, business documents, and supporting files via your encrypted dashboard.',
+    labelKey: 'biz_page_step3_label',
+    descKey: 'biz_page_step3_desc',
     to: '/provider-dashboard',
-    btnLabel: 'Go to Dashboard →',
+    btnLabelKey: 'biz_page_step3_btnLabel',
     color: '#f59e0b',
     bgColor: 'linear-gradient(135deg, #f59e0b, #d97706)',
-    detail: 'Our bank-grade encrypted portal accepts PDF, JPG, and PNG. Documents are reviewed within 1–2 business days.',
+    detailKey: 'biz_page_step3_detail',
   },
   {
     id: 'pay',
     step: 4,
     icon: '💳',
-    label: 'Make Payment',
-    desc: 'Pay via M-Pesa, MTN MoMo, Airtel Money, Telebirr, or bank transfer. Instant confirmation.',
+    labelKey: 'biz_page_step4_label',
+    descKey: 'biz_page_step4_desc',
     anchor: '#services',
-    btnLabel: 'View Pricing →',
+    btnLabelKey: 'biz_page_step4_btnLabel',
     color: '#8b5cf6',
     bgColor: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
-    detail: 'Service fees vary by country and service type. All payments are protected and fully refundable if your application is not processed.',
+    detailKey: 'biz_page_step4_detail',
   },
   {
     id: 'complete',
     step: 5,
     icon: '✅',
-    label: 'Get Certificate',
-    desc: 'Receive your official certificate, PIN, or license document digitally — ready to download or print.',
+    labelKey: 'biz_page_step5_label',
+    descKey: 'biz_page_step5_desc',
     to: '/provider-dashboard',
-    btnLabel: 'Track Progress →',
+    btnLabelKey: 'biz_page_step5_btnLabel',
     color: '#ef4444',
     bgColor: 'linear-gradient(135deg, #ef4444, #dc2626)',
-    detail: 'Most registrations are completed in 3–7 business days. You will receive SMS and email notifications at every stage.',
+    detailKey: 'biz_page_step5_detail',
   },
 ]
 
@@ -261,11 +261,12 @@ export function BusinessPage() {
   }
 
   const serviceGroups = [
-    { id: 'registration', label: '🏢 Business Registration', icon: '📝' },
-    { id: 'tax', label: '📊 Tax Services', icon: '📋' },
-    { id: 'property', label: '🏠 Property & Real Estate', icon: '🏠' },
+    { id: 'registration', label: t('biz_page_group_registration'), icon: '🏢' },
+    { id: 'tax', label: t('biz_page_group_tax'), icon: '📊' },
+    { id: 'property', label: t('biz_page_group_property'), icon: '🏠' },
   ]
 
+  const currentCountryName = t(currentCountry.name)
   const currentServices = currentCountry.services[activeServiceGroup] || []
 
   return (
@@ -292,20 +293,20 @@ export function BusinessPage() {
             ))}
           </div>
           <span className="hero-kicker" style={{ color: 'rgba(255,255,255,0.8)' }}>
-            Business Registration & Compliance Services
+            {t('biz_page_hero_kicker')}
           </span>
           <h1 className="hero-title" style={{ color: '#fff', fontSize: 'clamp(1.8rem, 4vw, 3rem)', lineHeight: 1.2 }}>
-            Empowering Entrepreneurs Across <span style={{ color: '#f59e0b' }}>East Africa</span>
+            {t('biz_page_hero_title')}
           </h1>
           <p className="hero-tagline" style={{ color: 'rgba(255,255,255,0.85)', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto 2rem' }}>
-            From Nairobi to Kigali, Dar es Salaam to Kampala — we help you register, comply, and grow your business in all {EA_COUNTRIES.length} East African countries.
+            {t('biz_page_hero_tagline', { count: EA_COUNTRIES.length })}
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="#services" className="btn btn-primary">Explore Services</a>
+            <a href="#services" className="btn btn-primary">{t('biz_page_explore_services')}</a>
             <a href="#countries" className="btn" style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.3)' }}>
-              Select Country
+              {t('biz_page_select_country')}
             </a>
-            <Link to="/register" className="btn btn-accent">Get Started Free</Link>
+            <Link to="/register" className="btn btn-accent">{t('biz_page_get_started_free')}</Link>
           </div>
         </div>
       </header>
@@ -314,12 +315,12 @@ export function BusinessPage() {
       <div style={{ background: 'linear-gradient(90deg, #f0fdf4, #eff6ff)', borderBottom: '1px solid var(--color-border)', padding: '1rem 2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '2.5rem', flexWrap: 'wrap', maxWidth: '1200px', margin: '0 auto' }}>
           {[
-            { icon: '🔒', label: 'Secure Documents' },
-            { icon: '✅', label: 'Govt. Compliant' },
-            { icon: '📱', label: 'Mobile Payments' },
-            { icon: '⚡', label: 'Fast Turnaround' },
-            { icon: '🌍', label: `${EA_COUNTRIES.length} EA Countries` },
-            { icon: '👨‍💼', label: 'Certified Consultants' },
+            { icon: '🔒', label: t('biz_page_trust_secure_docs') },
+            { icon: '✅', label: t('biz_page_trust_govt_compliant') },
+            { icon: '📱', label: t('biz_page_trust_mobile_payments') },
+            { icon: '⚡', label: t('biz_page_trust_fast_turnaround') },
+            { icon: '🌍', label: t('biz_page_trust_ea_countries', { count: EA_COUNTRIES.length }) },
+            { icon: '👨‍💼', label: t('biz_page_trust_certified_consultants') },
           ].map((item) => (
             <span key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '600', fontSize: '0.9rem', color: 'var(--color-heading)' }}>
               {item.icon} {item.label}
@@ -333,9 +334,9 @@ export function BusinessPage() {
         {/* ── How Registration Works (Interactive Steps) ── */}
         <section ref={stepSectionRef} className="card section-card" style={{ marginTop: '2.5rem', marginBottom: '2.5rem' }}>
           <div className="section-heading centered" style={{ marginBottom: '2.5rem' }}>
-            <span className="section-kicker">Simple Process</span>
-            <h2>How Registration Works</h2>
-            <p style={{ color: 'var(--color-text-muted)' }}>5 easy steps — click any step to instantly take action</p>
+            <span className="section-kicker">{t('biz_page_simple_process')}</span>
+            <h2>{t('biz_page_how_reg_works')}</h2>
+            <p style={{ color: 'var(--color-text-muted)' }}>{t('biz_page_how_reg_works_desc')}</p>
           </div>
 
           {/* Progress Bar */}
@@ -367,7 +368,7 @@ export function BusinessPage() {
                     flexShrink: 0,
                     position: 'relative',
                   }}
-                  aria-label={step.label}
+                  aria-label={t(step.labelKey)}
                 >
                   {step.icon}
                   {/* Step number badge */}
@@ -419,7 +420,7 @@ export function BusinessPage() {
                   lineHeight: 1.3,
                   transition: 'color 0.2s',
                 }}>
-                  {step.label}
+                  {t(step.labelKey)}
                 </small>
               </button>
             ))}
@@ -461,14 +462,14 @@ export function BusinessPage() {
                       fontSize: '0.7rem',
                       fontWeight: '700',
                     }}>
-                      Step {step.step} of {STEP_ACTIONS.length}
+                      {t('biz_page_step_word')} {step.step} {t('biz_page_step_of')} {STEP_ACTIONS.length}
                     </span>
                   </div>
                   <strong style={{ fontSize: '1.2rem', color: step.color, display: 'block', marginBottom: '0.5rem' }}>
-                    {step.label}
+                    {t(step.labelKey)}
                   </strong>
-                  <p style={{ color: 'var(--color-text)', margin: '0 0 0.5rem', lineHeight: 1.6 }}>{step.desc}</p>
-                  <p style={{ color: 'var(--color-text-muted)', margin: 0, fontSize: '0.875rem', lineHeight: 1.5 }}>{step.detail}</p>
+                  <p style={{ color: 'var(--color-text)', margin: '0 0 0.5rem', lineHeight: 1.6 }}>{t(step.descKey)}</p>
+                  <p style={{ color: 'var(--color-text-muted)', margin: 0, fontSize: '0.875rem', lineHeight: 1.5 }}>{t(step.detailKey)}</p>
                 </div>
                 <div className="biz-step-actions">
                   {step.to ? (
@@ -482,7 +483,7 @@ export function BusinessPage() {
                         boxShadow: `0 4px 14px ${step.color}50`,
                       }}
                     >
-                      {step.btnLabel}
+                      {t(step.btnLabelKey)}
                     </Link>
                   ) : (
                     <a
@@ -495,7 +496,7 @@ export function BusinessPage() {
                         boxShadow: `0 4px 14px ${step.color}50`,
                       }}
                     >
-                      {step.btnLabel}
+                      {t(step.btnLabelKey)}
                     </a>
                   )}
                   {step.step < STEP_ACTIONS.length && (
@@ -504,7 +505,7 @@ export function BusinessPage() {
                       onClick={() => setActiveStep(STEP_ACTIONS[step.step].id)}
                       style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem', color: 'var(--color-text-muted)', padding: '0.25rem 0.5rem' }}
                     >
-                      Next: {STEP_ACTIONS[step.step].label} →
+                      {t('biz_page_step_next')}: {t(STEP_ACTIONS[step.step].labelKey)} →
                     </button>
                   )}
                 </div>
@@ -515,20 +516,20 @@ export function BusinessPage() {
           {/* Instruction when nothing is selected */}
           {!activeStep && (
             <div style={{ textAlign: 'center', padding: '1rem', color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-              👆 Click any step above to learn more and take action
+              {t('biz_page_step_instruction')}
             </div>
           )}
 
           {/* Quick action row at bottom */}
           <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap', marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--color-border)' }}>
             <Link to="/register" className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none' }}>
-              👤 Sign Up Free
+              👤 {t('biz_page_step_sign_up_free')}
             </Link>
             <a href="#services" className="btn btn-secondary">
-              📋 Browse Services
+              📋 {t('biz_page_step_browse_services')}
             </a>
             <Link to="/provider-dashboard" className="btn" style={{ background: 'rgba(15,139,141,0.1)', color: 'var(--color-primary)', border: '1px solid var(--color-primary)' }}>
-              📊 My Dashboard
+              📊 {t('biz_page_step_my_dashboard')}
             </Link>
           </div>
         </section>
@@ -536,9 +537,9 @@ export function BusinessPage() {
         {/* ── Country Selector ── */}
         <section id="countries" className="card section-card" style={{ marginBottom: '2.5rem' }}>
           <div className="section-heading" style={{ marginBottom: '1.5rem' }}>
-            <span className="section-kicker">Coverage</span>
-            <h2>Select Your Country</h2>
-            <p>Services are tailored to each country's regulatory framework.</p>
+            <span className="section-kicker">{t('biz_page_coverage_kicker')}</span>
+            <h2>{t('biz_page_select_your_country')}</h2>
+            <p>{t('biz_page_country_desc')}</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1rem' }}>
             {EA_COUNTRIES.map((country) => (
@@ -560,12 +561,12 @@ export function BusinessPage() {
                 }}
               >
                 <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{country.flag}</div>
-                <strong style={{ display: 'block', fontSize: '1rem', marginBottom: '0.25rem' }}>{country.name}</strong>
-                <small style={{ opacity: 0.75, fontSize: '0.75rem' }}>{country.regBody.split('(')[0].trim()}</small>
+                <strong style={{ display: 'block', fontSize: '1rem', marginBottom: '0.25rem' }}>{t(country.name)}</strong>
+                <small style={{ opacity: 0.75, fontSize: '0.75rem' }}>{t(country.regBody.split('(')[0].trim())}</small>
                 <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
                   {country.paymentMethods.slice(0, 2).map((method) => (
                     <span key={method} style={{ fontSize: '0.65rem', padding: '0.15rem 0.4rem', background: activeCountry === country.code ? 'rgba(255,255,255,0.2)' : 'rgba(15,139,141,0.1)', borderRadius: '6px', color: activeCountry === country.code ? '#fff' : 'var(--color-primary)' }}>
-                      {method}
+                      {t(method)}
                     </span>
                   ))}
                 </div>
@@ -579,10 +580,10 @@ export function BusinessPage() {
           <div className="section-heading" style={{ marginBottom: '0' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
               <div>
-                <span className="section-kicker">{currentCountry.flag} {currentCountry.name}</span>
-                <h2>Services Offered</h2>
+                <span className="section-kicker">{currentCountry.flag} {currentCountryName}</span>
+                <h2>{t('biz_page_services_offered')}</h2>
                 <p style={{ maxWidth: '600px' }}>
-                  Regulated by <strong>{currentCountry.regBody}</strong> and <strong>{currentCountry.taxBody}</strong>. Payments via {currentCountry.paymentMethods.join(', ')}.
+                  {t('biz_page_regulated_by', { reg: t(currentCountry.regBody), tax: t(currentCountry.taxBody), payments: currentCountry.paymentMethods.map(m => t(m)).join(', ') })}
                 </p>
               </div>
             </div>
@@ -625,12 +626,12 @@ export function BusinessPage() {
                 >
                   <span className="biz-svc-icon">{icons[activeServiceGroup] || '📄'}</span>
                   <div className="biz-svc-content">
-                    <strong>{serviceName}</strong>
+                    <strong>{t(serviceName)}</strong>
                     <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
-                      {currentCountry.name} · {currentCountry.taxBody} / {currentCountry.regBody.split('(')[0].trim()}
+                      {t('biz_page_card_desc', { country: currentCountryName, tax: t(currentCountry.taxBody), reg: t(currentCountry.regBody.split('(')[0].trim()) })}
                     </p>
                     <button className="btn btn-accent btn-sm" style={{ marginTop: '0.75rem' }}>
-                      Inquire Now →
+                      {t('biz_page_inquire_now')}
                     </button>
                   </div>
                 </article>
@@ -642,17 +643,17 @@ export function BusinessPage() {
         {/* ── Why Choose Us ── */}
         <section className="card section-card" style={{ marginBottom: '2.5rem' }}>
           <div className="section-heading centered" style={{ marginBottom: '2rem' }}>
-            <span className="section-kicker">Our Advantage</span>
-            <h2>Why Choose Makazi Plus?</h2>
+            <span className="section-kicker">{t('biz_page_why_kicker')}</span>
+            <h2>{t('biz_page_why_title')}</h2>
           </div>
           <div className="food-steps-grid">
             {[
-              { icon: '🌍', title: 'East Africa Coverage', desc: `Serving ${EA_COUNTRIES.length} countries — Kenya, Tanzania, Uganda, Rwanda, Burundi, South Sudan, Ethiopia, DR Congo.` },
-              { icon: '✨', title: 'Simplified Processes', desc: 'We navigate complex regulatory frameworks so you can focus on your business.' },
-              { icon: '👨‍💼', title: 'Certified Consultants', desc: 'Verified professionals with country-specific expertise and local knowledge.' },
-              { icon: '🔒', title: 'Secure & Confidential', desc: 'Bank-grade document security and end-to-end encrypted transmissions.' },
-              { icon: '📱', title: 'Mobile-First Payments', desc: 'M-Pesa, MTN, Airtel Money, Telebirr — pay how you want, where you are.' },
-              { icon: '⚡', title: 'Fast Turnaround', desc: 'Expedited processing available. Track your application status in real-time.' },
+              { icon: '🌍', title: t('biz_page_why_benefit1_title'), desc: t('biz_page_why_benefit1_desc', { count: EA_COUNTRIES.length }) },
+              { icon: '✨', title: t('biz_page_why_benefit2_title'), desc: t('biz_page_why_benefit2_desc') },
+              { icon: '👨‍💼', title: t('biz_page_why_benefit3_title'), desc: t('biz_page_why_benefit3_desc') },
+              { icon: '🔒', title: t('biz_page_why_benefit4_title'), desc: t('biz_page_why_benefit4_desc') },
+              { icon: '📱', title: t('biz_page_why_benefit5_title'), desc: t('biz_page_why_benefit5_desc') },
+              { icon: '⚡', title: t('biz_page_why_benefit6_title'), desc: t('biz_page_why_benefit6_desc') },
             ].map((item, idx) => (
               <div key={idx} className="food-step-card" style={{ '--stagger': idx }}>
                 <span className="food-step-icon">{item.icon}</span>
@@ -674,14 +675,14 @@ export function BusinessPage() {
             padding: '3rem 2rem',
           }}
         >
-          <h2 style={{ color: '#fff', marginBottom: '0.75rem' }}>Partner with Makazi Plus</h2>
+          <h2 style={{ color: '#fff', marginBottom: '0.75rem' }}>{t('biz_page_partner_title')}</h2>
           <p style={{ color: 'rgba(255,255,255,0.85)', marginBottom: '2rem', maxWidth: '550px', margin: '0 auto 2rem' }}>
-            Are you a certified business consultant, accountant, or compliance expert in East Africa? Join our verified network and earn by helping entrepreneurs across the region.
+            {t('biz_page_partner_desc')}
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/register-provider" className="btn btn-accent">Register as a Service Provider</Link>
+            <Link to="/register-provider" className="btn btn-accent">{t('biz_page_register_provider')}</Link>
             <Link to="/contact" className="btn" style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.3)' }}>
-              Contact Our Team
+              {t('biz_page_contact_team')}
             </Link>
           </div>
         </section>
@@ -710,13 +711,13 @@ export function BusinessPage() {
             {inquirySuccess ? (
               <div style={{ textAlign: 'center', padding: '2rem 0' }}>
                 <span style={{ fontSize: '4rem', display: 'block', marginBottom: '1rem' }}>✅</span>
-                <h3>Inquiry Submitted!</h3>
+                <h3>{t('biz_page_inquiry_success')}</h3>
                 <p style={{ margin: '1rem 0 2rem 0', color: 'var(--color-text-muted)' }}>
-                  Your inquiry for <strong>{selectedService}</strong> ({currentCountry.flag} {currentCountry.name}) has been recorded. A verified consultant will contact you shortly.
+                  {t('biz_page_inquiry_success_desc', { service: t(selectedService), flag: currentCountry.flag, country: currentCountryName })}
                 </p>
                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                  <button onClick={() => setSelectedService(null)} className="btn btn-secondary">Close</button>
-                  <Link to="/provider-dashboard" className="btn btn-primary">View Dashboard</Link>
+                  <button onClick={() => setSelectedService(null)} className="btn btn-secondary">{t('biz_page_close')}</button>
+                  <Link to="/provider-dashboard" className="btn btn-primary">{t('biz_page_view_dashboard')}</Link>
                 </div>
               </div>
             ) : (
@@ -724,12 +725,12 @@ export function BusinessPage() {
                 <div style={{ display: 'flex', align: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
                   <span style={{ fontSize: '2rem' }}>{currentCountry.flag}</span>
                   <div>
-                    <h3 style={{ margin: 0 }}>Request: {selectedService}</h3>
-                    <small style={{ color: 'var(--color-text-muted)' }}>{currentCountry.name} · {currentCountry.regBody}</small>
+                    <h3 style={{ margin: 0 }}>{t('biz_page_request_service', { service: t(selectedService) })}</h3>
+                    <small style={{ color: 'var(--color-text-muted)' }}>{currentCountryName} · {t(currentCountry.regBody)}</small>
                   </div>
                 </div>
                 <p style={{ color: 'var(--color-text-muted)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-                  Submit your details and a verified {currentCountry.name} specialist will begin processing.
+                  {t('biz_page_request_desc', { country: currentCountryName })}
                 </p>
 
                 {!user && (
@@ -747,13 +748,13 @@ export function BusinessPage() {
                     fontWeight: '600'
                   }}>
                     <span>⚠️</span>
-                    <span>You are browsing as a guest. Please log in to submit this request.</span>
+                    <span>{t('biz_page_guest_warning')}</span>
                   </div>
                 )}
 
                 {backendBusinessProviders.length > 0 && (
                   <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                    <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '600' }}>Select Certified Consultant</label>
+                    <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '600' }}>{t('biz_page_select_consultant')}</label>
                     <select
                       value={selectedProviderId}
                       onChange={(e) => setSelectedProviderId(e.target.value)}
@@ -768,18 +769,18 @@ export function BusinessPage() {
                 )}
 
                 <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '600' }}>Inquiry Details</label>
+                  <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '600' }}>{t('biz_page_inquiry_details')}</label>
                   <textarea
                     value={inquiryDetails.specificDetails}
                     onChange={(e) => setInquiryDetails((prev) => ({ ...prev, specificDetails: e.target.value }))}
                     required
-                    placeholder={`e.g. Your requirements for ${selectedService} in ${currentCountry.name}. Include any existing registration numbers if applicable.`}
+                    placeholder={t('biz_page_inquiry_placeholder', { service: t(selectedService), country: currentCountryName })}
                     style={{ width: '100%', minHeight: '100px', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-background)', color: 'var(--color-text)' }}
                   />
                 </div>
 
                 <div className="form-group" style={{ marginBottom: '2rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '600' }}>Contact Phone Number</label>
+                  <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '600' }}>{t('biz_page_contact_phone')}</label>
                   <input
                     type="tel"
                     value={inquiryDetails.phone}
@@ -797,7 +798,7 @@ export function BusinessPage() {
                     className="btn btn-accent"
                     style={{ width: '100%', padding: '1rem', borderRadius: '12px' }}
                   >
-                    🔐 Log In to Submit Request
+                    🔐 {t('biz_page_login_to_submit')}
                   </button>
                 ) : (
                   <button
@@ -806,7 +807,7 @@ export function BusinessPage() {
                     style={{ width: '100%', padding: '1rem', borderRadius: '12px' }}
                     disabled={createRequestMutation.isLoading}
                   >
-                    {createRequestMutation.isLoading ? 'Submitting...' : `Submit Request for ${currentCountry.name}`}
+                    {createRequestMutation.isLoading ? t('biz_page_submitting') : t('biz_page_submit_for_country', { country: currentCountryName })}
                   </button>
                 )}
               </form>
