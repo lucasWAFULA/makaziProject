@@ -271,7 +271,7 @@ export function FoodPage() {
       return
     }
     if (orderDetails.selectedItems.length === 0) {
-      alert('Please select at least one item.')
+      alert(t('food_select_item_alert'))
       return
     }
 
@@ -339,20 +339,20 @@ export function FoodPage() {
             ))}
           </div>
           <span className="hero-kicker" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem', letterSpacing: '0.15em', fontWeight: '700', textTransform: 'uppercase' }}>
-            🍽️ Food Delivery Across East Africa
+            🍽️ {t('food_ea_kicker')}
           </span>
           <h1 className="hero-title" style={{ color: '#fff', fontSize: 'clamp(1.8rem, 4vw, 3rem)', lineHeight: 1.2, margin: '0.75rem 0' }}>
-            Delicious Meals Delivered to <span style={{ color: 'rgba(255,255,100,1)' }}>Your Stay</span>
+            {t('food_ea_hero_title_pre')} <span style={{ color: 'rgba(255,255,100,1)' }}>{t('food_ea_hero_title_highlight')}</span>
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto 2rem' }}>
-            Order from top local restaurants in {EA_FOOD_COUNTRIES.length} East African countries. Fresh food, fast delivery, mobile money payments.
+            {t('food_ea_hero_subtitle', { count: EA_FOOD_COUNTRIES.length })}
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <a href="#restaurants" className="btn btn-primary" style={{ background: '#fff', color: '#ef4444', fontWeight: '700' }}>
-              Browse Restaurants
+              {t('food_ea_browse_restaurants')}
             </a>
             <a href="#countries" className="btn" style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', border: '1px solid rgba(255,255,255,0.4)', backdropFilter: 'blur(8px)' }}>
-              Select Country
+              {t('food_ea_select_country')}
             </a>
           </div>
         </div>
@@ -362,12 +362,12 @@ export function FoodPage() {
       <div style={{ background: 'linear-gradient(90deg, #fff7ed, #fff1f2)', borderBottom: '1px solid var(--color-border)', padding: '1rem 2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '2.5rem', flexWrap: 'wrap', maxWidth: '1200px', margin: '0 auto' }}>
           {[
-            { icon: '🌍', label: `${EA_FOOD_COUNTRIES.length} EA Countries` },
-            { icon: '📱', label: 'Mobile Money Payments' },
-            { icon: '⚡', label: 'Fast Delivery' },
-            { icon: '🏠', label: 'Delivery to Your Stay' },
-            { icon: '✅', label: 'Verified Restaurants' },
-            { icon: '🔒', label: 'Secure Ordering' },
+            { icon: '🌍', label: t('food_trust_countries', { count: EA_FOOD_COUNTRIES.length }) },
+            { icon: '📱', label: t('food_trust_mobile_money') },
+            { icon: '⚡', label: t('food_trust_fast_delivery') },
+            { icon: '🏠', label: t('food_trust_delivery_stay') },
+            { icon: '✅', label: t('food_trust_verified_restaurants') },
+            { icon: '🔒', label: t('food_trust_secure_ordering') },
           ].map((item) => (
             <span key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '600', fontSize: '0.9rem', color: 'var(--color-heading)' }}>
               {item.icon} {item.label}
@@ -380,15 +380,15 @@ export function FoodPage() {
 
         {/* ── Integration Note ── */}
         <section className="card section-card food-integration-note" style={{ marginTop: '2rem', marginBottom: '2rem', background: 'linear-gradient(135deg, rgba(245,158,11,0.08), rgba(239,68,68,0.05))', border: '1px solid rgba(245,158,11,0.3)' }}>
-          <p>🏠 <strong>{t('food_integration_note', 'Makazi Plus food delivery is linked to your booked property — meals go exactly where you are staying in East Africa.')}</strong></p>
+          <p>🏠 <strong>{t('food_integration_note')}</strong></p>
         </section>
 
         {/* ── Country Selector ── */}
         <section id="countries" className="card section-card" style={{ marginBottom: '2rem' }}>
           <div className="section-heading" style={{ marginBottom: '1.5rem' }}>
-            <span className="section-kicker">Coverage</span>
-            <h2>Select Your Country</h2>
-            <p>We partner with local restaurants and vendors in all major East African cities.</p>
+            <span className="section-kicker">{t('food_coverage_kicker')}</span>
+            <h2>{t('food_select_your_country')}</h2>
+            <p>{t('food_country_desc')}</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.85rem' }}>
             {EA_FOOD_COUNTRIES.map((country) => (
@@ -430,13 +430,13 @@ export function FoodPage() {
             <span style={{ fontSize: '3rem' }}>{currentCountry.flag}</span>
             <div style={{ flex: 1 }}>
               <h3 style={{ margin: '0 0 0.25rem', color: 'var(--color-heading)' }}>
-                {currentCountry.name} — Food Delivery
+                {t('food_country_delivery', { name: currentCountry.name })}
               </h3>
               <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-                Serving: <strong>{currentCountry.cities.join(', ')}</strong>
+                {t('food_serving_label')} <strong>{currentCountry.cities.join(', ')}</strong>
               </p>
               <p style={{ margin: '0.25rem 0 0', color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-                Payments: {currentCountry.paymentMethods.join(' · ')} &nbsp;|&nbsp; Currency: <strong>{currentCountry.currency}</strong>
+                {t('food_payments_label')} {currentCountry.paymentMethods.join(' · ')} &nbsp;|&nbsp; {t('food_currency_label')} <strong>{currentCountry.currency}</strong>
               </p>
             </div>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -453,11 +453,11 @@ export function FoodPage() {
         <section id="restaurants" className="card section-card" style={{ marginBottom: '2rem' }}>
           <div className="section-heading" style={{ marginBottom: '1.5rem' }}>
             <span className="section-kicker">{currentCountry.flag} {currentCountry.name}</span>
-            <h2>Featured Restaurants</h2>
-            <p>Browse partner restaurants and order directly to your location in {currentCountry.name}.</p>
+            <h2>{t('food_featured_restaurants')}</h2>
+            <p>{t('food_browse_partner_desc', { name: currentCountry.name })}</p>
           </div>
           {isLoading ? (
-            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>Loading restaurants...</div>
+            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>{t('food_loading_restaurants')}</div>
           ) : (
             <div className="grid grid-3">
               {restaurantsList.map((rest, idx) => (
@@ -488,7 +488,7 @@ export function FoodPage() {
                         className="btn btn-primary btn-sm"
                         style={{ background: 'linear-gradient(135deg, #f59e0b, #ef4444)', border: 'none' }}
                       >
-                        Order Now
+                        {t('food_order_now')}
                       </button>
                     </div>
                   </div>
@@ -501,16 +501,16 @@ export function FoodPage() {
         {/* ── Service Categories ── */}
         <section className="card section-card" style={{ marginBottom: '2rem' }}>
           <div className="section-heading">
-            <h2>Services Offered</h2>
+            <h2>{t('food_services_offered')}</h2>
           </div>
           <div className="food-categories-grid">
             {[
-              { icon: '🍽️', label: 'Restaurant Meal Delivery', stagger: 0 },
-              { icon: '🛒', label: 'Grocery & Convenience Delivery', stagger: 1 },
-              { icon: '🍱', label: 'Office Lunch Delivery', stagger: 2 },
-              { icon: '🏘️', label: 'Apartment & Gated-Community Delivery', stagger: 3 },
-              { icon: '🎉', label: 'Catering Requests for Events', stagger: 4 },
-              { icon: '📅', label: 'Scheduled Meal Deliveries', stagger: 5 },
+              { icon: '🍽️', label: t('food_svc_restaurant'), stagger: 0 },
+              { icon: '🛒', label: t('food_svc_grocery'), stagger: 1 },
+              { icon: '🍱', label: t('food_svc_office'), stagger: 2 },
+              { icon: '🏘️', label: t('food_svc_community'), stagger: 3 },
+              { icon: '🎉', label: t('food_svc_catering'), stagger: 4 },
+              { icon: '📅', label: t('food_svc_scheduled'), stagger: 5 },
             ].map((item) => (
               <div key={item.label} className="food-category-card" style={{ '--stagger': item.stagger }}>
                 <span className="food-cat-icon">{item.icon}</span>
@@ -523,16 +523,16 @@ export function FoodPage() {
         {/* ── Why Use Makazi Food ── */}
         <section className="card section-card" style={{ marginBottom: '2rem' }}>
           <div className="section-heading">
-            <h2>Why Use Makazi Food?</h2>
+            <h2>{t('food_why_use')}</h2>
           </div>
           <div className="food-steps-grid">
             {[
-              { icon: '🌍', title: 'Pan-East Africa Coverage', desc: `Restaurants in all ${EA_FOOD_COUNTRIES.length} East African countries — Kenya, Tanzania, Uganda, Rwanda, Ethiopia, Burundi, South Sudan, DR Congo.` },
-              { icon: '📱', title: 'Mobile Money Payments', desc: 'M-Pesa, MTN MoMo, Airtel Money, Telebirr, Tigo Pesa — pay how you want, where you are.' },
-              { icon: '🏠', title: 'Direct to Your Stay', desc: 'Delivery directly to your booked property, hotel room, or apartment across East Africa.' },
-              { icon: '🤝', title: 'Verified Local Partners', desc: 'All restaurants are verified local businesses with quality assurance and food safety compliance.' },
-              { icon: '⚡', title: 'Fast & Reliable', desc: 'Real-time tracking and guaranteed delivery times from top-rated local restaurants.' },
-              { icon: '🔒', title: 'Secure Ordering', desc: 'End-to-end encrypted orders with secure mobile payment confirmation.' },
+              { icon: '🌍', title: t('food_why_pan_ea'), desc: t('food_why_pan_ea_desc', { count: EA_FOOD_COUNTRIES.length }) },
+              { icon: '📱', title: t('food_why_mobile_money'), desc: t('food_why_mobile_money_desc') },
+              { icon: '🏠', title: t('food_why_direct'), desc: t('food_why_direct_desc') },
+              { icon: '🤝', title: t('food_why_verified'), desc: t('food_why_verified_desc') },
+              { icon: '⚡', title: t('food_why_fast'), desc: t('food_why_fast_desc') },
+              { icon: '🔒', title: t('food_why_secure'), desc: t('food_why_secure_desc') },
             ].map((item, idx) => (
               <div key={idx} className="food-step-card" style={{ '--stagger': idx }}>
                 <span className="food-step-icon">{item.icon}</span>
@@ -554,16 +554,16 @@ export function FoodPage() {
             padding: '3rem 2rem',
           }}
         >
-          <h2 style={{ color: '#fff', marginBottom: '0.75rem' }}>Partner with Makazi Plus Food</h2>
+          <h2 style={{ color: '#fff', marginBottom: '0.75rem' }}>{t('food_partner_cta_title')}</h2>
           <p style={{ color: 'rgba(255,255,255,0.9)', marginBottom: '2rem', maxWidth: '550px', margin: '0 auto 2rem' }}>
-            Are you a restaurant, caterer, or food vendor in East Africa? Join our verified network and reach thousands of travelers and residents.
+            {t('food_partner_cta_desc')}
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link to="/register-provider" className="btn btn-primary" style={{ background: '#fff', color: '#ef4444', fontWeight: '700' }}>
-              Register as a Food Partner
+              {t('food_register_partner')}
             </Link>
             <Link to="/contact" className="btn" style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', border: '1px solid rgba(255,255,255,0.4)', backdropFilter: 'blur(8px)' }}>
-              Contact Our Team
+              {t('food_contact_team')}
             </Link>
           </div>
         </section>
@@ -596,13 +596,13 @@ export function FoodPage() {
             {orderSuccess ? (
               <div style={{ textAlign: 'center', padding: '2rem 0' }}>
                 <span style={{ fontSize: '4rem', display: 'block', marginBottom: '1rem' }}>🎉</span>
-                <h3>Order Placed Successfully!</h3>
+                <h3>{t('food_order_success')}</h3>
                 <p style={{ margin: '1rem 0 2rem 0', color: 'var(--color-text-muted)' }}>
-                  Your order from <strong>{selectedRest.name}</strong> ({currentCountry.flag} {currentCountry.name}) has been sent. You can track it in your dashboard.
+                  {t('food_order_sent', { restaurant: selectedRest.name, flag: currentCountry.flag, country: currentCountry.name })}
                 </p>
                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                  <button onClick={() => setSelectedRest(null)} className="btn btn-secondary">Close</button>
-                  <Link to="/provider-dashboard" className="btn btn-primary">Track Order</Link>
+                  <button onClick={() => setSelectedRest(null)} className="btn btn-secondary">{t('food_close')}</button>
+                  <Link to="/provider-dashboard" className="btn btn-primary">{t('food_track_order')}</Link>
                 </div>
               </div>
             ) : (
@@ -611,7 +611,7 @@ export function FoodPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                   <span style={{ fontSize: '2rem' }}>{currentCountry.flag}</span>
                   <div>
-                    <h3 style={{ margin: 0 }}>Order from {selectedRest.name}</h3>
+                    <h3 style={{ margin: 0 }}>{t('food_order_from', { name: selectedRest.name })}</h3>
                     <small style={{ color: 'var(--color-text-muted)' }}>{currentCountry.name} · {selectedRest.city || currentCountry.cities[0]} · {currentCountry.currency}</small>
                   </div>
                 </div>
@@ -631,13 +631,13 @@ export function FoodPage() {
                     fontWeight: '600'
                   }}>
                     <span>⚠️</span>
-                    <span>You are browsing as a guest. Please log in to complete your order.</span>
+                    <span>{t('food_guest_warning')}</span>
                   </div>
                 )}
 
                 {/* Menu Items */}
                 <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '700' }}>Select Menu Items</label>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '700' }}>{t('food_select_menu')}</label>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     {currentCountry.dishes.map((dish) => {
                       const dishLabel = `${dish.name} (${currentCountry.currency} ${dish.price.toLocaleString()})`
@@ -667,14 +667,14 @@ export function FoodPage() {
 
                 {/* City */}
                 <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '700' }}>City / Area</label>
+                  <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '700' }}>{t('food_city_area')}</label>
                   <select
                     value={orderDetails.city}
                     onChange={(e) => setOrderDetails((prev) => ({ ...prev, city: e.target.value }))}
                     required
                     style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-background)', color: 'var(--color-text)' }}
                   >
-                    <option value="">Select city</option>
+                    <option value="">{t('food_select_city')}</option>
                     {currentCountry.cities.map((city) => (
                       <option key={city} value={city}>{city}</option>
                     ))}
@@ -683,31 +683,31 @@ export function FoodPage() {
 
                 {/* Special Instructions */}
                 <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '700' }}>Special Instructions</label>
+                  <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '700' }}>{t('food_special_instructions')}</label>
                   <textarea
                     value={orderDetails.instructions}
                     onChange={(e) => setOrderDetails((prev) => ({ ...prev, instructions: e.target.value }))}
-                    placeholder="e.g. Extra spice, no onions, deliver at 8 PM..."
+                    placeholder={t('food_instructions_placeholder')}
                     style={{ width: '100%', minHeight: '80px', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-background)', color: 'var(--color-text)' }}
                   />
                 </div>
 
                 {/* Delivery Location */}
                 <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '700' }}>Delivery Location / Room / Stay Name</label>
+                  <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '700' }}>{t('food_delivery_location')}</label>
                   <input
                     type="text"
                     value={orderDetails.location}
                     onChange={(e) => setOrderDetails((prev) => ({ ...prev, location: e.target.value }))}
                     required
-                    placeholder="e.g. Room 402 / Villa Sunset / Apartment 7B"
+                    placeholder={t('food_delivery_placeholder')}
                     style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-background)', color: 'var(--color-text)' }}
                   />
                 </div>
 
                 {/* Phone */}
                 <div className="form-group" style={{ marginBottom: '2rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '700' }}>Contact Phone Number</label>
+                  <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '700' }}>{t('food_contact_phone')}</label>
                   <input
                     type="tel"
                     value={orderDetails.phone}
@@ -725,7 +725,7 @@ export function FoodPage() {
                     className="btn btn-accent"
                     style={{ width: '100%', padding: '1rem', borderRadius: '12px', background: 'linear-gradient(135deg, #f59e0b, #ef4444)', border: 'none' }}
                   >
-                    🔐 Log In to Place Order
+                    🔐 {t('food_login_to_order')}
                   </button>
                 ) : (
                   <button
@@ -734,7 +734,7 @@ export function FoodPage() {
                     style={{ width: '100%', padding: '1rem', borderRadius: '12px', background: 'linear-gradient(135deg, #f59e0b, #ef4444)', border: 'none' }}
                     disabled={createRequestMutation.isLoading}
                   >
-                    {createRequestMutation.isLoading ? 'Placing Order...' : `Confirm & Order — ${currentCountry.currency}`}
+                    {createRequestMutation.isLoading ? t('food_placing_order') : t('food_confirm_order', { currency: currentCountry.currency })}
                   </button>
                 )}
               </form>
